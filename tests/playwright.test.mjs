@@ -95,6 +95,8 @@ async function runE2ESuite() {
     await page.goto(`${baseUrl}/repair`, { waitUntil: "domcontentloaded" });
     await page.waitForSelector(".choice-grid", { timeout: 10000 });
 
+    await page.waitForTimeout(2000); // Wait for React hydration in dev mode
+
     // Step 0: Choose Brand (Apple)
     console.log("    - Selecting brand: Apple");
     await page.locator(".choice:has-text('Apple')").first().click({ force: true });
