@@ -1,0 +1,27 @@
+{
+  "name": "RE:Art — Precision Electronics Repair",
+  "short_name": "RE:Art",
+  "description": "Component-level electronics repair, micro-soldering & individual pricing in Prague 3.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#040711",
+  "theme_color": "#00e5ff",
+  "icons": [
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

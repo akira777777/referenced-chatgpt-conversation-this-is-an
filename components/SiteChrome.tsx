@@ -28,10 +28,16 @@ export function Header() {
   const [hidden, setHidden] = useState(false);
   const [menu, setMenu] = useState(false);
   const [search, setSearch] = useState(false);
-  const [dark, setDark] = useState(() => typeof document !== "undefined" && document.documentElement.classList.contains("dark"));
+  const [dark, setDark] = useState(false);
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      setDark(document.documentElement.classList.contains("dark"));
+    }
+  }, []);
 
   const navLinks = [
     { label: t.nav.repairs, href: "/repair" },
