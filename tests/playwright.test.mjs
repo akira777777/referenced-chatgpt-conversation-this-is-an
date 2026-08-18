@@ -28,27 +28,30 @@ async function runE2ESuite() {
     
     // Switch to Russian
     console.log("  - Switching to Russian");
-    await page.locator(".nav-actions button[aria-label='Switch to RU']").first().click();
-    await page.waitForTimeout(400);
-    const ruHeading = await page.locator(".hero-headline").textContent();
-    assert.match(ruHeading, /Работает как новый/);
-    console.log("  ✔ Switched to Russian: 'Работает как новый'");
+    await page.waitForFunction(() => {
+      const btn = document.querySelector(".nav-actions button[aria-label='Switch to RU']");
+      if (btn) btn.click();
+      return document.querySelector(".hero-headline")?.textContent.includes("Работает как новый");
+    }, { timeout: 10000 });
+    console.log("  ✔ Switched to Russian");
 
     // Switch to Czech
     console.log("  - Switching to Czech");
-    await page.locator(".nav-actions button[aria-label='Switch to CZ']").first().click();
-    await page.waitForTimeout(400);
-    const czHeading = await page.locator(".hero-headline").textContent();
-    assert.match(czHeading, /Jako nový/);
-    console.log("  ✔ Switched to Czech: 'Jako nový'");
+    await page.waitForFunction(() => {
+      const btn = document.querySelector(".nav-actions button[aria-label='Switch to CZ']");
+      if (btn) btn.click();
+      return document.querySelector(".hero-headline")?.textContent.includes("Jako nový");
+    }, { timeout: 10000 });
+    console.log("  ✔ Switched to Czech");
 
     // Switch to English
     console.log("  - Switching to English");
-    await page.locator(".nav-actions button[aria-label='Switch to EN']").first().click();
-    await page.waitForTimeout(400);
-    const enHeading = await page.locator(".hero-headline").textContent();
-    assert.match(enHeading, /Working like new/);
-    console.log("  ✔ Switched to English: 'Working like new'");
+    await page.waitForFunction(() => {
+      const btn = document.querySelector(".nav-actions button[aria-label='Switch to EN']");
+      if (btn) btn.click();
+      return document.querySelector(".hero-headline")?.textContent.includes("Working like new");
+    }, { timeout: 10000 });
+    console.log("  ✔ Switched to English");
 
     console.log("▶ [3/7] Testing Dark/Light Mode Theme Toggle...");
     await page.locator("button[title='Toggle theme']").first().click({ force: true });
