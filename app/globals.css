@@ -377,8 +377,8 @@ main {
 
 /* Mobile Nav */
 .mobile-nav {
-  position: absolute;
-  top: 72px;
+  position: fixed;
+  top: 80px;
   left: 16px;
   right: 16px;
   background: var(--surface);
@@ -389,6 +389,9 @@ main {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  z-index: 100;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
 }
 
 .mobile-nav-top {
@@ -2090,20 +2093,7 @@ main {
   font-size: 14px;
 }
 
-.notice {
-  display: flex;
-  gap: 12px;
-  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
-  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--line));
-  padding: 16px;
-  border-radius: 14px;
-  margin: 16px 0;
-  color: var(--muted);
-}
-
-.notice svg {
-  color: var(--accent);
-}
+/* .notice — primary styles are in the tracking section below */
 
 .notice p {
   margin: 0;
@@ -2607,6 +2597,14 @@ main {
 @media (max-width: 640px) {
   .container { width: min(100% - 28px, 1220px); }
   .section { padding: 60px 0; }
+  /* Mobile header: keep the hamburger reachable on narrow viewports.
+     Language switching lives inside the mobile drawer (.mobile-nav-top),
+     Telegram lives in the drawer and the footer. */
+  .nav { gap: 10px; }
+  .nav-actions { gap: 6px; }
+  .nav-actions > .lang-switcher { display: none; }
+  .telegram-nav-icon { display: none; }
+  .brand-tagline { display: none; }
   .hero-cyber { padding: 120px 0 40px; }
   .hero-headline { font-size: 42px; }
   .symptom-tabs { grid-template-columns: 1fr; }
@@ -2623,6 +2621,11 @@ main {
   .wizard-content { padding: 20px; }
   .wizard-top { padding: 24px 20px; }
   .progress { padding: 14px 20px; }
+  /* Collapse header: hide lang-switcher & telegram in header bar at small mobile —
+     both are accessible inside the mobile nav drawer */
+  .nav-actions > .lang-switcher { display: none; }
+  .nav-actions > .telegram-nav-icon { display: none; }
+  .nav-actions { gap: 6px; }
 }
 
 /* ==========================================================================

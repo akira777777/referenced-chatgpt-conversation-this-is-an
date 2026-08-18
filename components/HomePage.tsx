@@ -158,7 +158,8 @@ export function HomePage() {
                   <Link
                     key={brand.id}
                     href={`/repair?brand=${brand.id}`}
-                    className="brand-quick-chip"
+                    className="brand-quick-chip quick-select"
+                    data-testid="quick-select-brand"
                   >
                     <Icon size={16} />
                     <span>{brand.name}</span>

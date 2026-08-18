@@ -19,8 +19,8 @@ async function test() {
     await page.goto("http://localhost:3000/", { waitUntil: "networkidle", timeout: 20000 });
     await page.waitForTimeout(1500);
 
-    // Quick-select brand buttons
-    const quickBtns = await page.locator(".quick-select-row button").all();
+    // Quick-select brand chips (rendered as Links in .quick-brands-grid)
+    const quickBtns = await page.locator(".quick-brands-grid .brand-quick-chip").all();
     let quickOk = quickBtns.length > 0;
     if (quickOk) {
       await quickBtns[0].click();
