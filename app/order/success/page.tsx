@@ -1,0 +1,5 @@
+import Link from "next/link";
+import { CalendarPlus, Check, Headphones, Search } from "lucide-react";
+import { SiteChrome } from "@/components/SiteChrome";
+import { PlaceholderTag } from "@/components/ui";
+export default async function SuccessPage({ searchParams }: { searchParams: Promise<{ id?: string }> }) { const { id } = await searchParams; const orderId = id ?? "REP-240182"; return <SiteChrome><div className="success-page container narrow"><span className="success-icon"><Check/></span><p className="eyebrow">REQUEST RECEIVED <PlaceholderTag/></p><h1>Your repair is booked.</h1><p>We’ll review the details and confirm your appointment shortly.</p><div className="order-number"><span>REPAIR NUMBER</span><b>{orderId}</b><small>Keep this number to track your repair.</small></div><div className="success-actions"><Link href={`/track/${orderId}`}><Search/>Track repair</Link><button><CalendarPlus/>Add to calendar</button><Link href="/contact"><Headphones/>Contact support</Link></div><Link className="text-link" href="/">Return home</Link></div></SiteChrome>; }

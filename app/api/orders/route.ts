@@ -1,0 +1,3 @@
+import { z } from "zod";
+const orderSchema = z.object({ brand: z.string(), model: z.string(), repairs: z.array(z.string()).min(1), estimatedPrice: z.number().nonnegative(), method: z.string(), slot: z.string().optional(), customer: z.object({ firstName: z.string(), lastName: z.string(), email: z.string().email(), phone: z.string() }) });
+export async function POST(request: Request) { const parsed = orderSchema.safeParse(await request.json()); if (!parsed.success) return Response.json({ error: "Invalid repair request" }, { status: 400 }); const orderId = `REP-${Math.floor(100000 + Math.random() * 900000)}`; return Response.json({ orderId, status: "REQUESTED", persistence: "demo" }, { status: 201 }); }

@@ -1,0 +1,13 @@
+import { pgTable, serial, text, integer, timestamp, pgEnum, boolean } from "drizzle-orm/pg-core";
+
+export const repairStatus = pgEnum("repair_status", ["REQUESTED", "RECEIVED", "DIAGNOSTICS", "IN_PROGRESS", "TESTING", "READY", "COMPLETED"]);
+export const customers = pgTable("customers", { id: serial("id").primaryKey(), firstName: text("first_name").notNull(), lastName: text("last_name").notNull(), email: text("email").notNull(), phone: text("phone").notNull(), createdAt: timestamp("created_at").defaultNow().notNull() });
+export const deviceBrands = pgTable("device_brands", { id: serial("id").primaryKey(), name: text("name").notNull().unique() });
+export const deviceCategories = pgTable("device_categories", { id: serial("id").primaryKey(), brandId: integer("brand_id").references(() => deviceBrands.id), name: text("name").notNull() });
+export const deviceModels = pgTable("device_models", { id: serial("id").primaryKey(), categoryId: integer("category_id").references(() => deviceCategories.id), name: text("name").notNull(), active: boolean("active").default(true) });
+export const repairServices = pgTable("repair_services", { id: serial("id").primaryKey(), name: text("name").notNull(), description: text("description") });
+export const repairPrices = pgTable("repair_prices", { id: serial("id").primaryKey(), deviceModelId: integer("device_model_id").references(() => deviceModels.id), repairServiceId: integer("repair_service_id").references(() => repairServices.id), amountCzk: integer("amount_czk").notNull(), durationMinutes: integer("duration_minutes") });
+export const serviceLocations = pgTable("service_locations", { id: serial("id").primaryKey(), name: text("name").notNull(), address: text("address").notNull() });
+export const repairOrders = pgTable("repair_orders", { id: serial("id").primaryKey(), publicId: text("public_id").notNull().unique(), customerId: integer("customer_id").references(() => customers.id), deviceModelId: integer("device_model_id").references(() => deviceModels.id), estimatedPrice: integer("estimated_price").notNull(), deliveryMethod: text("delivery_method").notNull(), notes: text("notes"), status: repairStatus("status").default("REQUESTED").notNull(), createdAt: timestamp("created_at").defaultNow().notNull(), updatedAt: timestamp("updated_at").defaultNow().notNull() });
+export const appointments = pgTable("appointments", { id: serial("id").primaryKey(), orderId: integer("order_id").references(() => repairOrders.id), locationId: integer("location_id").references(() => serviceLocations.id), startsAt: timestamp("starts_at").notNull() });
+export const users = pgTable("users", { id: serial("id").primaryKey(), email: text("email").notNull().unique(), role: text("role").default("admin").notNull() });

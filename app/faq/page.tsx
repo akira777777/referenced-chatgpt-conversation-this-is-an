@@ -1,0 +1,4 @@
+import { SiteChrome } from "@/components/SiteChrome";
+import { faqs } from "@/lib/data";
+import { StructuredData } from "@/components/StructuredData";
+export default function FaqPage() { return <SiteChrome><StructuredData data={{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faqs.map(([q,a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) }}/><div className="page-hero compact"><div className="container"><p className="eyebrow">SUPPORT</p><h1>Frequently asked questions.</h1><p>Clear answers about timing, data, parts and warranty.</p></div></div><section className="section"><div className="container narrow faq-list">{faqs.map(([q,a]) => <details key={q}><summary>{q}<span>+</span></summary><p>{a}</p></details>)}</div></section></SiteChrome>; }
