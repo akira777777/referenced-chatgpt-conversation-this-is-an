@@ -696,6 +696,7 @@ export const translations = {
       terms: "Условия обслуживания",
     },
   },
-} as const;
+};
 
 export type TranslationKeys = typeof translations.en;
+export type Language = "en" | "cs" | "ru";
