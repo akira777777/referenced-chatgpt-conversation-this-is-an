@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     template: "%s | Reform Prague",
   },
   description: "Precision repairs, micro-soldering, and individual quotes for Apple, Samsung, Google in Prague 3. Telegram @liltrafficRUS.",
-  icons: { icon: "/favicon.svg", apple: "/favicon.svg" },
+  icons: { icon: "/favicon.svg", shortcut: "/favicon.ico", apple: "/favicon.svg" },
   openGraph: {
     title: "Reform — Precision Device Care Prague",
     description: "Component-level electronics repair, micro-soldering & individual pricing in Prague 3.",

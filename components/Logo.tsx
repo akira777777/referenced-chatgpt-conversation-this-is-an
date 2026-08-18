@@ -69,7 +69,7 @@ export function Logo({ variant = "header", showTagline = true, className = "" }:
   const isFooter = variant === "footer";
 
   return (
-    <Link href="/" className={`brand-logo ${variant} ${className}`} aria-label="Reform — Electronics Repair Prague">
+    <Link href="/" className={`brand-logo brand-logo-${variant} ${className}`} aria-label="Reform — Electronics Repair Prague">
       <div className="logo-icon-wrap">
         <LogoMark size={isFooter ? 34 : 30} />
       </div>
