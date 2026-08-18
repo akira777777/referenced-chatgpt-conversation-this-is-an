@@ -99,45 +99,44 @@ async function runE2ESuite() {
 
     // Step 0: Choose Brand (Apple)
     console.log("    - Selecting brand: Apple");
-    await page.locator(".choice:has-text('Apple')").first().click({ force: true });
-    await page.waitForTimeout(300);
+    await page.locator(".choice:has-text('Apple')").first().click();
 
     // Step 1: Choose Category (iPhone)
     console.log("    - Selecting category: iPhone");
-    await page.locator(".choice:has-text('iPhone')").first().click({ force: true });
-    await page.waitForTimeout(300);
+    await page.locator(".choice:has-text('iPhone')").first().waitFor({ state: "visible" });
+    await page.locator(".choice:has-text('iPhone')").first().click();
 
     // Step 2: Choose Model
     console.log("    - Selecting model from list");
-    await page.locator(".model-btn").first().click({ force: true });
-    await page.waitForTimeout(300);
+    await page.locator(".model-btn").first().waitFor({ state: "visible" });
+    await page.locator(".model-btn").first().click();
 
     // Step 3: Choose Repair Service
     console.log("    - Selecting repair service");
-    await page.locator(".repair-list button").first().click({ force: true });
-    await page.waitForTimeout(200);
-    await page.locator(".wizard-nav button").last().click({ force: true });
-    await page.waitForTimeout(300);
+    await page.locator(".repair-list button").first().waitFor({ state: "visible" });
+    await page.locator(".repair-list button").first().click();
+    await page.locator(".wizard-nav button").last().click();
 
     // Step 4: Choose Delivery Method
     console.log("    - Selecting delivery method & timeslot");
-    await page.locator(".wizard-nav button").last().click({ force: true });
-    await page.waitForTimeout(300);
+    await page.locator(".method-list button").first().waitFor({ state: "visible" });
+    await page.locator(".wizard-nav button").last().click();
 
     // Step 5: Fill Form Details
     console.log("    - Filling customer contact form");
+    await page.locator("input[name='firstName']").waitFor({ state: "visible" });
     await page.locator("input[name='firstName']").fill("Alexandr");
     await page.locator("input[name='lastName']").fill("Novak");
     await page.locator("input[name='email']").fill("alex.novak@example.cz");
     await page.locator("input[name='phone']").fill("+420737500587");
-    await page.locator("input[name='consent']").check({ force: true });
+    await page.locator("input[name='consent']").check();
     
-    await page.locator("button[type='submit']").click({ force: true });
-    await page.waitForTimeout(400);
+    await page.locator("button[type='submit']").click();
 
     // Step 6: Confirmation Review & Final Submit
     console.log("    - Submitting final repair booking request");
-    await page.locator(".confirm-btn").click({ force: true });
+    await page.locator(".confirm-btn").waitFor({ state: "visible" });
+    await page.locator(".confirm-btn").click();
 
     // Verification on /order/success
     await page.waitForURL(/\/order\/success/, { timeout: 10000 });
