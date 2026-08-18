@@ -1,13 +1,28 @@
 "use client";
 
-import { Clock3, Mail, MapPin, Navigation, Phone, Send } from "lucide-react";
+import { Clock3, Mail, MapPin, Navigation, Phone, Send, Sparkles } from "lucide-react";
 import { SiteChrome } from "@/components/SiteChrome";
 import { LinkButton } from "@/components/ui";
 import { contactInfo } from "@/lib/data";
 import { useLanguage } from "@/lib/i18n/context";
 
 export default function ContactPage() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+
+  const techCard = {
+    badge:
+      language === "cs"
+        ? "HLAVNÍ INŽENÝR & ZAKLADATEL"
+        : language === "ru"
+        ? "ВЕДУЩИЙ МАСТЕР И ОСНОВАТЕЛЬ"
+        : "LEAD MASTER & FOUNDER",
+    desc:
+      language === "cs"
+        ? "Dostupný přímo na Telegramu pro rychlé odborné posouzení a kalkulaci opravy."
+        : language === "ru"
+        ? "Доступен напрямую в Telegram для быстрой оценки поломки и согласования цены."
+        : "Available directly on Telegram for technical assessment and fast estimates.",
+  };
 
   return (
     <SiteChrome>
@@ -75,23 +90,72 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <div className="map-card">
-          <div className="map-grid" />
-          <span className="map-pin">
-            <MapPin />
-          </span>
-          <div>
-            <b>{contactInfo.brandName} Prague Lab</b>
-            <small>{contactInfo.addressFull}</small>
-            <a
-              className="map-directions"
-              href="https://www.google.com/maps/search/?api=1&query=Biskupcova+31+Praha"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Navigation size={15} />
-              {t.contact.getDirections}
-            </a>
+        <div className="contact-right-col" style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          {/* Master Technician Card */}
+          <div className="technician-contact-card">
+            <div className="tech-avatar-box">
+              <div className="tech-avatar-frame">
+                <picture>
+                  <source srcSet="/artem-avatar.webp" type="image/webp" />
+                  <img
+                    src="/artem-avatar.png"
+                    alt="Artem — Lead Engineer Reform Prague"
+                    width={80}
+                    height={80}
+                    loading="lazy"
+                    decoding="async"
+                    className="tech-avatar-img"
+                  />
+                </picture>
+              </div>
+              <div className="tech-live-status">
+                <span className="tech-pulse-dot" />
+                <span className="tech-live-text">
+                  {language === "cs" ? "Online" : language === "ru" ? "В сети" : "Online"}
+                </span>
+              </div>
+            </div>
+
+            <div className="tech-info-col">
+              <span className="tech-role-badge">
+                <Sparkles size={11} /> {techCard.badge}
+              </span>
+              <h3 className="tech-name">
+                {language === "ru" ? "Артём Михайлов" : "Artem Mikhailov"}
+              </h3>
+              <p className="tech-desc">
+                {techCard.desc}
+              </p>
+              <a
+                href={contactInfo.telegramUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="tech-tg-link"
+              >
+                <Send size={13} /> {contactInfo.telegram}
+              </a>
+            </div>
+          </div>
+
+          {/* Map Card */}
+          <div className="map-card">
+            <div className="map-grid" />
+            <span className="map-pin">
+              <MapPin />
+            </span>
+            <div>
+              <b>{contactInfo.brandName} Prague Lab</b>
+              <small>{contactInfo.addressFull}</small>
+              <a
+                className="map-directions"
+                href="https://www.google.com/maps/search/?api=1&query=Biskupcova+31+Praha"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Navigation size={15} />
+                {t.contact.getDirections}
+              </a>
+            </div>
           </div>
         </div>
       </div>

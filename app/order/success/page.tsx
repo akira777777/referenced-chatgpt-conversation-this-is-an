@@ -10,8 +10,15 @@ import { useLanguage } from "@/lib/i18n/context";
 
 export default function SuccessPage({ searchParams }: { searchParams: Promise<{ id?: string }> }) {
   const { id } = use(searchParams);
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const orderId = id ?? "REP-240182";
+
+  const tgMessage =
+    language === "cs"
+      ? `Dobrý den! Vytvořil jsem objednávku opravy č. ${orderId}.`
+      : language === "ru"
+      ? `Здравствуйте! Я оформил заявку на ремонт № ${orderId}.`
+      : `Hello! I created a repair request with order number ${orderId}.`;
 
   return (
     <SiteChrome>
@@ -34,9 +41,7 @@ export default function SuccessPage({ searchParams }: { searchParams: Promise<{ 
             <Search /> {t.successPage.trackBtn}
           </Link>
           <a
-            href={`${contactInfo.telegramUrl}?text=${encodeURIComponent(
-              `Hello! I created a repair request with order number ${orderId}.`
-            )}`}
+            href={`${contactInfo.telegramUrl}?text=${encodeURIComponent(tgMessage)}`}
             target="_blank"
             rel="noreferrer"
           >

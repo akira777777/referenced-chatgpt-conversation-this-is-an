@@ -5,12 +5,14 @@ import { translations, type Language, type TranslationKeys } from "./translation
 
 interface LanguageContextType {
   lang: Language;
+  language: Language;
   setLang: (lang: Language) => void;
   t: TranslationKeys;
 }
 
 const LanguageContext = createContext<LanguageContextType>({
   lang: "cs",
+  language: "cs",
   setLang: () => {},
   t: translations.cs,
 });
@@ -62,7 +64,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const t = translations[lang] || translations.cs;
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, t }}>
+    <LanguageContext.Provider value={{ lang, language: lang, setLang, t }}>
       {children}
     </LanguageContext.Provider>
   );

@@ -4,22 +4,30 @@ import { isServerReady, startServer, stopServer } from "./e2e-server.mjs";
 
 async function runE2ESuite() {
   let managedServer = null;
+  let activePort = 3000;
 
-  const serverAlreadyRunning = await isServerReady(3000);
-  if (!serverAlreadyRunning) {
-    managedServer = await startServer();
-  } else {
+  if (await isServerReady(3002)) {
+    activePort = 3002;
+    console.log("ℹ️  Using existing server on http://localhost:3002");
+  } else if (await isServerReady(3001)) {
+    activePort = 3001;
+    console.log("ℹ️  Using existing server on http://localhost:3001");
+  } else if (await isServerReady(3000)) {
+    activePort = 3000;
     console.log("ℹ️  Using existing server on http://localhost:3000");
+  } else {
+    managedServer = await startServer();
+    activePort = 3000;
   }
 
   try {
-    await runE2ETests();
+    await runE2ETests(activePort);
   } finally {
     stopServer(managedServer);
   }
 }
 
-async function runE2ETests() {
+async function runE2ETests(port = 3000) {
   console.log("🚀 Launching Chromium for Playwright E2E testing...");
   const browser = await chromium.launch({
     headless: true,
@@ -37,7 +45,7 @@ async function runE2ETests() {
       if (msg.type() === "error") console.error("PAGE CONSOLE ERROR:", msg.text());
     });
 
-    const baseUrl = "http://localhost:3000";
+    const baseUrl = `http://localhost:${port}`;
 
     console.log("▶ [1/7] Testing Homepage & Bespoke Vector Logo...");
     await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
@@ -85,7 +93,7 @@ async function runE2ETests() {
 
     console.log("▶ [4/7] Testing Global Search Modal (Search + Keyboard Escape)...");
     await page.waitForFunction(() => {
-      const btn = document.querySelector("button[title='Search devices']");
+      const btn = document.querySelector(".search-trigger-btn, button[aria-label*='Search devices']");
       if (btn) btn.click();
       return !!document.querySelector(".search-modal");
     }, { timeout: 10000 });
@@ -98,9 +106,7 @@ async function runE2ETests() {
     console.log(`  ✔ Found ${resultsCount} matching devices for query 'iPhone 16'.`);
 
     await page.keyboard.press("Escape");
-    await page.waitForTimeout(300);
-    const isModalVisible = await page.locator(".search-modal").count();
-    assert.equal(isModalVisible, 0, "Search modal must close on Escape key");
+    await page.locator(".search-modal").waitFor({ state: "detached", timeout: 5000 });
     console.log("  ✔ Modal dismissed with Escape key.");
 
     console.log("▶ [5/7] Testing Interactive Diagnostic Symptom Checker...");
@@ -110,12 +116,30 @@ async function runE2ETests() {
     assert.ok(diagnosticText.length > 20);
     console.log("  ✔ Diagnostic telemetry updated dynamically on symptom selection.");
 
-    console.log("▶ [6/7] Testing Telegram & Contact Direct Channels...");
+    console.log("▶ [6/8] Testing Approximate Repair Prices Explorer (/prices)...");
+    await page.goto(`${baseUrl}/prices`, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector(".repair-card-grid", { timeout: 10000 });
+    await page.waitForTimeout(1000);
+    
+    const cardCount = await page.locator(".repair-price-card").count();
+    assert.ok(cardCount > 0, "Pricing explorer must render repair cards");
+    console.log(`  ✔ Rendered ${cardCount} approximate price cards.`);
+
+    const inclusionBadgeText = await page.locator(".inclusions-badge").first().textContent();
+    assert.match(inclusionBadgeText, /Cena včetně dílu a práce|Parts and labor included|Запчасть и работа включены/i);
+    console.log("  ✔ Inclusions badge verified on price cards.");
+
+    // Toggle Table View
+    await page.locator(".view-mode-toggle button").last().click({ force: true });
+    await page.waitForSelector(".price-table", { timeout: 10000 });
+    console.log("  ✔ Switched to Detailed Price Table view.");
+
+    console.log("▶ [7/8] Testing Telegram & Contact Direct Channels...");
     const telegramCount = await page.locator("a[href*='t.me/liltrafficRUS']").count();
     assert.ok(telegramCount > 0, "Telegram link @liltrafficRUS must be present");
     console.log(`  ✔ Verified ${telegramCount} direct Telegram @liltrafficRUS contact endpoints.`);
 
-    console.log("▶ [7/7] Testing End-to-End Multi-Step Repair Wizard & Booking Flow...");
+    console.log("▶ [8/8] Testing End-to-End Multi-Step Repair Wizard & Booking Flow...");
     await page.goto(`${baseUrl}/repair`, { waitUntil: "domcontentloaded" });
     await page.waitForSelector(".choice-grid", { timeout: 10000 });
 

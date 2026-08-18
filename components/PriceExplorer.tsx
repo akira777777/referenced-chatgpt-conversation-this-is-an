@@ -2,37 +2,73 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, ArrowRight, Sparkles, Clock, Wrench } from "lucide-react";
-import { allModels, formatPrice, brands } from "@/lib/data";
+import { motion } from "motion/react";
+import {
+  Search,
+  ArrowRight,
+  Clock,
+  Wrench,
+  ShieldCheck,
+  CheckCircle2,
+  LayoutGrid,
+  List,
+  Sparkles,
+  HelpCircle,
+  X,
+} from "lucide-react";
+import { allModels, brands, formatRepairPrice } from "@/lib/data";
 import { useLanguage } from "@/lib/i18n/context";
-import { DeviceGlyph } from "./ui";
+import { RepairPriceCard } from "./RepairPriceCard";
+import { BrandIcon, RepairIcon } from "./BrandIcons";
 
 export function PriceExplorer() {
-  const { t } = useLanguage();
+  const { language, lang, t } = useLanguage();
   const [query, setQuery] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
 
   const brandOptions = ["All", ...brands.map(b => b.name)];
+
+  // Extract unique categories for active brand
+  const categoryOptions = useMemo(() => {
+    const available = allModels
+      .filter(m => selectedBrand === "All" || m.brand === selectedBrand)
+      .map(m => m.category);
+    return ["All", ...Array.from(new Set(available))];
+  }, [selectedBrand]);
 
   const rows = useMemo(() => {
     return allModels
       .filter(
         m =>
           (selectedBrand === "All" || m.brand === selectedBrand) &&
+          (selectedCategory === "All" || m.category === selectedCategory) &&
           `${m.brand} ${m.name} ${m.repairs.map(r => r.name).join(" ")}`
             .toLowerCase()
             .includes(query.toLowerCase())
       )
       .flatMap(m =>
-        m.repairs.slice(0, 4).map(r => ({
+        m.repairs.map(r => ({
           ...r,
           model: m,
         }))
       );
-  }, [query, selectedBrand]);
+  }, [query, selectedBrand, selectedCategory]);
+
+  const actionColHeader =
+    language === "cs" ? "Akce" : language === "ru" ? "Заказ" : "Action";
+
+  const resultsCountText =
+    language === "cs"
+      ? `${rows.length} ${rows.length === 1 ? "položka" : rows.length > 1 && rows.length < 5 ? "položky" : "položek"}`
+      : language === "ru"
+      ? `${rows.length} ${rows.length === 1 ? "цена" : rows.length > 1 && rows.length < 5 ? "цены" : "цен"}`
+      : `${rows.length} ${rows.length === 1 ? "price" : "prices"}`;
 
   return (
     <div className="price-explorer-wrapper">
+      {/* 1. FILTER CONTROLS */}
       <div className="price-filters-bar">
         <label className="price-search-input" aria-label="Search devices">
           <Search size={18} />
@@ -41,79 +77,243 @@ export function PriceExplorer() {
             onChange={e => setQuery(e.target.value)}
             placeholder={t.pricing.searchPlaceholder}
           />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              className="search-clear-btn"
+              aria-label="Clear search"
+            >
+              <X size={16} />
+            </button>
+          )}
         </label>
 
-        <div className="brand-pill-selector">
-          {brandOptions.map(b => (
-            <button
-              key={b}
-              type="button"
-              className={`brand-tab-pill ${selectedBrand === b ? "active" : ""}`}
-              onClick={() => setSelectedBrand(b)}
-            >
-              {b === "All" ? t.pricing.allBrands : b}
-            </button>
-          ))}
+        <div className="brand-pill-selector" role="tablist" aria-label="Filter by brand">
+          {brandOptions.map(b => {
+            const isSelected = selectedBrand === b;
+            return (
+              <button
+                key={b}
+                type="button"
+                role="tab"
+                aria-selected={isSelected}
+                className={`brand-tab-pill ${isSelected ? "active" : ""}`}
+                onClick={() => {
+                  setSelectedBrand(b);
+                  setSelectedCategory("All");
+                }}
+              >
+                {b !== "All" && <BrandIcon brandId={b} size={14} />}
+                <span>{b === "All" ? t.pricing.allBrands : b}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
+      {/* Category Pills & View Switcher */}
+      <div className="price-subfilters-row">
+        <div className="category-pill-group" role="tablist" aria-label="Filter by category">
+          {categoryOptions.map(cat => {
+            const isSelected = selectedCategory === cat;
+            return (
+              <button
+                key={cat}
+                type="button"
+                role="tab"
+                aria-selected={isSelected}
+                className={`category-subpill ${isSelected ? "active" : ""}`}
+                onClick={() => setSelectedCategory(cat)}
+              >
+                <span>{cat === "All" ? t.pricing.filterCategoryAll : cat}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="view-mode-toggle" role="group" aria-label="View mode">
+          <span className="results-count-badge">
+            {resultsCountText}
+          </span>
+          <button
+            type="button"
+            className={`view-btn ${viewMode === "cards" ? "active" : ""}`}
+            onClick={() => setViewMode("cards")}
+            title={t.pricing.viewCards}
+            aria-pressed={viewMode === "cards"}
+          >
+            <LayoutGrid size={16} />
+            <span>{t.pricing.viewCards}</span>
+          </button>
+          <button
+            type="button"
+            className={`view-btn ${viewMode === "table" ? "active" : ""}`}
+            onClick={() => setViewMode("table")}
+            title={t.pricing.viewTable}
+            aria-pressed={viewMode === "table"}
+          >
+            <List size={16} />
+            <span>{t.pricing.viewTable}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 2. CORE PRICING NOTICE BANNER */}
       <div className="pricing-banner-note">
-        <Sparkles size={16} />
-        <span>{t.pricing.note}</span>
+        <ShieldCheck size={18} className="banner-icon" />
+        <div>
+          <strong>{t.pricing.partsAndLaborIncluded}</strong>
+          <span> — {t.pricing.finalPriceConfirmed}</span>
+        </div>
       </div>
 
-      <div className="price-table">
-        <div className="price-head">
-          <span>{t.pricing.colDevice}</span>
-          <span>{t.pricing.colCategory}</span>
-          <span>{t.pricing.colTime}</span>
-          <span>{t.pricing.colPrice}</span>
-          <span>Action</span>
+      {/* 3. MAIN RESULTS CONTAINER */}
+      {viewMode === "cards" ? (
+        <motion.div
+          className="repair-card-grid"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.25 }}
+        >
+          {rows.slice(0, 48).map((r, i) => (
+            <RepairPriceCard
+              key={`${r.model.id}-${r.id}-${i}`}
+              repair={r}
+              deviceName={r.model.name}
+              brandName={r.model.brand}
+              brandId={r.model.brandId}
+              deviceCategory={r.model.category}
+              deviceId={r.model.id}
+            />
+          ))}
+        </motion.div>
+      ) : (
+        <motion.div
+          className="price-table"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.25 }}
+        >
+          <div className="price-head">
+            <span>{t.pricing.colDevice}</span>
+            <span>{t.pricing.colCategory}</span>
+            <span>{t.pricing.colTime}</span>
+            <span>{t.pricing.colPrice}</span>
+            <span>{actionColHeader}</span>
+          </div>
+
+          {rows.slice(0, 50).map((r, i) => {
+            const formattedPrice = formatRepairPrice(r, lang, { showCca: true });
+            const duration = r.estimatedDuration || r.time || "60–90 min";
+
+            return (
+              <div className="price-row" key={`${r.model.id}-${r.id}-${i}`}>
+                <span className="price-device">
+                  <div className="table-brand-icon">
+                    <BrandIcon brandId={r.model.brandId || r.model.brand} size={16} />
+                  </div>
+                  <span>
+                    <b>{r.model.name}</b>
+                    <small>
+                      <RepairIcon repairId={r.id || r.name} size={12} className="inline-repair-icon" />
+                      {r.name}
+                    </small>
+                  </span>
+                </span>
+
+                <span className="price-cat-badge">{r.model.category}</span>
+
+                <span className="price-timing">
+                  <Clock size={13} /> ~{duration}
+                </span>
+
+                <span className="price-tag-value">
+                  <b>{formattedPrice}</b>
+                  <small className="inclusions-label">
+                    <CheckCircle2 size={11} /> {t.pricing.partsAndLaborIncluded}
+                  </small>
+                </span>
+
+                <Link
+                  href={`/repair?brand=${r.model.brandId}&model=${r.model.id}`}
+                  className="price-book-btn"
+                  aria-label={`${t.pricing.btnBook}: ${r.name} (${r.model.name})`}
+                >
+                  <span>{t.pricing.btnBook}</span>
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+            );
+          })}
+        </motion.div>
+      )}
+
+      {/* Empty State */}
+      {!rows.length && (
+        <div className="empty-state">
+          <Wrench size={36} />
+          <strong>{t.nav.noMatch}</strong>
+          <p>{t.nav.chooseOther}</p>
+          <Link className="button" href="/repair">
+            {t.nav.continueWithOther}
+          </Link>
+        </div>
+      )}
+
+      {/* 4. TRUST GUARANTEE PILLARS SECTION */}
+      <section className="pricing-trust-pillars">
+        <div className="pillar-header">
+          <p className="eyebrow">
+            <ShieldCheck size={14} /> {t.pricing.noSurpriseChargesTitle}
+          </p>
+          <h2>{t.pricing.noSurpriseChargesTitle}</h2>
+          <p className="section-copy">{t.pricing.noSurpriseChargesDesc}</p>
         </div>
 
-        {rows.slice(0, 40).map((r, i) => (
-          <div className="price-row" key={`${r.model.id}-${r.id}-${i}`}>
-            <span className="price-device">
-              <DeviceGlyph kind={r.model.category} compact />
-              <span>
-                <b>{r.model.name}</b>
-                <small>{r.name}</small>
-              </span>
-            </span>
-
-            <span className="price-cat-badge">{r.model.category}</span>
-
-            <span className="price-timing">
-              <Clock size={13} /> {r.time}
-            </span>
-
-            <span className="price-tag-value">
-              <b>{formatPrice(r.price)}</b>
-              <small>{t.wizard.agreedIndividually}</small>
-            </span>
-
-            <Link
-              href={`/repair?brand=${r.model.brandId}&model=${r.model.id}`}
-              className="price-book-btn"
-              aria-label={`Book ${r.name} for ${r.model.name}`}
-            >
-              <span>{t.pricing.btnBook}</span>
-              <ArrowRight size={15} />
-            </Link>
+        <div className="pillars-grid">
+          <div className="pillar-card">
+            <div className="pillar-icon">
+              <CheckCircle2 size={22} />
+            </div>
+            <h3>{t.pricing.partsAndLaborIncluded}</h3>
+            <p>{t.pricing.inclusionsTitle}</p>
+            <ul>
+              <li>{t.pricing.inclusionsParts}</li>
+              <li>{t.pricing.inclusionsLabor}</li>
+              <li>{t.pricing.inclusionsTesting}</li>
+            </ul>
           </div>
-        ))}
 
-        {!rows.length && (
-          <div className="empty-state">
-            <Wrench size={32} />
-            <strong>{t.nav.noMatch}</strong>
-            <p>{t.nav.chooseOther}</p>
-            <Link className="button" href="/repair">
-              {t.nav.continueWithOther}
-            </Link>
+          <div className="pillar-card">
+            <div className="pillar-icon">
+              <ShieldCheck size={22} />
+            </div>
+            <h3>{t.pricing.finalPriceConfirmed}</h3>
+            <p>{t.pricing.pricingPhilosophyDesc}</p>
           </div>
-        )}
-      </div>
+
+          <div className="pillar-card">
+            <div className="pillar-icon">
+              <Sparkles size={22} />
+            </div>
+            <h3>{t.pricing.diagnosticsTitle}</h3>
+            <p>{t.pricing.diagnosticsDesc}</p>
+          </div>
+
+          <div className="pillar-card">
+            <div className="pillar-icon">
+              <HelpCircle size={22} />
+            </div>
+            <h3>{t.pricing.qualityTiersTitle}</h3>
+            <ul>
+              <li><strong>Standard:</strong> {t.pricing.qualityStandard}</li>
+              <li><strong>Premium:</strong> {t.pricing.qualityPremium}</li>
+              <li><strong>Original:</strong> {t.pricing.qualityOriginal}</li>
+            </ul>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

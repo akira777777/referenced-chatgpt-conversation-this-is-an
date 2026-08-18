@@ -51,7 +51,7 @@ test("server-renders the pricing directory page", async () => {
   assert.equal(response.status, 200);
 
   const html = await response.text();
-  assert.match(html, /Price on request|Cena na dotaz|Цена по запросу/i);
+  assert.match(html, /Kč|Cena včetně dílu a práce|Parts and labor included|Запчасть и работа включены/i);
 });
 
 test("server-renders the contact page with location and Telegram information", async () => {

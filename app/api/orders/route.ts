@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { saveOrderToSupabase, sendTelegramOrderNotification, getSupabase } from "@/lib/supabase";
+import { saveOrderToSupabase, sendTelegramOrderNotification } from "@/lib/supabase";
 
 const orderSchema = z.object({
   brand: z.string().min(1),
   model: z.string().min(1),
   repairs: z.array(z.string()).min(1),
-  estimatedPrice: z.number().nonnegative().optional().default(0),
+  estimatedPrice: z.union([z.number(), z.string()]).optional().default(0),
   method: z.string().min(1),
   slot: z.string().optional(),
   customer: z.object({
@@ -24,7 +24,10 @@ export async function POST(request: Request) {
     const parsed = orderSchema.safeParse(json);
 
     if (!parsed.success) {
-      return Response.json({ error: "Invalid repair request", details: parsed.error.format() }, { status: 400 });
+      return Response.json(
+        { error: "Invalid repair request", details: parsed.error.format() },
+        { status: 400 }
+      );
     }
 
     const data = parsed.data;
@@ -41,25 +44,35 @@ export async function POST(request: Request) {
       customer: data.customer,
     };
 
-    // 1. Persist to Supabase if configured
+    // 1. Persist to Supabase (required)
     const saveResult = await saveOrderToSupabase(orderPayload);
 
-    // 2. Dispatch Telegram alert if configured
-    await sendTelegramOrderNotification(orderPayload);
+    if (!saveResult.success) {
+      return Response.json(
+        { error: "Failed to save order", details: saveResult.error },
+        { status: 500 }
+      );
+    }
 
-    const hasSupabase = Boolean(getSupabase());
+    // 2. Send Telegram notification (optional — fire and forget)
+    sendTelegramOrderNotification(orderPayload).catch(console.error);
 
     return Response.json(
       {
         orderId,
         status: "REQUESTED",
-        persistence: hasSupabase && saveResult.success ? "supabase" : "demo",
-        telegramDispatched: Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID),
+        persistence: "supabase",
+        telegramDispatched: Boolean(
+          process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID
+        ),
       },
       { status: 201 }
     );
   } catch (err) {
     console.error("Order processing error:", err);
-    return Response.json({ error: "Failed to process repair request" }, { status: 500 });
+    return Response.json(
+      { error: "Failed to process repair request" },
+      { status: 500 }
+    );
   }
 }

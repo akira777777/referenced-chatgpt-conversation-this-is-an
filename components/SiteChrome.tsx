@@ -2,13 +2,28 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Menu, Moon, Search, Send, Sun, X, ArrowUpRight, ShieldCheck, MapPin, Phone, Mail, Wrench } from "lucide-react";
-import { allModels, contactInfo, placeholderNotice } from "@/lib/data";
+import { motion, AnimatePresence } from "motion/react";
+import {
+  Menu,
+  Moon,
+  Search,
+  Send,
+  Sun,
+  X,
+  ArrowUpRight,
+  ShieldCheck,
+  MapPin,
+  Phone,
+  Mail,
+  Wrench,
+} from "lucide-react";
+import { allModels, contactInfo } from "@/lib/data";
 import { useLanguage, LanguageSwitcher } from "@/lib/i18n/context";
 import { Logo } from "./Logo";
+import { BrandIcon } from "./BrandIcons";
 
 export function Header() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -75,6 +90,14 @@ export function Header() {
     ? allModels.filter(x => `${x.brand} ${x.name}`.toLowerCase().includes(query.toLowerCase())).slice(0, 6)
     : allModels.slice(0, 4);
 
+  const searchResultsLabel = query
+    ? language === "cs"
+      ? "Výsledky hledání"
+      : language === "ru"
+      ? "Результаты поиска"
+      : "Results"
+    : t.nav.popularDevices;
+
   return (
     <>
       <header className={`header ${scrolled ? "scrolled" : ""} ${hidden ? "hidden" : ""}`}>
@@ -96,22 +119,30 @@ export function Header() {
 
                 <button
                   type="button"
-                  className="icon-button"
+                  className="icon-button search-trigger-btn"
                   onClick={() => setSearch(true)}
-                  aria-label="Search devices"
-                  title="Search devices"
+                  aria-label="Search devices (Cmd+K)"
+                  title="Search devices (⌘K)"
                 >
-                  <Search size={18} />
+                  <Search size={17} />
+                  <span className="kbd-shortcut">⌘K</span>
                 </button>
 
                 <button
                   type="button"
-                  className="icon-button"
+                  className="icon-button theme-toggle-btn"
                   onClick={toggleTheme}
                   aria-label="Toggle color theme"
                   title="Toggle theme"
                 >
-                  {dark ? <Sun size={18} /> : <Moon size={18} />}
+                  <motion.div
+                    key={dark ? "dark" : "light"}
+                    initial={{ rotate: -45, scale: 0.7, opacity: 0 }}
+                    animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {dark ? <Sun size={17} /> : <Moon size={17} />}
+                  </motion.div>
                 </button>
 
                 <a
@@ -122,13 +153,13 @@ export function Header() {
                   aria-label={`Telegram ${contactInfo.telegram}`}
                   title={`Telegram ${contactInfo.telegram}`}
                 >
-                  <Send size={16} />
+                  <Send size={15} />
                 </a>
               </div>
 
               <Link className="button nav-cta" href="/repair">
-                <Wrench size={16} />
-                {t.nav.startRepair}
+                <Wrench size={15} />
+                <span>{t.nav.startRepair}</span>
               </Link>
 
               <button
@@ -145,91 +176,137 @@ export function Header() {
         </div>
       </header>
 
-      {menu && (
-        <div className="mobile-nav-overlay">
-          <button
-            type="button"
-            className="mobile-nav-backdrop"
-            onClick={() => setMenu(false)}
-            aria-label="Close menu"
-          />
-          <div className="mobile-nav" role="dialog" aria-label="Mobile navigation">
-            <div className="mobile-nav-top">
-              <span className="mobile-nav-title">{t.nav.menu}</span>
-              <button type="button" className="icon-button" onClick={() => setMenu(false)} aria-label="Close menu">
-                <X size={20} />
-              </button>
-            </div>
-            {navLinks.map(link => (
-              <Link key={link.href} href={link.href} className="mobile-nav-link" onClick={() => setMenu(false)}>
-                {link.label}
-                <ArrowUpRight size={18} />
-              </Link>
-            ))}
-            <a
-              href={contactInfo.telegramUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mobile-nav-link mobile-telegram-link"
+      {/* Mobile Drawer Navigation with AnimatePresence */}
+      <AnimatePresence>
+        {menu && (
+          <div className="mobile-nav-overlay">
+            <motion.button
+              type="button"
+              className="mobile-nav-backdrop"
+              onClick={() => setMenu(false)}
+              aria-label="Close menu"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+            <motion.div
+              className="mobile-nav"
+              role="dialog"
+              aria-label="Mobile navigation"
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
             >
-              Telegram
-              <Send size={18} />
-            </a>
-            <div className="mobile-nav-cta-wrap">
-              <Link className="button mobile-cta-btn" href="/repair" onClick={() => setMenu(false)}>
-                {t.nav.startRepair}
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
+              <div className="mobile-nav-top">
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <Logo variant="header" showTagline={false} />
+                  <span className="mobile-nav-title">{t.nav.menu}</span>
+                </div>
+                <button type="button" className="icon-button" onClick={() => setMenu(false)} aria-label="Close menu">
+                  <X size={20} />
+                </button>
+              </div>
 
-      {search && (
-        <div className="modal-backdrop">
-          <button type="button" className="modal-dismiss-backdrop" onClick={() => setSearch(false)} aria-label="Close search" />
-          <div className="search-modal">
-            <div className="search-input">
-              <Search size={20} />
-              <input
-                ref={inputRef}
-                type="text"
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                placeholder={t.nav.searchPlaceholder}
-                aria-label="Search devices"
-              />
-              <button type="button" onClick={() => setSearch(false)} aria-label="Close search">
-                <X size={20} />
-              </button>
-            </div>
-            <div className="search-results">
-              <span>{query ? "Results" : t.nav.popularDevices}</span>
-              {results.map(model => (
-                <Link
-                  key={`${model.brandId}-${model.id}`}
-                  href={`/repair?brand=${model.brandId}&model=${model.id}`}
-                  onClick={() => setSearch(false)}
-                >
-                  <div>
-                    <strong>{model.name}</strong>
-                    <small>{model.brand} · {model.category}</small>
-                  </div>
+              {navLinks.map(link => (
+                <Link key={link.href} href={link.href} className="mobile-nav-link" onClick={() => setMenu(false)}>
+                  <span>{link.label}</span>
                   <ArrowUpRight size={18} />
                 </Link>
               ))}
-              {!results.length && (
-                <div className="empty-state">
-                  <strong>{t.nav.noMatch}</strong>
-                  <p>{t.nav.chooseOther}</p>
-                  <Link className="button" href="/repair" onClick={() => setSearch(false)}>
-                    {t.nav.continueWithOther}
-                  </Link>
-                </div>
-              )}
-            </div>
+
+              <a
+                href={contactInfo.telegramUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mobile-nav-link mobile-telegram-link"
+              >
+                <span>Telegram: {contactInfo.telegram}</span>
+                <Send size={16} />
+              </a>
+
+              <div className="mobile-nav-cta-wrap">
+                <Link className="button mobile-cta-btn" href="/repair" onClick={() => setMenu(false)}>
+                  <Wrench size={16} />
+                  {t.nav.startRepair}
+                </Link>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
+
+      {/* Search Modal with Brand Icons */}
+      <AnimatePresence>
+        {search && (
+          <div className="modal-backdrop">
+            <motion.button
+              type="button"
+              className="modal-dismiss-backdrop"
+              onClick={() => setSearch(false)}
+              aria-label="Close search"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+            <motion.div
+              className="search-modal"
+              initial={{ opacity: 0, y: -15, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -15, scale: 0.96 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="search-input">
+                <Search size={20} className="search-input-icon" />
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  placeholder={t.nav.searchPlaceholder}
+                  aria-label="Search devices"
+                />
+                <button type="button" onClick={() => setSearch(false)} aria-label="Close search">
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="search-results">
+                <span>{searchResultsLabel}</span>
+                {results.map(model => (
+                  <Link
+                    key={`${model.brandId}-${model.id}`}
+                    href={`/repair?brand=${model.brandId}&model=${model.id}`}
+                    onClick={() => setSearch(false)}
+                  >
+                    <div className="search-result-item">
+                      <div className="search-brand-icon">
+                        <BrandIcon brandId={model.brandId || model.brand} size={16} />
+                      </div>
+                      <div>
+                        <strong>{model.name}</strong>
+                        <small>
+                          {model.brand} · {model.category} · {model.repairs.length}{" "}
+                          {language === "cs" ? "služeb" : language === "ru" ? "услуг" : "services"}
+                        </small>
+                      </div>
+                    </div>
+                    <ArrowUpRight size={18} />
+                  </Link>
+                ))}
+                {!results.length && (
+                  <div className="empty-state">
+                    <strong>{t.nav.noMatch}</strong>
+                    <p>{t.nav.chooseOther}</p>
+                    <Link className="button" href="/repair" onClick={() => setSearch(false)}>
+                      {t.nav.continueWithOther}
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
@@ -242,14 +319,12 @@ export function Footer() {
       <div className="container footer-grid">
         <div className="footer-brand-col">
           <Logo variant="footer" />
-          <p className="footer-tagline">
-            Precision care, micro-soldering & component-level restoration for the technology you rely on in Prague.
-          </p>
+          <p className="footer-tagline">{t.footer.tagline}</p>
           <div className="footer-meta-pill">
             <ShieldCheck size={14} />
-            <span>Prague 3 · Certified Lab</span>
+            <span>{t.footer.labPill}</span>
           </div>
-          <small className="footer-notice">{placeholderNotice}</small>
+          <small className="footer-notice">{t.footer.notice}</small>
         </div>
 
         <div>
@@ -270,7 +345,7 @@ export function Footer() {
         </div>
 
         <div>
-          <b>Support & Direct</b>
+          <b>{t.footer.supportTitle}</b>
           <a href={`tel:${contactInfo.phoneRaw}`} className="footer-contact-link">
             <Phone size={14} /> {contactInfo.phone}
           </a>

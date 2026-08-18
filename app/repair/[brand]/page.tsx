@@ -3,12 +3,14 @@
 import { use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight } from "lucide-react";
+import { motion } from "motion/react";
+import { ArrowRight, Wrench } from "lucide-react";
 import { SiteChrome } from "@/components/SiteChrome";
 import { DeviceGlyph, PlaceholderTag } from "@/components/ui";
 import { brands } from "@/lib/data";
 import { StructuredData } from "@/components/StructuredData";
 import { useLanguage } from "@/lib/i18n/context";
+import { BrandIcon } from "@/components/BrandIcons";
 
 export default function BrandPage({ params }: { params: Promise<{ brand: string }> }) {
   const { brand: id } = use(params);
@@ -42,7 +44,7 @@ export default function BrandPage({ params }: { params: Promise<{ brand: string 
       <div className="page-hero compact">
         <div className="container">
           <p className="eyebrow">
-            {t.wizard.badge} <PlaceholderTag />
+            <BrandIcon brandId={brand.id} size={16} /> {t.wizard.badge} <PlaceholderTag />
           </p>
           <h1>{brand.name} {t.nav.repairs.toLowerCase()}.</h1>
           <p>{t.wizard.chooseModel}</p>
@@ -51,16 +53,27 @@ export default function BrandPage({ params }: { params: Promise<{ brand: string 
       <section className="section">
         <div className="container">
           <div className="device-directory">
-            {brand.models.map(model => (
-              <Link key={model.id} href={`/repair?brand=${brand.id}&model=${model.id}`}>
-                <DeviceGlyph kind={model.category} />
-                <span>
-                  <small>{model.category}</small>
-                  <b>{model.name}</b>
-                  <em>{model.repairs.length} {t.nav.repairs.toLowerCase()}</em>
-                </span>
-                <ArrowRight />
-              </Link>
+            {brand.models.map((model, idx) => (
+              <motion.div
+                key={model.id}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.04 }}
+                whileHover={{ y: -3 }}
+              >
+                <Link href={`/repair?brand=${brand.id}&model=${model.id}`} className="directory-item-link">
+                  <DeviceGlyph kind={model.category} />
+                  <span>
+                    <small>{model.category}</small>
+                    <b>{model.name}</b>
+                    <em>
+                      <Wrench size={11} style={{ display: "inline-block", verticalAlign: "-1px", marginRight: "3px" }} />
+                      {model.repairs.length} {t.nav.repairs.toLowerCase()}
+                    </em>
+                  </span>
+                  <ArrowRight size={18} />
+                </Link>
+              </motion.div>
             ))}
           </div>
         </div>

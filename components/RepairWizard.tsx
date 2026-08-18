@@ -8,7 +8,6 @@ import { AnimatePresence, motion } from "motion/react";
 import {
   ArrowLeft,
   ArrowRight,
-  Battery,
   Check,
   CheckCircle2,
   Cpu,
@@ -19,14 +18,22 @@ import {
   ShieldCheck,
   Smartphone,
   Truck,
-  Wrench,
   Clock,
-  MessageSquare,
+  Sparkles,
 } from "lucide-react";
-import { Brand, brands, DeviceModel, Repair, contactInfo } from "@/lib/data";
+import {
+  Brand,
+  brands,
+  DeviceModel,
+  Repair,
+  contactInfo,
+  formatRepairPrice,
+  formatNumber,
+} from "@/lib/data";
 import { useLanguage } from "@/lib/i18n/context";
 import { Button, DeviceGlyph } from "./ui";
 import { useRouter, useSearchParams } from "next/navigation";
+import { BrandIcon, RepairIcon } from "./BrandIcons";
 
 const schema = z.object({
   firstName: z.string().min(2, "Please enter your first name"),
@@ -42,31 +49,16 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-const issueIcons: Record<string, React.ReactNode> = {
-  battery: <Battery size={20} />,
-  screen: <Smartphone size={20} />,
-  display: <Smartphone size={20} />,
-  charging: <ZapIcon />,
-  camera: <Wrench size={20} />,
-  diagnostics: <Cpu size={20} />,
-  default: <Wrench size={20} />,
-};
-
-function ZapIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-    </svg>
-  );
-}
-
 export function RepairWizard() {
-  const { t } = useLanguage();
+  const { language, lang, t } = useLanguage();
   const router = useRouter();
   const params = useSearchParams();
 
   const initialBrand = brands.find(b => b.id === params.get("brand"));
   const initialModel = initialBrand?.models.find(m => m.id === params.get("model"));
+
+  const defaultSlot =
+    language === "cs" ? "Zítra · 10:30" : language === "ru" ? "Завтра · 10:30" : "Tomorrow · 10:30";
 
   const [step, setStep] = useState(initialModel ? 3 : initialBrand ? 1 : 0);
   const [brand, setBrand] = useState<Brand | null>(initialBrand ?? null);
@@ -74,15 +66,39 @@ export function RepairWizard() {
   const [model, setModel] = useState<DeviceModel | null>(initialModel ?? null);
   const [repairs, setRepairs] = useState<Repair[]>([]);
   const [method, setMethod] = useState("Service center");
-  const [slot, setSlot] = useState("Tomorrow · 10:30");
+  const [slot, setSlot] = useState(defaultSlot);
   const [query, setQuery] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [customer, setCustomer] = useState<FormData | null>(null);
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { contact: "Email", consent: false },
+    defaultValues: { contact: "Telegram", consent: false },
   });
+
+  const totalEstimate = useMemo(() => {
+    if (!repairs.length) return null;
+    let min = 0;
+    let max = 0;
+    for (const r of repairs) {
+      min += (r.priceFrom ?? r.exactPrice ?? r.price ?? 0);
+      max += (r.priceTo ?? r.exactPrice ?? r.price ?? 0);
+    }
+    if (min === 0 && max === 0) return null;
+    if (min > 0 && max > 0 && min !== max) {
+      return `${formatNumber(min)}–${formatNumber(max)} Kč`;
+    }
+    if (min > 0 && max > 0 && min === max) {
+      return `${formatNumber(min)} Kč`;
+    }
+    if (min === 0 && max > 0) {
+      return `0–${formatNumber(max)} Kč`;
+    }
+    if (min > 0) {
+      return `od ${formatNumber(min)} Kč`;
+    }
+    return null;
+  }, [repairs]);
 
   const categories = brand?.categories ?? [];
   const models = useMemo(
@@ -111,7 +127,7 @@ export function RepairWizard() {
           brand: brand?.name,
           model: model?.name,
           repairs: repairs.map(r => r.name),
-          estimatedPrice: 0,
+          estimatedPrice: totalEstimate ?? 0,
           method,
           slot,
           customer,
@@ -153,6 +169,31 @@ export function RepairWizard() {
     },
   ];
 
+  const slotOptions =
+    language === "cs"
+      ? ["Dnes · 16:00", "Zítra · 10:30", "Zítra · 14:00", "Flexibilní / Dle domluvy"]
+      : language === "ru"
+      ? ["Сегодня · 16:00", "Завтра · 10:30", "Завтра · 14:00", "Гибко / По договоренности"]
+      : ["Today · 16:00", "Tomorrow · 10:30", "Tomorrow · 14:00", "Flexible / By arrangement"];
+
+  const wizardLabels = {
+    summaryHeader: language === "cs" ? "SOUHRN" : language === "ru" ? "СВОДКА" : "SUMMARY",
+    changeDevice: language === "cs" ? "Změnit zařízení" : language === "ru" ? "Изменить модель" : "Change device",
+    selectPrompt: language === "cs" ? "Vyberte výrobce a model" : language === "ru" ? "Выберите производителя и модель" : "Select your manufacturer and model",
+    warrantyBadge: language === "cs" ? "Záruka 12 měsíců" : language === "ru" ? "Гарантия 12 месяцев" : "12-Month Guarantee",
+    askTelegram: language === "cs" ? "Napsat Artemovi na Telegram" : language === "ru" ? "Написать Артёму в Telegram" : "Ask Artem on Telegram",
+    instantConsult: language === "cs" ? "Okamžitá technická konzultace" : language === "ru" ? "Быстрая консультация мастера" : "Instant technical consultation",
+    slotTitle: language === "cs" ? "Preferovaný čas předání / vyzvednutí:" : language === "ru" ? "Удобное время передачи / забора:" : "Preferred Drop-off / Collection Time:",
+    step1Desc: language === "cs" ? "Filtrovat modely podle kategorie" : language === "ru" ? "Фильтрация по типу устройства" : "Filter models by product category",
+    selectBtn: language === "cs" ? "Vybrat" : language === "ru" ? "Выбрать" : "Select",
+    notesPlaceholder:
+      language === "cs"
+        ? "Popište další závady, případně heslo pro testování (volitelné)..."
+        : language === "ru"
+        ? "Опишите проблему, код разблокировки для тестов (необязательно)..."
+        : "Describe any additional symptoms, passcodes (optional), or requests…",
+  };
+
   return (
     <div className="wizard-shell">
       <div className="wizard-top">
@@ -167,7 +208,7 @@ export function RepairWizard() {
         </span>
       </div>
 
-      {/* Interactive Step Indicator */}
+      {/* Interactive Step Indicator with Glowing Line */}
       <div className="progress" role="tablist">
         {t.wizard.steps.map((label, index) => (
           <button
@@ -186,7 +227,7 @@ export function RepairWizard() {
       <div className="wizard-layout">
         <div className="wizard-content">
           <AnimatePresence mode="wait">
-            {/* Step 0: Brand Selection */}
+            {/* Step 0: Brand Selection with Vector Logos */}
             {step === 0 && (
               <motion.div
                 key="step0"
@@ -199,19 +240,29 @@ export function RepairWizard() {
                 <p>{t.wizard.chooseCategory}</p>
                 <div className="choice-grid">
                   {brands.map(item => (
-                    <button
+                    <motion.button
                       key={item.id}
                       type="button"
                       className={`choice ${brand?.id === item.id ? "selected" : ""}`}
                       onClick={() => chooseBrand(item)}
+                      whileHover={{ y: -2 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      <span className="brand-letter">{item.name[0]}</span>
+                      <span className="brand-vector-box">
+                        <BrandIcon brandId={item.id} size={22} />
+                      </span>
                       <div>
                         <strong>{item.name}</strong>
-                        <small>{item.models.length} devices available</small>
+                        <small>
+                          {language === "cs"
+                            ? `${item.models.length} modelů k dispozici`
+                            : language === "ru"
+                            ? `${item.models.length} доступных моделей`
+                            : `${item.models.length} devices available`}
+                        </small>
                       </div>
                       <ArrowRight size={18} />
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </motion.div>
@@ -227,10 +278,10 @@ export function RepairWizard() {
                 className="wizard-step"
               >
                 <h2>{brand?.name}: {t.wizard.chooseCategory}</h2>
-                <p>Filter models by product category</p>
+                <p>{wizardLabels.step1Desc}</p>
                 <div className="choice-grid">
                   {categories.map(cat => (
-                    <button
+                    <motion.button
                       key={cat}
                       type="button"
                       className={`choice ${category === cat ? "selected" : ""}`}
@@ -238,14 +289,16 @@ export function RepairWizard() {
                         setCategory(cat);
                         next();
                       }}
+                      whileHover={{ y: -2 }}
+                      whileTap={{ scale: 0.98 }}
                     >
                       <DeviceGlyph kind={cat} />
                       <div>
                         <strong>{cat}</strong>
-                        <small>{brand?.name} {cat} series</small>
+                        <small>{brand?.name} {cat}</small>
                       </div>
                       <ArrowRight size={18} />
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </motion.div>
@@ -272,7 +325,7 @@ export function RepairWizard() {
                 </div>
                 <div className="model-list">
                   {models.map(item => (
-                    <button
+                    <motion.button
                       key={item.id}
                       type="button"
                       className={`model-btn ${model?.id === item.id ? "selected" : ""}`}
@@ -280,20 +333,25 @@ export function RepairWizard() {
                         setModel(item);
                         next();
                       }}
+                      whileHover={{ y: -2 }}
+                      whileTap={{ scale: 0.98 }}
                     >
                       <DeviceGlyph kind={item.category} compact />
                       <span>
                         <strong>{item.name}</strong>
-                        <small>{item.category} · {item.repairs.length} repair types</small>
+                        <small>
+                          {item.category} · {item.repairs.length}{" "}
+                          {language === "cs" ? "možností oprav" : language === "ru" ? "видов ремонта" : "repair options"}
+                        </small>
                       </span>
                       <ArrowRight size={18} />
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </motion.div>
             )}
 
-            {/* Step 3: Repair Service Selector */}
+            {/* Step 3: Repair Service Selector with Vector Glyphs */}
             {step === 3 && (
               <motion.div
                 key="step3"
@@ -303,38 +361,46 @@ export function RepairWizard() {
                 className="wizard-step"
               >
                 <h2>{t.wizard.chooseRepairs}</h2>
-                <p>{model?.name ?? "Selected device"}</p>
+                <p>{model?.name ?? (language === "cs" ? "Zvolené zařízení" : language === "ru" ? "Выбранное устройство" : "Selected device")}</p>
                 <div className="repair-list">
                   {(model?.repairs ?? []).map(repair => {
                     const selected = repairs.some(r => r.id === repair.id);
+                    const formattedPrice = formatRepairPrice(repair, lang, { showCca: true });
+                    const duration = repair.estimatedDuration || repair.time || "60–90 min";
+
                     return (
-                      <button
+                      <motion.button
                         key={repair.id}
                         type="button"
                         className={selected ? "selected" : ""}
                         onClick={() =>
                           setRepairs(r => (selected ? r.filter(x => x.id !== repair.id) : [...r, repair]))
                         }
+                        whileHover={{ y: -2 }}
+                        whileTap={{ scale: 0.99 }}
                       >
                         <span className="issue-icon">
-                          {issueIcons[repair.id] ?? issueIcons.default}
+                          <RepairIcon repairId={repair.id || repair.name} size={20} />
                         </span>
                         <div className="repair-info">
                           <strong>{repair.name}</strong>
                           <small>{repair.description}</small>
                           <em>
-                            <Clock size={12} /> {repair.time}
+                            <Clock size={12} /> ~{duration}
                           </em>
                         </div>
                         <div className="repair-price">
-                          <b>{t.wizard.priceOnRequest}</b>
+                          <b>{formattedPrice}</b>
+                          <small className="inclusions-mini">
+                            {t.pricing.partsAndLaborIncluded}
+                          </small>
                           {selected ? (
                             <i><Check size={14} /></i>
                           ) : (
-                            <small className="tap-select">Select</small>
+                            <small className="tap-select">{wizardLabels.selectBtn}</small>
                           )}
                         </div>
-                      </button>
+                      </motion.button>
                     );
                   })}
                 </div>
@@ -356,11 +422,13 @@ export function RepairWizard() {
                     const Icon = item.icon;
                     const isSelected = method === item.id;
                     return (
-                      <button
+                      <motion.button
                         key={item.id}
                         type="button"
                         className={isSelected ? "selected" : ""}
                         onClick={() => setMethod(item.id)}
+                        whileHover={{ y: -2 }}
+                        whileTap={{ scale: 0.98 }}
                       >
                         <span>
                           <Icon size={20} />
@@ -370,28 +438,26 @@ export function RepairWizard() {
                           <small>{item.desc}</small>
                         </div>
                         {isSelected && <CheckCircle2 size={20} className="method-checked" />}
-                      </button>
+                      </motion.button>
                     );
                   })}
                 </div>
 
                 <div className="slot-picker">
                   <b>
-                    <Clock size={18} /> Preferred Drop-off / Collection Time:
+                    <Clock size={18} /> {wizardLabels.slotTitle}
                   </b>
                   <div>
-                    {["Today · 16:00", "Tomorrow · 10:30", "Tomorrow · 14:00", "Flexible / By arrangement"].map(
-                      time => (
-                        <button
-                          key={time}
-                          type="button"
-                          className={slot === time ? "selected" : ""}
-                          onClick={() => setSlot(time)}
-                        >
-                          {time}
-                        </button>
-                      )
-                    )}
+                    {slotOptions.map(time => (
+                      <button
+                        key={time}
+                        type="button"
+                        className={slot === time ? "selected" : ""}
+                        onClick={() => setSlot(time)}
+                      >
+                        {time}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </motion.div>
@@ -444,15 +510,15 @@ export function RepairWizard() {
                     <span>{t.wizard.form.preferredContact}</span>
                     <select {...form.register("contact")}>
                       <option value="Telegram">Telegram (@liltrafficRUS)</option>
-                      <option value="Phone">Phone Call</option>
-                      <option value="SMS">SMS Message</option>
-                      <option value="Email">Email</option>
+                      <option value="Phone">{language === "cs" ? "Telefonní hovor" : language === "ru" ? "Звонок по телефону" : "Phone Call"}</option>
+                      <option value="SMS">{language === "cs" ? "SMS zpráva" : language === "ru" ? "SMS сообщение" : "SMS Message"}</option>
+                      <option value="Email">{language === "cs" ? "E-mail" : language === "ru" ? "Электронная почта" : "Email"}</option>
                     </select>
                   </label>
 
                   <label className="field">
                     <span>{t.wizard.form.notes}</span>
-                    <textarea {...form.register("notes")} placeholder="Describe any additional symptoms, passcodes (optional), or requests…" rows={3} />
+                    <textarea {...form.register("notes")} placeholder={wizardLabels.notesPlaceholder} rows={3} />
                   </label>
 
                   <label className="consent">
@@ -486,7 +552,7 @@ export function RepairWizard() {
                 </div>
                 <div className="review-row">
                   <span>{t.wizard.confirm.selectedServices}:</span>
-                  <strong>{repairs.length ? repairs.map(r => r.name).join(", ") : "General Diagnostics"}</strong>
+                  <strong>{repairs.length ? repairs.map(r => r.name).join(", ") : t.wizard.freeDiagnostics}</strong>
                 </div>
                 <div className="review-row">
                   <span>{t.wizard.confirm.method}:</span>
@@ -525,33 +591,42 @@ export function RepairWizard() {
           </div>
         </div>
 
-        {/* Persistent Right Summary Sidebar */}
+        {/* Persistent Right Summary Sidebar with Animated Price Count & Artem Assist */}
         <aside className="repair-summary">
-          <span>SUMMARY</span>
+          <div className="summary-header-row">
+            <span>{wizardLabels.summaryHeader}</span>
+            <Sparkles size={14} className="summary-sparkle" />
+          </div>
+
           {model ? (
             <div className="summary-device">
-              <DeviceGlyph kind={model.category} />
+              <div className="summary-brand-icon">
+                <BrandIcon brandId={brand?.id} size={20} />
+              </div>
               <div>
                 <small>{brand?.name}</small>
                 <strong>{model.name}</strong>
                 <button type="button" onClick={() => setStep(2)}>
-                  Change device
+                  {wizardLabels.changeDevice}
                 </button>
               </div>
             </div>
           ) : (
             <div className="summary-empty">
               <Smartphone size={32} />
-              <p>Select your manufacturer and model</p>
+              <p>{wizardLabels.selectPrompt}</p>
             </div>
           )}
 
           {repairs.length > 0 && (
             <div className="summary-services">
               {repairs.map(r => (
-                <div key={r.id}>
-                  <span>{r.name}</span>
-                  <b>{t.wizard.priceOnRequest}</b>
+                <div key={r.id} className="summary-service-item">
+                  <span>
+                    <RepairIcon repairId={r.id || r.name} size={14} className="summary-service-icon" />
+                    {r.name}
+                  </span>
+                  <b>{formatRepairPrice(r, lang, { showCca: true })}</b>
                 </div>
               ))}
             </div>
@@ -559,27 +634,50 @@ export function RepairWizard() {
 
           <div className="summary-total">
             <div>
-              <span>Estimated Cost</span>
-              <small>{t.wizard.agreedIndividually}</small>
+              <span>{t.pricing.totalEstimateLabel}</span>
+              <small>{t.pricing.partsAndLaborIncluded}</small>
             </div>
-            <b>{t.wizard.priceOnRequest}</b>
+            <b>{totalEstimate ?? t.wizard.priceOnRequest}</b>
+          </div>
+
+          <div className="summary-trust-notice">
+            <ShieldCheck size={14} />
+            <small>{t.pricing.finalPriceConfirmed}</small>
           </div>
 
           <div className="summary-meta">
-            <span><ShieldCheck size={15} /> 12-Month Guarantee</span>
+            <span><ShieldCheck size={15} /> {wizardLabels.warrantyBadge}</span>
             <span><MapPin size={15} /> {contactInfo.addressStreet}</span>
             <span><Send size={15} /> Telegram: {contactInfo.telegram}</span>
           </div>
 
           <div className="summary-telegram-assist">
-            <a
-              href={`${contactInfo.telegramUrl}?text=${encodeURIComponent("Hello! I have a question about booking a repair.")}`}
-              target="_blank"
-              rel="noreferrer"
-              className="telegram-assist-link"
-            >
-              <MessageSquare size={14} /> Need quick consultation? Ask master
-            </a>
+            <div className="assist-avatar-wrap">
+              <picture>
+                <source srcSet="/artem-avatar.webp" type="image/webp" />
+                <img src="/artem-avatar.png" alt="Artem" width={40} height={40} />
+              </picture>
+            </div>
+            <div className="assist-text-wrap">
+              <a
+                href={`${contactInfo.telegramUrl}?text=${encodeURIComponent(
+                  language === "cs"
+                    ? "Dobrý den! Mám dotaz ohledně objednávky opravy."
+                    : language === "ru"
+                    ? "Здравствуйте! У меня есть вопрос по поводу оформления ремонта."
+                    : "Hello! I have a question about booking a repair."
+                )}`}
+                target="_blank"
+                rel="noreferrer"
+                className="assist-link"
+              >
+                <span>{wizardLabels.askTelegram}</span>
+                <Send size={12} />
+              </a>
+              <small className="assist-sub">
+                {wizardLabels.instantConsult}
+              </small>
+            </div>
           </div>
         </aside>
       </div>

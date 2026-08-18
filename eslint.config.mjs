@@ -42,8 +42,10 @@ const eslintConfig = defineConfig([
         {
           argsIgnorePattern: "^_",
           varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
         },
       ],
+      "@next/next/no-img-element": "off",
     },
   },
 ]);

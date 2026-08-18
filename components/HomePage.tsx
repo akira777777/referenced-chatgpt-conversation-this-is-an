@@ -1,83 +1,130 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "motion/react";
 import { useLanguage } from "@/lib/i18n/context";
 import {
   ShieldCheck,
   Zap,
   MapPin,
   Clock,
-  Sparkles,
   ArrowRight,
   Send,
-  Wrench,
-  Smartphone,
-  Laptop,
-  Tablet,
   CheckCircle2,
   Navigation,
   Microscope,
   Award,
+  Laptop,
+  Smartphone,
+  Tablet,
+  Sparkles,
 } from "lucide-react";
 import { contactInfo, brands } from "@/lib/data";
 import { InteractiveDiagnostic } from "./InteractiveDiagnostic";
 import { InteractiveComparison } from "./InteractiveComparison";
+import { HolographicDeviceStage } from "./HolographicDeviceStage";
+import { BrandIcon } from "./BrandIcons";
 
 export function HomePage() {
-  const { t } = useLanguage();
-
-  const brandIcons: Record<string, React.ComponentType<{ size?: number }>> = {
-    apple: Smartphone,
-    samsung: Smartphone,
-    google: Smartphone,
-    xiaomi: Smartphone,
-    huawei: Smartphone,
-    other: Wrench,
-  };
+  const { language, t } = useLanguage();
 
   const featureCards = [
     {
       icon: Microscope,
       title: t.features.f1_title,
       desc: t.features.f1_desc,
+      tag: language === "cs" ? "Přesnost 0,02 mm" : language === "ru" ? "Точность 0,02 мм" : "0.02mm BGA Precision",
     },
     {
       icon: Award,
       title: t.features.f2_title,
       desc: t.features.f2_desc,
+      tag: language === "cs" ? "TrueTone & Biometrie" : language === "ru" ? "TrueTone и биометрия" : "TrueTone & Biometrics",
     },
     {
       icon: Zap,
       title: t.features.f3_title,
       desc: t.features.f3_desc,
+      tag: language === "cs" ? "Expresně 20–40 min" : language === "ru" ? "Экспресс 20–40 мин" : "Express 20-40 min",
     },
     {
       icon: ShieldCheck,
       title: t.features.f4_title,
       desc: t.features.f4_desc,
+      tag: language === "cs" ? "Záruka 12 měsíců" : language === "ru" ? "Гарантия 12 месяцев" : "12-Month Guarantee",
     },
   ];
 
+  const founderText = {
+    badge: language === "cs" ? "ARTEM · HLAVNÍ INŽENÝR" : language === "ru" ? "АРТЁМ · ВЕДУЩИЙ МАСТЕР" : "ARTEM · LEAD MASTER",
+    quote:
+      language === "cs"
+        ? "„Každé zařízení opravujeme s mikroskopickou přesností.“"
+        : language === "ru"
+        ? "«Каждое устройство мы восстанавливаем с микроскопической точностью.»"
+        : "“Every device is treated with microscopic precision.”",
+    desc:
+      language === "cs"
+        ? "V Reform vaše zařízení diagnostikují a opravují osobně zkušení servisní inženýři. Žádné skryté poplatky — zkontrolujeme desku, otestujeme všechny čipy a potvrdíme přesnou kalkulaci ještě před prvním šroubkem."
+        : language === "ru"
+        ? "В Reform ваше устройство диагностируют и ремонтируют лично опытные инженеры. Никаких скрытых наценок — мы осматриваем плату, тестируем цепи и утверждаем точную смету до первого винта."
+        : "At Reform, your device is diagnosed and repaired personally by experienced electronics engineers. No hidden fees, no mystery surcharges — we inspect the motherboard, test all components, and confirm the exact quote before turning the first screw.",
+    telegramBtn:
+      language === "cs"
+        ? "Konzultovat s Artemem na Telegramu"
+        : language === "ru"
+        ? "Написать Артёму в Telegram"
+        : "Consult with Artem on Telegram",
+    storyBtn:
+      language === "cs"
+        ? "Náš inženýrský příběh"
+        : language === "ru"
+        ? "О нашей лаборатории"
+        : "Our Engineering Story",
+  };
+
   return (
     <>
-      {/* 1. HERO SECTION */}
+      {/* 1. HERO SECTION WITH HOLOGRAPHIC 3D DEVICE STAGE */}
       <section className="hero-cyber">
         <div className="hero-glow-back" />
         <div className="container hero-cyber-grid">
           <div className="hero-cyber-copy">
-            <div className="hero-badge-pill">
+            <motion.div
+              className="hero-badge-pill"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
               <span className="live-pulse" />
               <span>{t.hero.badge}</span>
-            </div>
+            </motion.div>
 
-            <h1 className="hero-headline">
+            <motion.h1
+              className="hero-headline"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
               {t.hero.titleStart} <br />
               <span className="gradient-text">{t.hero.titleHighlight}</span>
-            </h1>
+            </motion.h1>
 
-            <p className="hero-description">{t.hero.subtitle}</p>
+            <motion.p
+              className="hero-description"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              {t.hero.subtitle}
+            </motion.p>
 
-            <div className="hero-actions-row">
+            <motion.div
+              className="hero-actions-row"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
               <Link href="/repair" className="button hero-main-cta">
                 {t.hero.startRepair} <ArrowRight size={18} />
               </Link>
@@ -89,9 +136,14 @@ export function HomePage() {
               >
                 <Send size={16} /> {t.hero.chatTelegram}
               </a>
-            </div>
+            </motion.div>
 
-            <div className="hero-trust-bar">
+            <motion.div
+              className="hero-trust-bar"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
               <div className="trust-item">
                 <ShieldCheck size={16} className="trust-icon" />
                 <span>{t.hero.trustWarranty}</span>
@@ -104,68 +156,29 @@ export function HomePage() {
                 <Clock size={16} className="trust-icon" />
                 <span>{t.hero.trustDiagnostics}</span>
               </div>
-            </div>
+            </motion.div>
           </div>
 
-          {/* 3D Visual Stage */}
-          <div className="hero-stage-cyber">
-            <div className="stage-cyber-frame">
-              <div className="device-showcase-card">
-                <div className="scanner-beam" />
-                <div className="device-floating-model">
-                  <div className="device-silhouette">
-                    <div className="device-bezel" />
-                    <div className="device-content">
-                      <Sparkles size={48} className="device-glow-icon" />
-                      <div className="device-tech-text">
-                        <span>REFORM LAB</span>
-                        <strong>0.02mm</strong>
-                        <small>MICROSCOPIC PRECISION</small>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating telemetry tags */}
-                <div className="telemetry-badge tag-top-right">
-                  <Wrench size={15} />
-                  <div>
-                    <b>BGA Micro-Soldering</b>
-                    <small>Prague 3 Lab</small>
-                  </div>
-                </div>
-
-                <div className="telemetry-badge tag-bottom-left">
-                  <CheckCircle2 size={15} />
-                  <div>
-                    <b>Calibrated OEM Parts</b>
-                    <small>TrueTone & Biometrics</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Holographic 3D Interactive Stage */}
+          <HolographicDeviceStage />
         </div>
 
-        {/* Quick Manufacturer Strip */}
+        {/* Quick Manufacturer Strip with Vector Brand Logos */}
         <div className="container quick-brands-container">
           <div className="quick-brands-strip">
             <span className="quick-title">{t.hero.quickSelectTitle}</span>
             <div className="quick-brands-grid">
-              {brands.map(brand => {
-                const Icon = brandIcons[brand.id] || Smartphone;
-                return (
-                  <Link
-                    key={brand.id}
-                    href={`/repair?brand=${brand.id}`}
-                    className="brand-quick-chip quick-select"
-                    data-testid="quick-select-brand"
-                  >
-                    <Icon size={16} />
-                    <span>{brand.name}</span>
-                  </Link>
-                );
-              })}
+              {brands.map(brand => (
+                <Link
+                  key={brand.id}
+                  href={`/repair?brand=${brand.id}`}
+                  className="brand-quick-chip quick-select"
+                  data-testid="quick-select-brand"
+                >
+                  <BrandIcon brandId={brand.id} size={16} />
+                  <span>{brand.name}</span>
+                </Link>
+              ))}
             </div>
           </div>
         </div>
@@ -185,7 +198,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 4. ENGINEERING HIGHLIGHTS / WHY REFORM */}
+      {/* 4. ENGINEERING HIGHLIGHTS / BENTO GRID */}
       <section className="section">
         <div className="container">
           <div className="section-head text-center">
@@ -200,14 +213,25 @@ export function HomePage() {
             {featureCards.map((feat, idx) => {
               const Icon = feat.icon;
               return (
-                <div key={idx} className="bento-card">
-                  <div className="bento-icon-wrap">
-                    <Icon size={24} />
+                <motion.div
+                  key={idx}
+                  className="bento-card"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ duration: 0.4, delay: idx * 0.1 }}
+                  whileHover={{ y: -4 }}
+                >
+                  <div className="bento-top-row">
+                    <div className="bento-icon-wrap">
+                      <Icon size={24} />
+                    </div>
+                    <span className="bento-tag">{feat.tag}</span>
                   </div>
                   <h3>{feat.title}</h3>
                   <p>{feat.desc}</p>
                   <div className="bento-corner-glow" />
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -224,26 +248,26 @@ export function HomePage() {
           </div>
 
           <div className="workflow-steps-grid">
-            <div className="step-card">
-              <span className="step-number">01</span>
-              <h3>{t.process.step1_title}</h3>
-              <p>{t.process.step1_desc}</p>
-            </div>
-            <div className="step-card">
-              <span className="step-number">02</span>
-              <h3>{t.process.step2_title}</h3>
-              <p>{t.process.step2_desc}</p>
-            </div>
-            <div className="step-card">
-              <span className="step-number">03</span>
-              <h3>{t.process.step3_title}</h3>
-              <p>{t.process.step3_desc}</p>
-            </div>
-            <div className="step-card">
-              <span className="step-number">04</span>
-              <h3>{t.process.step4_title}</h3>
-              <p>{t.process.step4_desc}</p>
-            </div>
+            {[
+              { num: "01", title: t.process.step1_title, desc: t.process.step1_desc },
+              { num: "02", title: t.process.step2_title, desc: t.process.step2_desc },
+              { num: "03", title: t.process.step3_title, desc: t.process.step3_desc },
+              { num: "04", title: t.process.step4_title, desc: t.process.step4_desc },
+            ].map((step, idx) => (
+              <motion.div
+                key={step.num}
+                className="step-card"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.1 }}
+                whileHover={{ y: -3 }}
+              >
+                <span className="step-number">{step.num}</span>
+                <h3>{step.title}</h3>
+                <p>{step.desc}</p>
+              </motion.div>
+            ))}
           </div>
 
           <div className="center-cta-wrap">
@@ -302,46 +326,101 @@ export function HomePage() {
           </div>
 
           <div className="testimonials-grid">
-            <div className="testimonial-card">
-              <div className="stars-row">★★★★★</div>
-              <p>{t.testimonials.t1_text}</p>
-              <div className="author-row">
-                <div className="author-avatar">JN</div>
-                <div>
-                  <strong>{t.testimonials.t1_author}</strong>
-                  <small>{t.testimonials.t1_role}</small>
+            {[
+              {
+                text: t.testimonials.t1_text,
+                author: t.testimonials.t1_author,
+                role: t.testimonials.t1_role,
+                avatar: "JN",
+              },
+              {
+                text: t.testimonials.t2_text,
+                author: t.testimonials.t2_author,
+                role: t.testimonials.t2_role,
+                avatar: "MV",
+              },
+              {
+                text: t.testimonials.t3_text,
+                author: t.testimonials.t3_author,
+                role: t.testimonials.t3_role,
+                avatar: "EP",
+              },
+            ].map((item, idx) => (
+              <motion.div
+                key={idx}
+                className="testimonial-card"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.1 }}
+                whileHover={{ y: -3 }}
+              >
+                <div className="stars-row">★★★★★</div>
+                <p>{item.text}</p>
+                <div className="author-row">
+                  <div className="author-avatar">{item.avatar}</div>
+                  <div>
+                    <strong>{item.author}</strong>
+                    <small>{item.role}</small>
+                  </div>
                 </div>
-              </div>
-            </div>
-
-            <div className="testimonial-card">
-              <div className="stars-row">★★★★★</div>
-              <p>{t.testimonials.t2_text}</p>
-              <div className="author-row">
-                <div className="author-avatar">MV</div>
-                <div>
-                  <strong>{t.testimonials.t2_author}</strong>
-                  <small>{t.testimonials.t2_role}</small>
-                </div>
-              </div>
-            </div>
-
-            <div className="testimonial-card">
-              <div className="stars-row">★★★★★</div>
-              <p>{t.testimonials.t3_text}</p>
-              <div className="author-row">
-                <div className="author-avatar">EP</div>
-                <div>
-                  <strong>{t.testimonials.t3_author}</strong>
-                  <small>{t.testimonials.t3_role}</small>
-                </div>
-              </div>
-            </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* 8. PRAGUE 3 WORKSHOP LOCATION & MAP */}
+      {/* 8. MEET THE MASTER & LEAD TECHNICIAN */}
+      <section className="section section-founder">
+        <div className="container">
+          <motion.div
+            className="founder-spotlight-card"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="founder-photo-col">
+              <div className="founder-img-frame">
+                <picture>
+                  <source srcSet="/artem.webp" type="image/webp" />
+                  <img
+                    src="/artem.png"
+                    alt="Artem — Lead Engineer Reform Prague"
+                  />
+                </picture>
+              </div>
+              <span className="founder-title-badge">
+                <Sparkles size={11} /> {founderText.badge}
+              </span>
+            </div>
+
+            <div className="founder-content-col">
+              <p className="eyebrow">
+                {t.nav.about || "REFORM PRAGUE 3 STUDIO"}
+              </p>
+              <h2>{founderText.quote}</h2>
+              <p className="founder-desc-text">{founderText.desc}</p>
+              <div className="founder-actions-row">
+                <a
+                  href={contactInfo.telegramUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="button"
+                >
+                  <Send size={15} />
+                  <span>{founderText.telegramBtn}</span>
+                </a>
+                <Link href="/about" className="button button-secondary">
+                  {founderText.storyBtn}
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 9. PRAGUE 3 WORKSHOP LOCATION & MAP */}
       <section className="section">
         <div className="container">
           <div className="contact-preview-card">
@@ -399,6 +478,7 @@ export function HomePage() {
             <div className="contact-map-col">
               <div className="map-visual-container">
                 <div className="map-grid-pattern" />
+                <div className="map-radar-ring" />
                 <div className="map-pulse-pin">
                   <MapPin size={28} />
                 </div>

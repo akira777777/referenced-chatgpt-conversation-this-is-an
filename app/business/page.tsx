@@ -6,7 +6,7 @@ import { LinkButton, PlaceholderTag, Section } from "@/components/ui";
 import { useLanguage } from "@/lib/i18n/context";
 
 export default function BusinessPage() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
 
   const b2bFeatures = [
     { icon: Laptop, title: t.businessPage.f1_title, text: t.businessPage.f1_desc },
@@ -16,6 +16,13 @@ export default function BusinessPage() {
     { icon: Building2, title: t.businessPage.f5_title, text: t.businessPage.f5_desc },
     { icon: PackageCheck, title: t.businessPage.f6_title, text: t.businessPage.f6_desc },
   ];
+
+  const sectionEyebrow =
+    language === "cs"
+      ? "PRO FIREMNÍ FLOTILY"
+      : language === "ru"
+      ? "ДЛЯ КОРПОРАТИВНЫХ КЛИЕНТОВ"
+      : "BUILT FOR OPERATIONS";
 
   return (
     <SiteChrome>
@@ -31,7 +38,7 @@ export default function BusinessPage() {
           </LinkButton>
         </div>
       </div>
-      <Section eyebrow="BUILT FOR OPERATIONS" title={t.businessPage.builtTitle}>
+      <Section eyebrow={sectionEyebrow} title={t.businessPage.builtTitle}>
         <div className="b2b-grid">
           {b2bFeatures.map(({ icon: Icon, title, text }) => (
             <article key={title}>
