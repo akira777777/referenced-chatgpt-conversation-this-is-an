@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Menu, Moon, Search, Send, Sun, X, ArrowUpRight, ShieldCheck, MapPin, Phone, Mail } from "lucide-react";
+import { Menu, Moon, Search, Send, Sun, X, ArrowUpRight, ShieldCheck, MapPin, Phone, Mail, Wrench } from "lucide-react";
 import { allModels, contactInfo, placeholderNotice } from "@/lib/data";
 import { useLanguage, LanguageSwitcher } from "@/lib/i18n/context";
 import { Logo } from "./Logo";
@@ -10,11 +10,13 @@ import { Logo } from "./Logo";
 export function Header() {
   const { t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [menu, setMenu] = useState(false);
   const [search, setSearch] = useState(false);
   const [dark, setDark] = useState(() => typeof document !== "undefined" && document.documentElement.classList.contains("dark"));
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const lastScrollY = useRef(0);
 
   const navLinks = [
     { label: t.nav.repairs, href: "/repair" },
@@ -26,7 +28,16 @@ export function Header() {
   ];
 
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 12);
+    const fn = () => {
+      const currentY = window.scrollY;
+      setScrolled(currentY > 12);
+      if (currentY > lastScrollY.current && currentY > 120) {
+        setHidden(true);
+      } else {
+        setHidden(false);
+      }
+      lastScrollY.current = currentY;
+    };
     fn();
     window.addEventListener("scroll", fn, { passive: true });
     return () => window.removeEventListener("scroll", fn);
@@ -44,13 +55,20 @@ export function Header() {
   };
 
   useEffect(() => {
-    if (!search) return;
-    inputRef.current?.focus();
     const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearch(true);
+      }
       if (e.key === "Escape") setSearch(false);
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    if (!search) return;
+    inputRef.current?.focus();
   }, [search]);
 
   const results = query.trim()
@@ -59,128 +77,129 @@ export function Header() {
 
   return (
     <>
-      <header className={`header ${scrolled ? "scrolled" : ""}`}>
-        <div className="nav container">
-          <Logo variant="header" />
+      <header className={`header ${scrolled ? "scrolled" : ""} ${hidden ? "hidden" : ""}`}>
+        <div className="header-island">
+          <div className="nav container">
+            <Logo variant="header" />
 
-          <nav className="desktop-nav" aria-label="Main Navigation">
-            {navLinks.map(link => (
-              <Link key={link.href} href={link.href} className="nav-link">
-                {link.label}
+            <nav className="desktop-nav" aria-label="Main Navigation">
+              {navLinks.map(link => (
+                <Link key={link.href} href={link.href} className="nav-link">
+                  <span>{link.label}</span>
+                </Link>
+              ))}
+            </nav>
+
+            <div className="nav-actions">
+              <div className="nav-actions-group">
+                <LanguageSwitcher />
+
+                <button
+                  type="button"
+                  className="icon-button"
+                  onClick={() => setSearch(true)}
+                  aria-label="Search devices"
+                  title="Search devices"
+                >
+                  <Search size={18} />
+                </button>
+
+                <button
+                  type="button"
+                  className="icon-button"
+                  onClick={toggleTheme}
+                  aria-label="Toggle color theme"
+                  title="Toggle theme"
+                >
+                  {dark ? <Sun size={18} /> : <Moon size={18} />}
+                </button>
+
+                <a
+                  href={contactInfo.telegramUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="icon-button telegram-nav-icon"
+                  aria-label={`Telegram ${contactInfo.telegram}`}
+                  title={`Telegram ${contactInfo.telegram}`}
+                >
+                  <Send size={16} />
+                </a>
+              </div>
+
+              <Link className="button nav-cta" href="/repair">
+                <Wrench size={16} />
+                {t.nav.startRepair}
               </Link>
-            ))}
-          </nav>
 
-          <div className="nav-actions">
-            <LanguageSwitcher />
-
-            <button
-              type="button"
-              className="icon-button"
-              onClick={() => setSearch(true)}
-              aria-label="Search devices"
-              title="Search devices"
-            >
-              <Search size={18} />
-            </button>
-
-            <button
-              type="button"
-              className="icon-button"
-              onClick={toggleTheme}
-              aria-label="Toggle color theme"
-              title="Toggle theme"
-            >
-              {dark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-
-            <a
-              href={contactInfo.telegramUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="icon-button telegram-nav-icon"
-              aria-label={`Telegram ${contactInfo.telegram}`}
-              title={`Telegram ${contactInfo.telegram}`}
-            >
-              <Send size={16} />
-            </a>
-
-            <Link className="button nav-cta" href="/repair">
-              {t.nav.startRepair}
-            </Link>
-
-            <button
-              type="button"
-              className="icon-button menu-button"
-              onClick={() => setMenu(v => !v)}
-              aria-label="Open mobile menu"
-            >
-              {menu ? <X size={20} /> : <Menu size={20} />}
-            </button>
+              <button
+                type="button"
+                className="icon-button menu-button"
+                onClick={() => setMenu(true)}
+                aria-label="Open menu"
+                aria-expanded={menu}
+              >
+                <Menu size={22} />
+              </button>
+            </div>
           </div>
         </div>
+      </header>
 
-        {/* Mobile Navigation Drawer */}
-        {menu && (
-          <nav className="mobile-nav" aria-label="Mobile Navigation">
+      {menu && (
+        <div className="mobile-nav-overlay">
+          <button
+            type="button"
+            className="mobile-nav-backdrop"
+            onClick={() => setMenu(false)}
+            aria-label="Close menu"
+          />
+          <div className="mobile-nav" role="dialog" aria-label="Mobile navigation">
             <div className="mobile-nav-top">
-              <LanguageSwitcher />
+              <span className="mobile-nav-title">{t.nav.menu}</span>
+              <button type="button" className="icon-button" onClick={() => setMenu(false)} aria-label="Close menu">
+                <X size={20} />
+              </button>
             </div>
             {navLinks.map(link => (
-              <Link
-                key={link.href}
-                onClick={() => setMenu(false)}
-                href={link.href}
-                className="mobile-nav-link"
-              >
-                <span>{link.label}</span>
-                <ArrowUpRight size={16} />
+              <Link key={link.href} href={link.href} className="mobile-nav-link" onClick={() => setMenu(false)}>
+                {link.label}
+                <ArrowUpRight size={18} />
               </Link>
             ))}
             <a
               href={contactInfo.telegramUrl}
               target="_blank"
               rel="noreferrer"
-              onClick={() => setMenu(false)}
               className="mobile-nav-link mobile-telegram-link"
             >
-              <span>Telegram ({contactInfo.telegram})</span>
-              <Send size={16} />
+              Telegram
+              <Send size={18} />
             </a>
             <div className="mobile-nav-cta-wrap">
-              <Link
-                href="/repair"
-                onClick={() => setMenu(false)}
-                className="button mobile-cta-btn"
-              >
+              <Link className="button mobile-cta-btn" href="/repair" onClick={() => setMenu(false)}>
                 {t.nav.startRepair}
               </Link>
             </div>
-          </nav>
-        )}
-      </header>
+          </div>
+        </div>
+      )}
 
-      {/* Global Device Search Modal */}
       {search && (
         <div className="modal-backdrop">
-          <button
-            type="button"
-            className="modal-dismiss-backdrop"
-            onClick={() => setSearch(false)}
-            aria-label="Close search modal"
-          />
-          <div role="dialog" aria-modal="true" aria-label="Device search" className="search-modal">
+          <button type="button" className="modal-dismiss-backdrop" onClick={() => setSearch(false)} aria-label="Close search" />
+          <div className="search-modal">
             <div className="search-input">
               <Search size={20} />
               <input
                 ref={inputRef}
+                type="text"
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 placeholder={t.nav.searchPlaceholder}
                 aria-label="Search devices"
               />
               <button type="button" onClick={() => setSearch(false)} aria-label="Close search">
-                <X size={18} />
+                <X size={20} />
               </button>
             </div>
             <div className="search-results">
