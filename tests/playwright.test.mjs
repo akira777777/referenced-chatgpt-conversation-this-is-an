@@ -1,7 +1,25 @@
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
+import { isServerReady, startServer, stopServer } from "./e2e-server.mjs";
 
 async function runE2ESuite() {
+  let managedServer = null;
+
+  const serverAlreadyRunning = await isServerReady(3000);
+  if (!serverAlreadyRunning) {
+    managedServer = await startServer();
+  } else {
+    console.log("ℹ️  Using existing server on http://localhost:3000");
+  }
+
+  try {
+    await runE2ETests();
+  } finally {
+    stopServer(managedServer);
+  }
+}
+
+async function runE2ETests() {
   console.log("🚀 Launching Chromium for Playwright E2E testing...");
   const browser = await chromium.launch({
     headless: true,
@@ -165,3 +183,4 @@ runE2ESuite().catch(err => {
   console.error("❌ E2E TEST FAILED:", err);
   process.exit(1);
 });
+

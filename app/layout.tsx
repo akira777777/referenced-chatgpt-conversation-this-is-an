@@ -18,9 +18,9 @@ export const metadata: Metadata = {
     title: "Reform — Precision Device Care Prague",
     description: "Component-level electronics repair, micro-soldering & individual pricing in Prague 3.",
     type: "website",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Reform — Precision Device Care Prague" }],
+    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "Reform — Precision Device Care Prague" }],
   },
-  twitter: { card: "summary_large_image", images: ["/og.png"] },
+  twitter: { card: "summary_large_image", images: ["/og.jpg"] },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
