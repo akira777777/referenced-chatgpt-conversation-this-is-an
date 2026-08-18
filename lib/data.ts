@@ -3,18 +3,18 @@ export type DeviceModel = { id: string; name: string; category: string; repairs:
 export type Brand = { id: string; name: string; categories: string[]; models: DeviceModel[] };
 
 const iphoneRepairs: Repair[] = [
-  { id: "screen", name: "Display replacement", description: "Premium OLED display, calibrated and tested.", price: 7490, time: "2 hours" },
-  { id: "battery", name: "Battery replacement", description: "Restore all-day battery life and peak performance.", price: 2490, time: "60 minutes" },
-  { id: "back-glass", name: "Back glass repair", description: "Precision glass replacement with a clean factory finish.", price: 3990, time: "3 hours" },
-  { id: "charging", name: "Charging port", description: "Cleaning, diagnostics and port replacement if needed.", price: 2990, time: "2 hours" },
-  { id: "camera", name: "Camera repair", description: "Resolve focus, image or lens problems.", price: 3290, time: "2 hours" },
-  { id: "diagnostics", name: "Diagnostics", description: "A complete hardware and software assessment.", price: 790, time: "1–2 days" },
+  { id: "screen", name: "Display replacement", description: "Premium OLED display, calibrated and tested.", price: 0, time: "2 hours" },
+  { id: "battery", name: "Battery replacement", description: "Restore all-day battery life and peak performance.", price: 0, time: "60 minutes" },
+  { id: "back-glass", name: "Back glass repair", description: "Precision glass replacement with a clean factory finish.", price: 0, time: "3 hours" },
+  { id: "charging", name: "Charging port", description: "Cleaning, diagnostics and port replacement if needed.", price: 0, time: "2 hours" },
+  { id: "camera", name: "Camera repair", description: "Resolve focus, image or lens problems.", price: 0, time: "2 hours" },
+  { id: "diagnostics", name: "Diagnostics", description: "A complete hardware and software assessment.", price: 0, time: "1–2 days" },
 ];
 const computerRepairs: Repair[] = [
-  { id: "display", name: "Display service", description: "Panel and display assembly diagnostics or replacement.", price: 8990, time: "2–4 days" },
-  { id: "battery", name: "Battery replacement", description: "Battery health restoration with full testing.", price: 4490, time: "1 day" },
-  { id: "keyboard", name: "Keyboard repair", description: "Top-case, keyboard or individual key service.", price: 4990, time: "2–3 days" },
-  { id: "liquid", name: "Liquid damage", description: "Board-level inspection and corrosion treatment.", price: 1490, time: "3–5 days" },
+  { id: "display", name: "Display service", description: "Panel and display assembly diagnostics or replacement.", price: 0, time: "2–4 days" },
+  { id: "battery", name: "Battery replacement", description: "Battery health restoration with full testing.", price: 0, time: "1 day" },
+  { id: "keyboard", name: "Keyboard repair", description: "Top-case, keyboard or individual key service.", price: 0, time: "2–3 days" },
+  { id: "liquid", name: "Liquid damage", description: "Board-level inspection and corrosion treatment.", price: 0, time: "3–5 days" },
 ];
 const phoneModels = (names: string[], category = "Phone") => names.map((name) => ({ id: name.toLowerCase().replace(/[^a-z0-9]+/g, "-"), name, category, repairs: iphoneRepairs }));
 
@@ -33,7 +33,7 @@ export const brands: Brand[] = [
   { id: "other", name: "Other", categories: ["Phone", "Laptop", "Tablet"], models: [{ id: "other-device", name: "Another device", category: "Phone", repairs: iphoneRepairs }] },
 ];
 
-export const formatPrice = (price: number) => new Intl.NumberFormat("cs-CZ").format(price) + " Kč";
+export const formatPrice = (_price: number) => "Price on request";
 export const allModels = brands.flatMap((brand) => brand.models.map((model) => ({ ...model, brand: brand.name, brandId: brand.id })));
 
 export const faqs = [
@@ -46,4 +46,4 @@ export const faqs = [
   ["Do I need an appointment?", "Walk-ins are welcome, but an appointment reserves technician time and usually shortens your visit."],
 ];
 
-export const placeholderNotice = "Demo content — prices, availability, address and trust metrics must be confirmed before launch.";
+export const placeholderNotice = "Availability, opening hours and trust metrics are demonstration content until confirmed.";

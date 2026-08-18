@@ -1,4 +1,4 @@
 import { PriceExplorer } from "@/components/PriceExplorer";
 import { SiteChrome } from "@/components/SiteChrome";
-export const metadata = { title: "Repair prices", description: "Search indicative prices for phone, tablet and computer repairs." };
-export default function PricesPage() { return <SiteChrome><div className="page-hero"><div className="container"><p className="eyebrow">CLEAR FROM THE START</p><h1>Repair pricing.</h1><p>Explore indicative prices for common repairs. You’ll approve a final quote after diagnostics.</p></div></div><section className="section price-section"><div className="container"><PriceExplorer/></div></section></SiteChrome>; }
+export const metadata = { title: "Request a repair price", description: "Find your device and request an individual quote for phone, tablet or computer repair." };
+export default function PricesPage() { return <SiteChrome><div className="page-hero"><div className="container"><p className="eyebrow">PRICED FOR YOUR DEVICE</p><h1>Individual repair quotes.</h1><p>Every device and fault is different. Choose your repair and we’ll contact you to agree the price.</p></div></div><section className="section price-section"><div className="container"><PriceExplorer/></div></section></SiteChrome>; }
