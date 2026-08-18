@@ -699,4 +699,3 @@ export const translations = {
 };
 
 export type TranslationKeys = typeof translations.en;
-export type Language = "en" | "cs" | "ru";
