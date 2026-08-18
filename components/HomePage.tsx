@@ -14,8 +14,6 @@ import {
   Smartphone,
   Laptop,
   Tablet,
-  Watch,
-  Headphones,
   CheckCircle2,
   Navigation,
   Microscope,

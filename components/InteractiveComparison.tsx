@@ -62,6 +62,16 @@ export function InteractiveComparison() {
         {/* Interactive Split View */}
         <div
           ref={containerRef}
+          role="slider"
+          aria-label="Comparison image slider"
+          aria-valuenow={sliderPos}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          tabIndex={0}
+          onKeyDown={e => {
+            if (e.key === "ArrowLeft") setSliderPos(p => Math.max(0, p - 5));
+            if (e.key === "ArrowRight") setSliderPos(p => Math.min(100, p + 5));
+          }}
           className="comparison-stage"
           onMouseMove={handleMouseMove}
           onTouchMove={handleTouchMove}
