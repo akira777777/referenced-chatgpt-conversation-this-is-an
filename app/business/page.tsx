@@ -1,38 +1,37 @@
-import type { Metadata } from "next";
+"use client";
+
 import { ArrowRight, Building2, FileText, Laptop, PackageCheck, ShieldCheck, Truck } from "lucide-react";
 import { SiteChrome } from "@/components/SiteChrome";
 import { LinkButton, PlaceholderTag, Section } from "@/components/ui";
-
-export const metadata: Metadata = {
-  title: "Business Device Care & Fleet Repairs",
-  description: "Priority repairs, consolidated invoicing and planned device pickup for companies and teams in Prague.",
-};
-
-const b2bFeatures = [
-  { icon: Laptop, title: "Fleet repairs", text: "iPhone, MacBook and multi-brand device support." },
-  { icon: Truck, title: "Pickup & delivery", text: "Planned collections that work around your team." },
-  { icon: FileText, title: "Consolidated invoicing", text: "Clear records and simple monthly billing." },
-  { icon: ShieldCheck, title: "Priority service", text: "Reserved capacity and named support." },
-  { icon: Building2, title: "B2B contracts", text: "Defined workflows for growing teams." },
-  { icon: PackageCheck, title: "Lifecycle support", text: "Repair-or-replace advice based on device value." },
-];
+import { useLanguage } from "@/lib/i18n/context";
 
 export default function BusinessPage() {
+  const { t } = useLanguage();
+
+  const b2bFeatures = [
+    { icon: Laptop, title: t.businessPage.f1_title, text: t.businessPage.f1_desc },
+    { icon: Truck, title: t.businessPage.f2_title, text: t.businessPage.f2_desc },
+    { icon: FileText, title: t.businessPage.f3_title, text: t.businessPage.f3_desc },
+    { icon: ShieldCheck, title: t.businessPage.f4_title, text: t.businessPage.f4_desc },
+    { icon: Building2, title: t.businessPage.f5_title, text: t.businessPage.f5_desc },
+    { icon: PackageCheck, title: t.businessPage.f6_title, text: t.businessPage.f6_desc },
+  ];
+
   return (
     <SiteChrome>
       <div className="page-hero business-hero">
         <div className="container">
           <p className="eyebrow">
-            REFORM FOR BUSINESS <PlaceholderTag />
+            {t.businessPage.badge} <PlaceholderTag />
           </p>
-          <h1>Keep your team working.</h1>
-          <p>Priority repairs, predictable handling and one clear point of contact for your entire device fleet.</p>
+          <h1>{t.businessPage.title}</h1>
+          <p>{t.businessPage.subtitle}</p>
           <LinkButton href="/contact">
-            Talk to business support <ArrowRight />
+            {t.businessPage.cta} <ArrowRight />
           </LinkButton>
         </div>
       </div>
-      <Section eyebrow="BUILT FOR OPERATIONS" title="Device care that scales with you.">
+      <Section eyebrow="BUILT FOR OPERATIONS" title={t.businessPage.builtTitle}>
         <div className="b2b-grid">
           {b2bFeatures.map(({ icon: Icon, title, text }) => (
             <article key={title}>
@@ -45,10 +44,10 @@ export default function BusinessPage() {
       </Section>
       <section className="final-cta">
         <div className="container">
-          <h2>A calmer way to manage repairs.</h2>
-          <p>Tell us about your fleet and we’ll propose a service workflow.</p>
+          <h2>{t.businessPage.finalCtaTitle}</h2>
+          <p>{t.businessPage.finalCtaSub}</p>
           <LinkButton href="/contact">
-            Request a consultation <ArrowRight />
+            {t.businessPage.requestConsultation} <ArrowRight />
           </LinkButton>
         </div>
       </section>

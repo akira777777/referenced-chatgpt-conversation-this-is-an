@@ -1,4 +1,45 @@
+"use client";
+
 import { SiteChrome } from "@/components/SiteChrome";
-import { faqs } from "@/lib/data";
 import { StructuredData } from "@/components/StructuredData";
-export default function FaqPage() { return <SiteChrome><StructuredData data={{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faqs.map(([q,a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) }}/><div className="page-hero compact"><div className="container"><p className="eyebrow">SUPPORT</p><h1>Frequently asked questions.</h1><p>Clear answers about timing, data, parts and warranty.</p></div></div><section className="section"><div className="container narrow faq-list">{faqs.map(([q,a]) => <details key={q}><summary>{q}<span>+</span></summary><p>{a}</p></details>)}</div></section></SiteChrome>; }
+import { useLanguage } from "@/lib/i18n/context";
+
+export default function FaqPage() {
+  const { t } = useLanguage();
+
+  return (
+    <SiteChrome>
+      <StructuredData
+        data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: t.faqPage.faqs.map(([q, a]) => ({
+            "@type": "Question",
+            name: q,
+            acceptedAnswer: { "@type": "Answer", text: a },
+          })),
+        }}
+      />
+      <div className="page-hero compact">
+        <div className="container">
+          <p className="eyebrow">{t.faqPage.badge}</p>
+          <h1>{t.faqPage.title}</h1>
+          <p>{t.faqPage.subtitle}</p>
+        </div>
+      </div>
+      <section className="section">
+        <div className="container narrow faq-list">
+          {t.faqPage.faqs.map(([q, a]) => (
+            <details key={q}>
+              <summary>
+                {q}
+                <span>+</span>
+              </summary>
+              <p>{a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+    </SiteChrome>
+  );
+}

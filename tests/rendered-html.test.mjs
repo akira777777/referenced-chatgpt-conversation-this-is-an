@@ -78,7 +78,7 @@ test("server-renders the FAQ page with FAQPage schema", async () => {
   assert.equal(response.status, 200);
 
   const html = await response.text();
-  assert.match(html, /Frequently asked questions/i);
+  assert.match(html, /Frequently asked questions|Často kladené otázky/i);
   assert.match(html, /FAQPage/);
 });
 

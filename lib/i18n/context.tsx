@@ -17,29 +17,36 @@ const LanguageContext = createContext<LanguageContextType>({
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<Language>("cs");
-  const [mounted, setMounted] = useState(false);
 
   React.useEffect(() => {
-    setMounted(true);
+    let isSubscribed = true;
     try {
       const stored = localStorage.getItem("reform_lang") as Language | null;
+      let targetLang: Language = "cs";
       if (stored && (stored === "cs" || stored === "ru" || stored === "en")) {
-        setLangState(stored);
-        document.documentElement.lang = stored;
-        return;
+        targetLang = stored;
+      } else {
+        const browserLang = navigator.language.slice(0, 2).toLowerCase();
+        if (browserLang === "ru" || browserLang === "uk" || browserLang === "be") {
+          targetLang = "ru";
+        } else if (browserLang === "en") {
+          targetLang = "en";
+        }
       }
-      const browserLang = navigator.language.slice(0, 2).toLowerCase();
-      let defaultLang: Language = "en";
-      if (browserLang === "ru" || browserLang === "uk" || browserLang === "be") {
-        defaultLang = "ru";
-      } else if (browserLang === "cs" || browserLang === "sk") {
-        defaultLang = "cs";
+      document.documentElement.lang = targetLang;
+      if (targetLang !== "cs") {
+        queueMicrotask(() => {
+          if (isSubscribed) {
+            setLangState(targetLang);
+          }
+        });
       }
-      setLangState(defaultLang);
-      document.documentElement.lang = defaultLang;
     } catch {
       // ignore
     }
+    return () => {
+      isSubscribed = false;
+    };
   }, []);
 
   const setLang = (newLang: Language) => {

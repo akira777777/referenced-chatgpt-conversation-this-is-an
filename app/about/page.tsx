@@ -1,9 +1,49 @@
-import type { Metadata } from "next";
+"use client";
+
 import { SiteChrome } from "@/components/SiteChrome";
 import { PlaceholderTag, Section } from "@/components/ui";
+import { useLanguage } from "@/lib/i18n/context";
 
-export const metadata: Metadata = {
-  title: "About Us — Craft, Clarity & Sustainable Device Care",
-  description: "Learn about Reform's approach to premium electronics repair in Prague: precision workmanship, clear communication and lasting quality.",
-};
-export default function AboutPage() { return <SiteChrome><div className="page-hero"><div className="container"><p className="eyebrow">ABOUT REFORM <PlaceholderTag/></p><h1>Technology deserves a second life.</h1><p>We’re building a repair experience defined by craft, clarity and respect for the things people rely on every day.</p></div></div><Section eyebrow="OUR APPROACH" title="Care is a process, not a slogan."><div className="editorial-grid"><div><h3>Diagnose first.</h3><p>We look for the cause, explain the options and ask for approval before work begins.</p></div><div><h3>Repair precisely.</h3><p>Clean workspaces, quality components and methodical testing protect the whole device.</p></div><div><h3>Communicate clearly.</h3><p>Plain-language updates and visible progress remove uncertainty from the experience.</p></div></div></Section><section className="manifesto"><div className="container"><blockquote>“Good repair should feel less like a compromise and more like responsible product care.”</blockquote><p>Reform concept team · demonstration copy</p></div></section></SiteChrome>; }
+export default function AboutPage() {
+  const { t } = useLanguage();
+
+  return (
+    <SiteChrome>
+      <div className="page-hero">
+        <div className="container">
+          <p className="eyebrow">
+            {t.about.badge} <PlaceholderTag />
+          </p>
+          <h1>{t.about.title}</h1>
+          <p>{t.about.subtitle}</p>
+        </div>
+      </div>
+      <Section eyebrow={t.about.approachBadge} title={t.about.approachTitle}>
+        <div className="editorial-grid">
+          <div>
+            <h3>{t.about.f1_title}</h3>
+            <p>{t.about.f1_desc}</p>
+          </div>
+          <div>
+            <h3>{t.about.f2_title}</h3>
+            <p>{t.about.f2_desc}</p>
+          </div>
+          <div>
+            <h3>{t.about.f3_title}</h3>
+            <p>{t.about.f3_desc}</p>
+          </div>
+        </div>
+      </Section>
+      <section className="manifesto">
+        <div className="container">
+          <blockquote style={{ fontSize: "24px", fontWeight: 500, lineHeight: 1.4, margin: "0 0 12px" }}>
+            {t.about.manifestoQuote}
+          </blockquote>
+          <p style={{ color: "var(--muted)", fontSize: "14px", fontFamily: "var(--font-geist-mono)" }}>
+            {t.about.manifestoTeam}
+          </p>
+        </div>
+      </section>
+    </SiteChrome>
+  );
+}
