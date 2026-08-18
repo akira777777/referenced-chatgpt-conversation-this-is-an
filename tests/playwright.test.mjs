@@ -13,6 +13,12 @@ async function runE2ESuite() {
       viewport: { width: 1280, height: 800 },
     });
     const page = await context.newPage();
+
+    page.on("pageerror", err => console.error("PAGE ERROR:", err));
+    page.on("console", msg => {
+      if (msg.type() === "error") console.error("PAGE CONSOLE ERROR:", msg.text());
+    });
+
     const baseUrl = "http://localhost:3000";
 
     console.log("▶ [1/7] Testing Homepage & Bespoke Vector Logo...");

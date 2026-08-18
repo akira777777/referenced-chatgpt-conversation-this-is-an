@@ -16,24 +16,31 @@ const LanguageContext = createContext<LanguageContextType>({
 });
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Language>(() => {
-    if (typeof window === "undefined") return "cs";
+  const [lang, setLangState] = useState<Language>("cs");
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
     try {
       const stored = localStorage.getItem("reform_lang") as Language | null;
       if (stored && (stored === "cs" || stored === "ru" || stored === "en")) {
-        return stored;
+        setLangState(stored);
+        document.documentElement.lang = stored;
+        return;
       }
       const browserLang = navigator.language.slice(0, 2).toLowerCase();
+      let defaultLang: Language = "en";
       if (browserLang === "ru" || browserLang === "uk" || browserLang === "be") {
-        return "ru";
+        defaultLang = "ru";
       } else if (browserLang === "cs" || browserLang === "sk") {
-        return "cs";
+        defaultLang = "cs";
       }
-      return "en";
+      setLangState(defaultLang);
+      document.documentElement.lang = defaultLang;
     } catch {
-      return "cs";
+      // ignore
     }
-  });
+  }, []);
 
   const setLang = (newLang: Language) => {
     setLangState(newLang);
