@@ -11,7 +11,6 @@ import {
   ArrowRight,
   Send,
   CheckCircle2,
-  Navigation,
   Microscope,
   Award,
   Laptop,
@@ -23,6 +22,8 @@ import { contactInfo, brands } from "@/lib/data";
 import { InteractiveDiagnostic } from "./InteractiveDiagnostic";
 import { InteractiveComparison } from "./InteractiveComparison";
 import { HolographicDeviceStage } from "./HolographicDeviceStage";
+import { QuickRepairEstimator } from "./QuickRepairEstimator";
+import { StudioTransitAssistant } from "./StudioTransitAssistant";
 import { BrandIcon } from "./BrandIcons";
 
 export function HomePage() {
@@ -69,6 +70,12 @@ export function HomePage() {
         : language === "ru"
         ? "В Reform ваше устройство диагностируют и ремонтируют лично опытные инженеры. Никаких скрытых наценок — мы осматриваем плату, тестируем цепи и утверждаем точную смету до первого винта."
         : "At Reform, your device is diagnosed and repaired personally by experienced electronics engineers. No hidden fees, no mystery surcharges — we inspect the motherboard, test all components, and confirm the exact quote before turning the first screw.",
+    credentials: [
+      language === "cs" ? "8+ let zkušeností v mikroelektronice" : language === "ru" ? "8+ лет опыта компонентного ремонта" : "8+ Years Component-Level Repair",
+      language === "cs" ? "IPC-7711/7721 certifikace BGA pájení" : language === "ru" ? "IPC-7711/7721 сертификация BGA пайки" : "IPC-7711/7721 BGA Soldering Cert",
+      language === "cs" ? "Bezpřachová komora pro laminaci displejů" : language === "ru" ? "Беспылевая комната для экранов" : "Class-100 Cleanroom Lamination",
+      language === "cs" ? "Specializace na Apple & Unix architekturu" : language === "ru" ? "Специализация Apple & Unix архитектуры" : "Apple & Unix Logic Board Specialist",
+    ],
     telegramBtn:
       language === "cs"
         ? "Konzultovat s Artemem na Telegramu"
@@ -184,21 +191,28 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 2. INTERACTIVE DIAGNOSTIC SYMPTOM CHECKER */}
+      {/* 2. INSTANT LIVE REPAIR ESTIMATOR */}
+      <section className="section section-estimator">
+        <div className="container">
+          <QuickRepairEstimator />
+        </div>
+      </section>
+
+      {/* 3. INTERACTIVE DIAGNOSTIC SYMPTOM CHECKER */}
       <section className="section">
         <div className="container">
           <InteractiveDiagnostic />
         </div>
       </section>
 
-      {/* 3. BEFORE / AFTER INTERACTIVE SLIDER */}
+      {/* 4. BEFORE / AFTER INTERACTIVE SLIDER */}
       <section className="section section-dark-accent">
         <div className="container">
           <InteractiveComparison />
         </div>
       </section>
 
-      {/* 4. ENGINEERING HIGHLIGHTS / BENTO GRID */}
+      {/* 5. ENGINEERING HIGHLIGHTS / BENTO GRID */}
       <section className="section">
         <div className="container">
           <div className="section-head text-center">
@@ -238,7 +252,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 5. WORKFLOW & PROCESS */}
+      {/* 6. WORKFLOW & PROCESS */}
       <section className="section section-workflow">
         <div className="container">
           <div className="section-head">
@@ -278,7 +292,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 6. B2B / CORPORATE FLEET SECTION */}
+      {/* 7. B2B / CORPORATE FLEET SECTION */}
       <section className="section">
         <div className="container">
           <div className="b2b-banner-card">
@@ -317,7 +331,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 7. TESTIMONIALS */}
+      {/* 8. TESTIMONIALS */}
       <section className="section section-testimonials">
         <div className="container">
           <div className="section-head text-center">
@@ -370,7 +384,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 8. MEET THE MASTER & LEAD TECHNICIAN */}
+      {/* 9. MEET THE MASTER & LEAD TECHNICIAN */}
       <section className="section section-founder">
         <div className="container">
           <motion.div
@@ -386,7 +400,7 @@ export function HomePage() {
                   <source srcSet="/artem.webp" type="image/webp" />
                   <img
                     src="/artem.png"
-                    alt="Artem — Lead Engineer Reform Prague"
+                    alt="Artem Mikhailov — Lead Master Reform Prague"
                   />
                 </picture>
               </div>
@@ -401,6 +415,16 @@ export function HomePage() {
               </p>
               <h2>{founderText.quote}</h2>
               <p className="founder-desc-text">{founderText.desc}</p>
+
+              <div className="founder-credentials-grid">
+                {founderText.credentials.map((cred, i) => (
+                  <div key={i} className="founder-cred-badge">
+                    <CheckCircle2 size={13} className="cred-icon" />
+                    <span>{cred}</span>
+                  </div>
+                ))}
+              </div>
+
               <div className="founder-actions-row">
                 <a
                   href={contactInfo.telegramUrl}
@@ -420,76 +444,10 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 9. PRAGUE 3 WORKSHOP LOCATION & MAP */}
+      {/* 10. PRAGUE 3 WORKSHOP LOCATION & TRANSIT ASSISTANT */}
       <section className="section">
         <div className="container">
-          <div className="contact-preview-card">
-            <div className="contact-info-col">
-              <p className="eyebrow">{t.contact.badge}</p>
-              <h2>{t.contact.title}</h2>
-              <p>{t.contact.subtitle}</p>
-
-              <div className="contact-details-list">
-                <div className="contact-detail-item">
-                  <MapPin size={20} className="detail-icon" />
-                  <div>
-                    <small>{t.contact.addressTitle}</small>
-                    <strong>{contactInfo.addressFull}</strong>
-                  </div>
-                </div>
-                <div className="contact-detail-item">
-                  <Clock size={20} className="detail-icon" />
-                  <div>
-                    <small>{t.contact.hoursTitle}</small>
-                    <strong>{t.contact.hours}</strong>
-                  </div>
-                </div>
-                <div className="contact-detail-item">
-                  <Send size={20} className="detail-icon" />
-                  <div>
-                    <small>{t.contact.telegramTitle}</small>
-                    <a href={contactInfo.telegramUrl} target="_blank" rel="noreferrer">
-                      <strong>{contactInfo.telegram}</strong> ({t.contact.telegramDesc})
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <div className="contact-actions-row">
-                <a
-                  href="https://www.google.com/maps/search/?api=1&query=Biskupcova+31+Praha"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="button"
-                >
-                  <Navigation size={17} /> {t.contact.getDirections}
-                </a>
-                <a
-                  href={contactInfo.telegramUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="button button-secondary"
-                >
-                  <Send size={16} /> {t.contact.telegramBtn}
-                </a>
-              </div>
-            </div>
-
-            <div className="contact-map-col">
-              <div className="map-visual-container">
-                <div className="map-grid-pattern" />
-                <div className="map-radar-ring" />
-                <div className="map-pulse-pin">
-                  <MapPin size={28} />
-                </div>
-                <div className="map-glass-overlay">
-                  <strong>{contactInfo.brandName} Prague Lab</strong>
-                  <span>{contactInfo.addressFull}</span>
-                  <small>Tel: {contactInfo.phone}</small>
-                </div>
-              </div>
-            </div>
-          </div>
+          <StudioTransitAssistant />
         </div>
       </section>
     </>

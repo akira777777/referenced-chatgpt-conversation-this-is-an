@@ -26,9 +26,21 @@ export function PriceExplorer() {
   const [query, setQuery] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("All");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedRepairType, setSelectedRepairType] = useState("All");
+  const [sortBy, setSortBy] = useState<"popular" | "priceAsc" | "priceDesc" | "fastest">("popular");
   const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
 
   const brandOptions = ["All", ...brands.map(b => b.name)];
+
+  const repairTypes = [
+    { id: "All", label: language === "cs" ? "Všechny opravy" : language === "ru" ? "Все услуги" : "All Services" },
+    { id: "display", label: language === "cs" ? "Displej & Sklo" : language === "ru" ? "Дисплей и стекло" : "Display & Glass" },
+    { id: "battery", label: language === "cs" ? "Baterie" : language === "ru" ? "Аккумулятор" : "Battery" },
+    { id: "charging", label: language === "cs" ? "Konektor / Nabíjení" : language === "ru" ? "Разъем зарядки" : "Charging Port" },
+    { id: "board", label: language === "cs" ? "Základní deska / Pájení" : language === "ru" ? "Плата / Микропайка" : "Board & Micro-soldering" },
+    { id: "camera", label: language === "cs" ? "Fotoaparát" : language === "ru" ? "Камера" : "Camera" },
+    { id: "glass", label: language === "cs" ? "Zadní sklo" : language === "ru" ? "Заднее стекло" : "Back Glass" },
+  ];
 
   // Extract unique categories for active brand
   const categoryOptions = useMemo(() => {
@@ -39,7 +51,7 @@ export function PriceExplorer() {
   }, [selectedBrand]);
 
   const rows = useMemo(() => {
-    return allModels
+    const filtered = allModels
       .filter(
         m =>
           (selectedBrand === "All" || m.brand === selectedBrand) &&
@@ -53,8 +65,35 @@ export function PriceExplorer() {
           ...r,
           model: m,
         }))
-      );
-  }, [query, selectedBrand, selectedCategory]);
+      )
+      .filter(r => {
+        if (selectedRepairType === "All") return true;
+        const nameLower = r.name.toLowerCase();
+        const idLower = (r.id || "").toLowerCase();
+        if (selectedRepairType === "display") return nameLower.includes("display") || nameLower.includes("displej") || nameLower.includes("ekran") || idLower.includes("display");
+        if (selectedRepairType === "battery") return nameLower.includes("battery") || nameLower.includes("baterie") || nameLower.includes("akkumul") || idLower.includes("battery");
+        if (selectedRepairType === "charging") return nameLower.includes("charge") || nameLower.includes("nabíjen") || nameLower.includes("port") || idLower.includes("charging");
+        if (selectedRepairType === "board") return nameLower.includes("board") || nameLower.includes("deska") || nameLower.includes("soldering") || nameLower.includes("plata") || idLower.includes("board");
+        if (selectedRepairType === "camera") return nameLower.includes("camera") || nameLower.includes("foto") || nameLower.includes("kamera") || idLower.includes("camera");
+        if (selectedRepairType === "glass") return nameLower.includes("back") || nameLower.includes("zadn") || nameLower.includes("zad") || idLower.includes("glass");
+        return true;
+      });
+
+    // Sorting
+    return filtered.sort((a, b) => {
+      const priceA = a.priceFrom ?? a.exactPrice ?? a.price ?? 0;
+      const priceB = b.priceFrom ?? b.exactPrice ?? b.price ?? 0;
+
+      if (sortBy === "priceAsc") return priceA - priceB;
+      if (sortBy === "priceDesc") return priceB - priceA;
+      if (sortBy === "fastest") {
+        const timeA = parseInt(a.estimatedDuration || a.time || "60", 10) || 60;
+        const timeB = parseInt(b.estimatedDuration || b.time || "60", 10) || 60;
+        return timeA - timeB;
+      }
+      return 0; // Default
+    });
+  }, [query, selectedBrand, selectedCategory, selectedRepairType, sortBy]);
 
   const actionColHeader =
     language === "cs" ? "Akce" : language === "ru" ? "Заказ" : "Action";
@@ -65,6 +104,13 @@ export function PriceExplorer() {
       : language === "ru"
       ? `${rows.length} ${rows.length === 1 ? "цена" : rows.length > 1 && rows.length < 5 ? "цены" : "цен"}`
       : `${rows.length} ${rows.length === 1 ? "price" : "prices"}`;
+
+  const sortLabels = {
+    popular: language === "cs" ? "Doporučené" : language === "ru" ? "По популярности" : "Recommended",
+    priceAsc: language === "cs" ? "Od nejlevnějších" : language === "ru" ? "Сначала дешевле" : "Price: Low to High",
+    priceDesc: language === "cs" ? "Od nejdražších" : language === "ru" ? "Сначала дороже" : "Price: High to Low",
+    fastest: language === "cs" ? "Nejrychlejší" : language === "ru" ? "Самые быстрые" : "Fastest Turnaround",
+  };
 
   return (
     <div className="price-explorer-wrapper">
@@ -109,6 +155,42 @@ export function PriceExplorer() {
               </button>
             );
           })}
+        </div>
+      </div>
+
+      {/* Repair Type Selector Ribbon */}
+      <div className="repair-type-filters-row">
+        <div className="repair-type-pills" role="tablist" aria-label="Filter by service type">
+          {repairTypes.map(rt => {
+            const isSelected = selectedRepairType === rt.id;
+            return (
+              <button
+                key={rt.id}
+                type="button"
+                role="tab"
+                aria-selected={isSelected}
+                className={`repair-type-pill ${isSelected ? "active" : ""}`}
+                onClick={() => setSelectedRepairType(rt.id)}
+              >
+                <span>{rt.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Sort selector */}
+        <div className="price-sort-control">
+          <select
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value as "popular" | "priceAsc" | "priceDesc" | "fastest")}
+            className="price-sort-select"
+            aria-label="Sort prices"
+          >
+            <option value="popular">{sortLabels.popular}</option>
+            <option value="priceAsc">{sortLabels.priceAsc}</option>
+            <option value="priceDesc">{sortLabels.priceDesc}</option>
+            <option value="fastest">{sortLabels.fastest}</option>
+          </select>
         </div>
       </div>
 

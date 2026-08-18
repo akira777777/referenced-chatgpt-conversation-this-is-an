@@ -171,3 +171,34 @@ INSERT INTO public.repair_services (id, name, description, estimated_time) VALUE
     ('diagnostics',  'Diagnostics',          'A complete hardware and software assessment.', '1–2 days'),
     ('liquid',       'Liquid damage',        'Board-level inspection and corrosion treatment.', '3–5 days')
 ON CONFLICT (id) DO NOTHING;
+
+-- 13. PRICE OVERRIDES TABLE (persists admin price edits)
+CREATE TABLE IF NOT EXISTS public.price_overrides (
+    id TEXT PRIMARY KEY,
+    brand TEXT NOT NULL,
+    device TEXT NOT NULL,
+    service TEXT NOT NULL,
+    category TEXT NOT NULL DEFAULT 'Other',
+    description TEXT DEFAULT '',
+    price_from NUMERIC,
+    price_to NUMERIC,
+    exact_price NUMERIC,
+    price_format TEXT NOT NULL DEFAULT 'range',
+    currency TEXT NOT NULL DEFAULT 'CZK',
+    parts_included BOOLEAN NOT NULL DEFAULT TRUE,
+    labor_included BOOLEAN NOT NULL DEFAULT TRUE,
+    installation_included BOOLEAN NOT NULL DEFAULT TRUE,
+    testing_included BOOLEAN NOT NULL DEFAULT TRUE,
+    estimated_duration TEXT DEFAULT '60–90 min',
+    quality_tier TEXT NOT NULL DEFAULT 'standard',
+    final_price_requires_confirmation BOOLEAN NOT NULL DEFAULT TRUE,
+    availability TEXT NOT NULL DEFAULT 'in_stock',
+    custom_note TEXT,
+    diagnostics_policy TEXT NOT NULL DEFAULT 'included_if_repaired',
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE public.price_overrides ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Service role manages price overrides" ON public.price_overrides
+    FOR ALL USING (auth.role() = 'service_role');

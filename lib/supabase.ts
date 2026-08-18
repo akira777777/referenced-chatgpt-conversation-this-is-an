@@ -101,8 +101,108 @@ export type StatusLog = {
 };
 
 // In-memory fallback for local dev / tests when Supabase is not configured
-const inMemoryOrders = new Map<string, RepairOrder>();
-const inMemoryLogs = new Map<string, StatusLog[]>();
+const inMemoryOrders = new Map<string, RepairOrder>([
+  [
+    "REP-240182",
+    {
+      id: "demo-240182",
+      public_id: "REP-240182",
+      customer_id: "demo-cust-1",
+      customer_first_name: "Jan",
+      customer_last_name: "Novák",
+      customer_email: "fear75412@gmail.com",
+      customer_phone: "+420 737 500 587",
+      preferred_contact: "Telegram",
+      brand: "Apple",
+      model: "iPhone 15 Pro",
+      repairs: ["Display replacement (OEM OLED)", "TrueTone EEPROM Calibration"],
+      delivery_method: "Service center (Biskupcova 31)",
+      appointment_slot: "Today · 16:00",
+      notes: "Screen matrix cracked, sensor intact",
+      price_agreed: "3 890 Kč",
+      status: "TESTING",
+      created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+  ],
+  [
+    "REP-240181",
+    {
+      id: "demo-240181",
+      public_id: "REP-240181",
+      customer_id: "demo-cust-2",
+      customer_first_name: "Petr",
+      customer_last_name: "Svoboda",
+      customer_email: "petr.svoboda@example.cz",
+      customer_phone: "+420 721 000 111",
+      preferred_contact: "Phone",
+      brand: "Apple",
+      model: "MacBook Air M2",
+      repairs: ["Liquid spill ultrasonic decontamination", "PMIC trace jumper repair"],
+      delivery_method: "Courier pickup",
+      appointment_slot: "Yesterday",
+      notes: "Tea spilled on keyboard",
+      price_agreed: "2 800 Kč",
+      status: "READY",
+      created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+  ],
+  [
+    "REP-240180",
+    {
+      id: "demo-240180",
+      public_id: "REP-240180",
+      customer_id: "demo-cust-3",
+      customer_first_name: "Elena",
+      customer_last_name: "Kovářová",
+      customer_email: "elena.k@example.cz",
+      customer_phone: "+420 777 888 999",
+      preferred_contact: "Telegram",
+      brand: "Samsung",
+      model: "Galaxy S24 Ultra",
+      repairs: ["0-Cycle OEM Battery Replacement"],
+      delivery_method: "Service center",
+      appointment_slot: "Today · 11:00",
+      notes: "Battery degraded to 68%",
+      price_agreed: "1 790 Kč",
+      status: "DIAGNOSTICS",
+      created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+  ],
+]);
+
+const inMemoryLogs = new Map<string, StatusLog[]>([
+  [
+    "demo-240182",
+    [
+      { id: "log-1", order_id: "demo-240182", status: "REQUESTED", note: "Order placed online", logged_at: new Date(Date.now() - 3600000 * 4).toISOString() },
+      { id: "log-2", order_id: "demo-240182", status: "RECEIVED", note: "Device accepted at Prague 3 workshop", logged_at: new Date(Date.now() - 3600000 * 3.5).toISOString() },
+      { id: "log-3", order_id: "demo-240182", status: "DIAGNOSTICS", note: "Microscope logic board inspection: 0 shorts, 0.00V leakage", logged_at: new Date(Date.now() - 3600000 * 3).toISOString() },
+      { id: "log-4", order_id: "demo-240182", status: "IN_PROGRESS", note: "OLED matrix installed, TrueTone EEPROM transfer complete", logged_at: new Date(Date.now() - 3600000 * 1.5).toISOString() },
+      { id: "log-5", order_id: "demo-240182", status: "TESTING", note: "120Hz ProMotion & biometric sensor calibration in progress", logged_at: new Date(Date.now() - 3600000 * 0.5).toISOString() },
+    ],
+  ],
+  [
+    "demo-240181",
+    [
+      { id: "log-6", order_id: "demo-240181", status: "REQUESTED", note: "Express courier booked", logged_at: new Date(Date.now() - 86400000 * 2).toISOString() },
+      { id: "log-7", order_id: "demo-240181", status: "RECEIVED", note: "Received in BGA lab", logged_at: new Date(Date.now() - 86400000 * 1.8).toISOString() },
+      { id: "log-8", order_id: "demo-240181", status: "DIAGNOSTICS", note: "Thermal camera located PMIC corroded resistor trace", logged_at: new Date(Date.now() - 86400000 * 1.5).toISOString() },
+      { id: "log-9", order_id: "demo-240181", status: "IN_PROGRESS", note: "Ultrasonic chemical bath + 0.02mm solder jumper restored", logged_at: new Date(Date.now() - 86400000 * 0.8).toISOString() },
+      { id: "log-10", order_id: "demo-240181", status: "READY", note: "Full 24h burn-in stress test passed. Ready for pickup!", logged_at: new Date(Date.now() - 3600000 * 2).toISOString() },
+    ],
+  ],
+  [
+    "demo-240180",
+    [
+      { id: "log-11", order_id: "demo-240180", status: "REQUESTED", note: "Direct booking confirmed", logged_at: new Date(Date.now() - 3600000 * 2).toISOString() },
+      { id: "log-12", order_id: "demo-240180", status: "RECEIVED", note: "Received at reception", logged_at: new Date(Date.now() - 3600000 * 1.5).toISOString() },
+      { id: "log-13", order_id: "demo-240180", status: "DIAGNOSTICS", note: "Current discharge test & BMS pairing", logged_at: new Date(Date.now() - 3600000 * 0.5).toISOString() },
+    ],
+  ],
+]);
 
 // ─── Save order ───────────────────────────────────────────────────────────────
 export async function saveOrderToSupabase(
@@ -160,7 +260,7 @@ export async function saveOrderToSupabase(
       const { error: logError } = await supabase.from("repair_status_logs").insert({
         order_id: orderData.id,
         status: "REQUESTED",
-        note: "Order received via reform-servis",
+        note: "Order received via reart.cz",
       });
 
       if (logError) {
@@ -197,7 +297,7 @@ export async function saveOrderToSupabase(
         id: `log-${Date.now()}`,
         order_id: mockOrder.id,
         status: "REQUESTED",
-        note: "Order received via reform-servis (Local store)",
+        note: "Order received via reart.cz (Local store)",
         logged_at: new Date().toISOString(),
       },
     ]);
@@ -215,7 +315,7 @@ export async function getOrderByPublicId(
 
     const { data, error } = await supabase
       .from("repair_orders")
-      .select("*")
+      .select("id, public_id, customer_id, customer_first_name, customer_last_name, customer_email, customer_phone, preferred_contact, brand, model, repairs, delivery_method, appointment_slot, notes, price_agreed, status, created_at, updated_at")
       .eq("public_id", normId)
       .single();
 

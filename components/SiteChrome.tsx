@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Menu,
@@ -22,22 +22,31 @@ import { useLanguage, LanguageSwitcher } from "@/lib/i18n/context";
 import { Logo } from "./Logo";
 import { BrandIcon } from "./BrandIcons";
 
+function subscribeTheme(callback: () => void) {
+  if (typeof document === "undefined") return () => {};
+  const observer = new MutationObserver(callback);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  return () => observer.disconnect();
+}
+
+function getThemeSnapshot() {
+  return typeof document !== "undefined" ? document.documentElement.classList.contains("dark") : false;
+}
+
+function getThemeServerSnapshot() {
+  return false;
+}
+
 export function Header() {
   const { language, t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [menu, setMenu] = useState(false);
   const [search, setSearch] = useState(false);
-  const [dark, setDark] = useState(false);
+  const dark = useSyncExternalStore(subscribeTheme, getThemeSnapshot, getThemeServerSnapshot);
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const lastScrollY = useRef(0);
-
-  useEffect(() => {
-    if (typeof document !== "undefined") {
-      setDark(document.documentElement.classList.contains("dark"));
-    }
-  }, []);
 
   const navLinks = [
     { label: t.nav.repairs, href: "/repair" },
@@ -65,8 +74,8 @@ export function Header() {
   }, []);
 
   const toggleTheme = () => {
-    const nextDark = !dark;
-    setDark(nextDark);
+    if (typeof document === "undefined") return;
+    const nextDark = !document.documentElement.classList.contains("dark");
     document.documentElement.classList.toggle("dark", nextDark);
     try {
       localStorage.setItem("reform_theme", nextDark ? "dark" : "light");
@@ -140,6 +149,7 @@ export function Header() {
                   onClick={toggleTheme}
                   aria-label="Toggle color theme"
                   title="Toggle theme"
+                  suppressHydrationWarning
                 >
                   <motion.div
                     key={dark ? "dark" : "light"}
