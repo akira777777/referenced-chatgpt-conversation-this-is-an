@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { translations, type Language, type TranslationKeys } from "./translations";
 
 interface LanguageContextType {
@@ -16,27 +16,24 @@ const LanguageContext = createContext<LanguageContextType>({
 });
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Language>("cs");
-
-  useEffect(() => {
+  const [lang, setLangState] = useState<Language>(() => {
+    if (typeof window === "undefined") return "cs";
     try {
       const stored = localStorage.getItem("reform_lang") as Language | null;
       if (stored && (stored === "cs" || stored === "ru" || stored === "en")) {
-        setLangState(stored);
-      } else {
-        const browserLang = navigator.language.slice(0, 2).toLowerCase();
-        if (browserLang === "ru" || browserLang === "uk" || browserLang === "be") {
-          setLangState("ru");
-        } else if (browserLang === "cs" || browserLang === "sk") {
-          setLangState("cs");
-        } else {
-          setLangState("en");
-        }
+        return stored;
       }
+      const browserLang = navigator.language.slice(0, 2).toLowerCase();
+      if (browserLang === "ru" || browserLang === "uk" || browserLang === "be") {
+        return "ru";
+      } else if (browserLang === "cs" || browserLang === "sk") {
+        return "cs";
+      }
+      return "en";
     } catch {
-      // ignore in SSR
+      return "cs";
     }
-  }, []);
+  });
 
   const setLang = (newLang: Language) => {
     setLangState(newLang);

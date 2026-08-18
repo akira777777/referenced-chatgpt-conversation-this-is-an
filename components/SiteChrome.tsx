@@ -12,7 +12,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menu, setMenu] = useState(false);
   const [search, setSearch] = useState(false);
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(() => typeof document !== "undefined" && document.documentElement.classList.contains("dark"));
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -30,11 +30,6 @@ export function Header() {
     fn();
     window.addEventListener("scroll", fn, { passive: true });
     return () => window.removeEventListener("scroll", fn);
-  }, []);
-
-  useEffect(() => {
-    const isDark = document.documentElement.classList.contains("dark");
-    setDark(isDark);
   }, []);
 
   const toggleTheme = () => {
