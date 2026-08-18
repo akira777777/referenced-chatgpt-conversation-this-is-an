@@ -1,21 +1,418 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "motion/react";
-import { ArrowRight, BatteryCharging, Check, ChevronRight, Clock3, ShieldCheck, Sparkles, Star, Wrench } from "lucide-react";
-import { faqs, placeholderNotice } from "@/lib/data";
-import { DeviceGlyph, LinkButton, PlaceholderTag, Section } from "./ui";
+import { useLanguage } from "@/lib/i18n/context";
+import {
+  ShieldCheck,
+  Zap,
+  MapPin,
+  Clock,
+  Sparkles,
+  ArrowRight,
+  Send,
+  Wrench,
+  Smartphone,
+  Laptop,
+  Tablet,
+  Watch,
+  Headphones,
+  CheckCircle2,
+  Navigation,
+  Microscope,
+  Award,
+} from "lucide-react";
+import { contactInfo, brands } from "@/lib/data";
+import { InteractiveDiagnostic } from "./InteractiveDiagnostic";
+import { InteractiveComparison } from "./InteractiveComparison";
 
-const reveal = { initial: { opacity: 0, y: 18 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-80px" }, transition: { duration: .5 } };
-export function HomePage() { return <>
-  <section className="hero"><div className="hero-orbit orbit-one"/><div className="hero-orbit orbit-two"/><div className="container hero-grid"><motion.div className="hero-copy" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .55 }}><p className="eyebrow"><span className="pulse-dot"/> Precision electronics care · Prague <PlaceholderTag/></p><h1>Your device.<br/><em>Working like new</em> again.</h1><p>Professional repair for Apple and other premium electronics. Individual quotes, quality parts, and fast turnaround.</p><div className="hero-actions"><LinkButton href="/repair">Start a repair <ArrowRight size={18}/></LinkButton><LinkButton href="/prices" secondary>Request a price</LinkButton></div><div className="trust-row"><span><Star size={15} fill="currentColor"/>4.9 rating*</span><span>10,000+ devices*</span><span>Up to 12-month warranty*</span></div></motion.div><motion.div className="hero-visual" initial={{ opacity: 0, scale: .97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: .65, delay: .12 }}><div className="phone-stage"><div className="phone-shell before"><i/><span className="crack crack-a"/><span className="crack crack-b"/></div><div className="phone-shell after"><i/><div className="screen-art"><span>14:30</span><div/><small>Ready.</small></div></div><div className="repair-chip chip-one"><Wrench/><span><b>Screen restored</b><small>Quality checked</small></span><Check/></div><div className="repair-chip chip-two"><BatteryCharging/><span><b>Battery health</b><small>100% performance</small></span></div></div></motion.div></div>
-    <div className="container quick-select"><span>Repair your</span>{[["iPhone", "iPhone"], ["Mac", "MacBook"], ["iPad", "iPad"], ["Watch", "Apple Watch"], ["Samsung", "Galaxy Phone"]].map(([label, kind]) => <Link key={label} href={`/repair?brand=${label === "Samsung" ? "samsung" : "apple"}`}><DeviceGlyph kind={kind} compact/>{label}<ChevronRight/></Link>)}<Link href="/repair">Other<ChevronRight/></Link></div>
-  </section>
-  <Section eyebrow="DESIGNED AROUND YOU" title="Repair, without the uncertainty." copy="Know what to expect before your device reaches the workbench."><motion.div className="feature-grid" {...reveal}>{[[<Sparkles/>, "Careful diagnostics", "A technician checks the complete device, not just the visible issue."], [<Clock3/>, "Fast turnaround", "Many common phone repairs are completed on the same day."], [<ShieldCheck/>, "Warranty included", "Selected repairs include up to 12 months of service warranty."], [<Check/>, "Individual quote", "Every repair is assessed and priced individually before work begins."]].map(([icon, title, text]) => <article key={String(title)}><span>{icon}</span><h3>{title}</h3><p>{text}</p></article>)}</motion.div></Section>
-  <Section className="dark-section" eyebrow="HOW IT WORKS" title="Four steps. Zero guesswork."><div className="process-grid">{[["01", "Choose your device", "Find your exact model in seconds."], ["02", "Select the issue", "Tell us what needs attention."], ["03", "Receive your quote", "We confirm the price with you directly."], ["04", "Get back to life", "Track progress and collect when ready."]].map(([n, title, copy], i) => <motion.article key={n} {...reveal} transition={{ duration: .45, delay: i * .07 }}><b>{n}</b><div><h3>{title}</h3><p>{copy}</p></div></motion.article>)}</div><div className="center-cta"><LinkButton href="/repair">Configure your repair <ArrowRight/></LinkButton></div></Section>
-  <Section eyebrow="CRAFT, MADE VISIBLE" title="From damaged to dependable." copy="Every repair ends with careful testing and a final quality check."><motion.div className="before-after" {...reveal}><div className="ba-copy"><span className="eyebrow">DISPLAY REPAIR</span><h3>Precision you can see.</h3><p>Careful disassembly, a premium display, clean seals and full calibration.</p><ul><li><Check/>Multi-point function test</li><li><Check/>Display calibration</li><li><Check/>Clean finish</li></ul></div><div className="ba-visual"><div className="ba-phone damaged"><span>Before</span><i/><b className="crack crack-a"/><b className="crack crack-b"/></div><div className="ba-phone fixed"><span>After</span><i/><div><small>Tuesday</small><strong>9:41</strong></div></div></div></motion.div></Section>
-  <Section className="testimonial-section" eyebrow="CUSTOMER CARE" title="The standard is simple: treat every device like it matters."><div className="testimonial"><blockquote>“A calm, transparent repair experience — the kind of service you expect from a premium technology brand.”</blockquote><div><span className="avatar">JP</span><p><b>Example testimonial</b><small>Placeholder · not a real customer review</small></p><span className="stars">★★★★★</span></div></div></Section>
-  <Section className="business-cta"><div className="business-inner"><div><p className="eyebrow">FOR BUSINESS</p><h2>Your team’s devices, always in motion.</h2><p>Priority fleet repairs, consolidated invoicing, pickup and a clear service-level process for growing teams.</p><LinkButton href="/business">Explore business service <ArrowRight/></LinkButton></div><div className="fleet"><DeviceGlyph kind="laptop"/><DeviceGlyph kind="phone"/><DeviceGlyph kind="tablet"/><span><b>Fleet care</b><small>One point of contact</small></span></div></div></Section>
-  <Section eyebrow="QUESTIONS, ANSWERED" title="What customers ask us."><div className="faq-list">{faqs.slice(0, 5).map(([q, a], i) => <details key={q} open={i === 0}><summary>{q}<span>+</span></summary><p>{a}</p></details>)}</div><div className="center-cta"><Link href="/faq" className="text-link">View all questions <ArrowRight/></Link></div></Section>
-  <section className="final-cta"><div className="container"><p className="eyebrow">READY WHEN YOU ARE</p><h2>Let’s bring it back to perfect.</h2><p>Choose your device and send a quote request in under a minute.</p><LinkButton href="/repair">Start your repair <ArrowRight/></LinkButton><small>{placeholderNotice}</small></div></section>
-  </>; }
+export function HomePage() {
+  const { t } = useLanguage();
+
+  const brandIcons: Record<string, React.ComponentType<{ size?: number }>> = {
+    apple: Smartphone,
+    samsung: Smartphone,
+    google: Smartphone,
+    xiaomi: Smartphone,
+    huawei: Smartphone,
+    other: Wrench,
+  };
+
+  const featureCards = [
+    {
+      icon: Microscope,
+      title: t.features.f1_title,
+      desc: t.features.f1_desc,
+    },
+    {
+      icon: Award,
+      title: t.features.f2_title,
+      desc: t.features.f2_desc,
+    },
+    {
+      icon: Zap,
+      title: t.features.f3_title,
+      desc: t.features.f3_desc,
+    },
+    {
+      icon: ShieldCheck,
+      title: t.features.f4_title,
+      desc: t.features.f4_desc,
+    },
+  ];
+
+  return (
+    <>
+      {/* 1. HERO SECTION */}
+      <section className="hero-cyber">
+        <div className="hero-glow-back" />
+        <div className="container hero-cyber-grid">
+          <div className="hero-cyber-copy">
+            <div className="hero-badge-pill">
+              <span className="live-pulse" />
+              <span>{t.hero.badge}</span>
+            </div>
+
+            <h1 className="hero-headline">
+              {t.hero.titleStart} <br />
+              <span className="gradient-text">{t.hero.titleHighlight}</span>
+            </h1>
+
+            <p className="hero-description">{t.hero.subtitle}</p>
+
+            <div className="hero-actions-row">
+              <Link href="/repair" className="button hero-main-cta">
+                {t.hero.startRepair} <ArrowRight size={18} />
+              </Link>
+              <a
+                href={contactInfo.telegramUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="button button-secondary hero-telegram-cta"
+              >
+                <Send size={16} /> {t.hero.chatTelegram}
+              </a>
+            </div>
+
+            <div className="hero-trust-bar">
+              <div className="trust-item">
+                <ShieldCheck size={16} className="trust-icon" />
+                <span>{t.hero.trustWarranty}</span>
+              </div>
+              <div className="trust-item">
+                <MapPin size={16} className="trust-icon" />
+                <span>{t.hero.trustLocation}</span>
+              </div>
+              <div className="trust-item">
+                <Clock size={16} className="trust-icon" />
+                <span>{t.hero.trustDiagnostics}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* 3D Visual Stage */}
+          <div className="hero-stage-cyber">
+            <div className="stage-cyber-frame">
+              <div className="device-showcase-card">
+                <div className="scanner-beam" />
+                <div className="device-floating-model">
+                  <div className="device-silhouette">
+                    <div className="device-bezel" />
+                    <div className="device-content">
+                      <Sparkles size={48} className="device-glow-icon" />
+                      <div className="device-tech-text">
+                        <span>REFORM LAB</span>
+                        <strong>0.02mm</strong>
+                        <small>MICROSCOPIC PRECISION</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating telemetry tags */}
+                <div className="telemetry-badge tag-top-right">
+                  <Wrench size={15} />
+                  <div>
+                    <b>BGA Micro-Soldering</b>
+                    <small>Prague 3 Lab</small>
+                  </div>
+                </div>
+
+                <div className="telemetry-badge tag-bottom-left">
+                  <CheckCircle2 size={15} />
+                  <div>
+                    <b>Calibrated OEM Parts</b>
+                    <small>TrueTone & Biometrics</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Manufacturer Strip */}
+        <div className="container quick-brands-container">
+          <div className="quick-brands-strip">
+            <span className="quick-title">{t.hero.quickSelectTitle}</span>
+            <div className="quick-brands-grid">
+              {brands.map(brand => {
+                const Icon = brandIcons[brand.id] || Smartphone;
+                return (
+                  <Link
+                    key={brand.id}
+                    href={`/repair?brand=${brand.id}`}
+                    className="brand-quick-chip"
+                  >
+                    <Icon size={16} />
+                    <span>{brand.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 2. INTERACTIVE DIAGNOSTIC SYMPTOM CHECKER */}
+      <section className="section">
+        <div className="container">
+          <InteractiveDiagnostic />
+        </div>
+      </section>
+
+      {/* 3. BEFORE / AFTER INTERACTIVE SLIDER */}
+      <section className="section section-dark-accent">
+        <div className="container">
+          <InteractiveComparison />
+        </div>
+      </section>
+
+      {/* 4. ENGINEERING HIGHLIGHTS / WHY REFORM */}
+      <section className="section">
+        <div className="container">
+          <div className="section-head text-center">
+            <p className="eyebrow justify-center">
+              <Microscope size={14} /> {t.features.badge}
+            </p>
+            <h2>{t.features.title}</h2>
+            <p className="section-copy centered">{t.features.subtitle}</p>
+          </div>
+
+          <div className="features-bento-grid">
+            {featureCards.map((feat, idx) => {
+              const Icon = feat.icon;
+              return (
+                <div key={idx} className="bento-card">
+                  <div className="bento-icon-wrap">
+                    <Icon size={24} />
+                  </div>
+                  <h3>{feat.title}</h3>
+                  <p>{feat.desc}</p>
+                  <div className="bento-corner-glow" />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* 5. WORKFLOW & PROCESS */}
+      <section className="section section-workflow">
+        <div className="container">
+          <div className="section-head">
+            <p className="eyebrow">{t.process.badge}</p>
+            <h2>{t.process.title}</h2>
+            <p className="section-copy">{t.process.subtitle}</p>
+          </div>
+
+          <div className="workflow-steps-grid">
+            <div className="step-card">
+              <span className="step-number">01</span>
+              <h3>{t.process.step1_title}</h3>
+              <p>{t.process.step1_desc}</p>
+            </div>
+            <div className="step-card">
+              <span className="step-number">02</span>
+              <h3>{t.process.step2_title}</h3>
+              <p>{t.process.step2_desc}</p>
+            </div>
+            <div className="step-card">
+              <span className="step-number">03</span>
+              <h3>{t.process.step3_title}</h3>
+              <p>{t.process.step3_desc}</p>
+            </div>
+            <div className="step-card">
+              <span className="step-number">04</span>
+              <h3>{t.process.step4_title}</h3>
+              <p>{t.process.step4_desc}</p>
+            </div>
+          </div>
+
+          <div className="center-cta-wrap">
+            <Link href="/repair" className="button button-large">
+              {t.nav.startRepair} <ArrowRight size={18} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. B2B / CORPORATE FLEET SECTION */}
+      <section className="section">
+        <div className="container">
+          <div className="b2b-banner-card">
+            <div className="b2b-copy-col">
+              <span className="b2b-pill">{t.b2b.badge}</span>
+              <h2>{t.b2b.title}</h2>
+              <p>{t.b2b.subtitle}</p>
+              <ul className="b2b-perks-list">
+                <li><CheckCircle2 size={18} /> {t.b2b.feature1}</li>
+                <li><CheckCircle2 size={18} /> {t.b2b.feature2}</li>
+                <li><CheckCircle2 size={18} /> {t.b2b.feature3}</li>
+                <li><CheckCircle2 size={18} /> {t.b2b.feature4}</li>
+              </ul>
+              <div className="b2b-actions">
+                <Link href="/business" className="button b2b-btn-white">
+                  {t.b2b.cta}
+                </Link>
+                <a
+                  href={`${contactInfo.telegramUrl}?text=${encodeURIComponent("Hello! I am interested in B2B corporate device repairs.")}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="button button-secondary b2b-btn-outline"
+                >
+                  <Send size={16} /> {t.b2b.contactManager}
+                </a>
+              </div>
+            </div>
+            <div className="b2b-visual-col">
+              <div className="b2b-devices-fan">
+                <Laptop size={72} className="b2b-icon laptop" />
+                <Smartphone size={54} className="b2b-icon phone" />
+                <Tablet size={60} className="b2b-icon tablet" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. TESTIMONIALS */}
+      <section className="section section-testimonials">
+        <div className="container">
+          <div className="section-head text-center">
+            <p className="eyebrow justify-center">{t.testimonials.badge}</p>
+            <h2>{t.testimonials.title}</h2>
+          </div>
+
+          <div className="testimonials-grid">
+            <div className="testimonial-card">
+              <div className="stars-row">★★★★★</div>
+              <p>{t.testimonials.t1_text}</p>
+              <div className="author-row">
+                <div className="author-avatar">JN</div>
+                <div>
+                  <strong>{t.testimonials.t1_author}</strong>
+                  <small>{t.testimonials.t1_role}</small>
+                </div>
+              </div>
+            </div>
+
+            <div className="testimonial-card">
+              <div className="stars-row">★★★★★</div>
+              <p>{t.testimonials.t2_text}</p>
+              <div className="author-row">
+                <div className="author-avatar">MV</div>
+                <div>
+                  <strong>{t.testimonials.t2_author}</strong>
+                  <small>{t.testimonials.t2_role}</small>
+                </div>
+              </div>
+            </div>
+
+            <div className="testimonial-card">
+              <div className="stars-row">★★★★★</div>
+              <p>{t.testimonials.t3_text}</p>
+              <div className="author-row">
+                <div className="author-avatar">EP</div>
+                <div>
+                  <strong>{t.testimonials.t3_author}</strong>
+                  <small>{t.testimonials.t3_role}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 8. PRAGUE 3 WORKSHOP LOCATION & MAP */}
+      <section className="section">
+        <div className="container">
+          <div className="contact-preview-card">
+            <div className="contact-info-col">
+              <p className="eyebrow">{t.contact.badge}</p>
+              <h2>{t.contact.title}</h2>
+              <p>{t.contact.subtitle}</p>
+
+              <div className="contact-details-list">
+                <div className="contact-detail-item">
+                  <MapPin size={20} className="detail-icon" />
+                  <div>
+                    <small>{t.contact.addressTitle}</small>
+                    <strong>{contactInfo.addressFull}</strong>
+                  </div>
+                </div>
+                <div className="contact-detail-item">
+                  <Clock size={20} className="detail-icon" />
+                  <div>
+                    <small>{t.contact.hoursTitle}</small>
+                    <strong>{t.contact.hours}</strong>
+                  </div>
+                </div>
+                <div className="contact-detail-item">
+                  <Send size={20} className="detail-icon" />
+                  <div>
+                    <small>{t.contact.telegramTitle}</small>
+                    <a href={contactInfo.telegramUrl} target="_blank" rel="noreferrer">
+                      <strong>{contactInfo.telegram}</strong> ({t.contact.telegramDesc})
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <div className="contact-actions-row">
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Biskupcova+31+Praha"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="button"
+                >
+                  <Navigation size={17} /> {t.contact.getDirections}
+                </a>
+                <a
+                  href={contactInfo.telegramUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="button button-secondary"
+                >
+                  <Send size={16} /> {t.contact.telegramBtn}
+                </a>
+              </div>
+            </div>
+
+            <div className="contact-map-col">
+              <div className="map-visual-container">
+                <div className="map-grid-pattern" />
+                <div className="map-pulse-pin">
+                  <MapPin size={28} />
+                </div>
+                <div className="map-glass-overlay">
+                  <strong>{contactInfo.brandName} Prague Lab</strong>
+                  <span>{contactInfo.addressFull}</span>
+                  <small>Tel: {contactInfo.phone}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}

@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "motion/react";
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { motion, type HTMLMotionProps } from "motion/react";
+import type { ReactNode } from "react";
 
-export function Button({ children, className = "", ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
+export function Button({ children, className = "", ...props }: HTMLMotionProps<"button">) {
   return <motion.button whileTap={{ scale: .98 }} className={`button ${className}`} {...props}>{children}</motion.button>;
 }
 export function LinkButton({ href, children, secondary = false }: { href: string; children: ReactNode; secondary?: boolean }) {

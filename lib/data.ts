@@ -33,7 +33,7 @@ export const brands: Brand[] = [
   { id: "other", name: "Other", categories: ["Phone", "Laptop", "Tablet"], models: [{ id: "other-device", name: "Another device", category: "Phone", repairs: iphoneRepairs }] },
 ];
 
-export const formatPrice = (_price: number) => "Price on request";
+export const formatPrice = (_price?: number) => "Price on request";
 export const allModels = brands.flatMap((brand) => brand.models.map((model) => ({ ...model, brand: brand.name, brandId: brand.id })));
 
 export const faqs = [
@@ -45,5 +45,21 @@ export const faqs = [
   ["Can you repair water-damaged devices?", "Yes. We begin with diagnostics because liquid damage can affect several components and pricing depends on the findings."],
   ["Do I need an appointment?", "Walk-ins are welcome, but an appointment reserves technician time and usually shortens your visit."],
 ];
+
+export const contactInfo = {
+  brandName: "Reform",
+  addressStreet: "Biskupcova 31",
+  addressDistrict: "Praha 3",
+  addressFull: "Biskupcova 31, Praha 3",
+  postalCode: "130 00",
+  city: "Praha",
+  country: "CZ",
+  phone: "+420 737 500 587",
+  phoneRaw: "+420737500587",
+  email: "fear75412@gmail.com",
+  telegram: "@liltrafficRUS",
+  telegramUrl: "https://t.me/liltrafficRUS",
+  pricingPolicy: "All repair prices are provided on request and agreed individually prior to work.",
+};
 
 export const placeholderNotice = "Availability, opening hours and trust metrics are demonstration content until confirmed.";

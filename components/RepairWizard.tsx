@@ -1,51 +1,588 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ArrowLeft, ArrowRight, Battery, CalendarDays, Check, ChevronRight, Clock3, Cpu, MapPin, Package, Search, ShieldCheck, Smartphone, Truck, Wrench } from "lucide-react";
-import { brands, formatPrice, type Brand, type DeviceModel, type Repair } from "@/lib/data";
-import { Button, DeviceGlyph, PlaceholderTag } from "./ui";
+import { AnimatePresence, motion } from "motion/react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Battery,
+  Check,
+  CheckCircle2,
+  Cpu,
+  MapPin,
+  Package,
+  Search,
+  Send,
+  ShieldCheck,
+  Smartphone,
+  Truck,
+  Wrench,
+  Clock,
+  MessageSquare,
+} from "lucide-react";
+import { Brand, brands, DeviceModel, Repair, contactInfo } from "@/lib/data";
+import { useLanguage } from "@/lib/i18n/context";
+import { Button, DeviceGlyph } from "./ui";
 import { useRouter, useSearchParams } from "next/navigation";
 
-const schema = z.object({ firstName: z.string().min(2, "Enter your first name"), lastName: z.string().min(2, "Enter your last name"), email: z.string().email("Enter a valid email"), phone: z.string().min(7, "Enter a valid phone"), contact: z.string(), notes: z.string().optional(), consent: z.literal(true, { error: "Please accept the privacy notice" }) });
-type FormData = z.infer<typeof schema>;
-const steps = ["Brand", "Device", "Model", "Repair", "Delivery", "Details", "Confirm"];
-const issueIcons: Record<string, React.ReactNode> = { battery: <Battery/>, screen: <Smartphone/>, display: <Smartphone/>, diagnostics: <Cpu/>, default: <Wrench/> };
+const schema = z.object({
+  firstName: z.string().min(2, "Please enter your first name"),
+  lastName: z.string().min(2, "Please enter your last name"),
+  email: z.string().email("Please enter a valid email"),
+  phone: z.string().min(6, "Please enter a valid phone number"),
+  contact: z.string(),
+  notes: z.string().optional(),
+  consent: z.boolean().refine(val => val === true, {
+    message: "Please accept the privacy notice",
+  }),
+});
 
-export function RepairWizard() {
-  const router = useRouter(); const params = useSearchParams();
-  const initialBrand = brands.find(b => b.id === params.get("brand")); const initialModel = initialBrand?.models.find(m => m.id === params.get("model"));
-  const [step, setStep] = useState(initialModel ? 3 : initialBrand ? 1 : 0); const [brand, setBrand] = useState<Brand | null>(initialBrand ?? null); const [category, setCategory] = useState<string | null>(initialModel?.category ?? null); const [model, setModel] = useState<DeviceModel | null>(initialModel ?? null); const [repairs, setRepairs] = useState<Repair[]>([]); const [method, setMethod] = useState("Service center"); const [slot, setSlot] = useState("Tomorrow · 10:30"); const [query, setQuery] = useState(""); const [submitting, setSubmitting] = useState(false); const [customer, setCustomer] = useState<FormData | null>(null);
-  const form = useForm<FormData>({ resolver: zodResolver(schema), defaultValues: { contact: "Email", consent: false } });
-  const categories = brand?.categories ?? []; const models = useMemo(() => brand?.models.filter(m => (!category || m.category === category) && m.name.toLowerCase().includes(query.toLowerCase())) ?? [], [brand, category, query]);
-  const total = repairs.reduce((sum, repair) => sum + repair.price, 0);
-  const next = () => setStep(s => Math.min(6, s + 1)); const back = () => setStep(s => Math.max(0, s - 1));
-  const submitDetails = form.handleSubmit(data => { setCustomer(data); next(); });
-  async function confirm() { setSubmitting(true); try { const response = await fetch("/api/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ brand: brand?.name, model: model?.name, repairs: repairs.map(r => r.name), estimatedPrice: total, method, slot, customer }) }); const result = await response.json(); router.push(`/order/success?id=${result.orderId}`); } catch { setSubmitting(false); } }
-  function chooseBrand(item: Brand) { setBrand(item); setCategory(null); setModel(null); setRepairs([]); next(); }
-  return <div className="wizard-shell">
-    <div className="wizard-top"><div><p className="eyebrow">Repair configurator <PlaceholderTag/></p><h1>Let’s get it fixed.</h1></div><span>Step {step + 1} of {steps.length}</span></div>
-    <div className="progress" aria-label={`Step ${step + 1} of ${steps.length}`}>{steps.map((label, i) => <button key={label} onClick={() => i < step && setStep(i)} className={i <= step ? "active" : ""} disabled={i > step}><i>{i < step ? <Check size={12}/> : i + 1}</i><span>{label}</span></button>)}</div>
-    <div className="wizard-layout"><div className="wizard-content">
-      <AnimatePresence mode="wait" initial={false}><motion.div key={step} initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }} transition={{ duration: .22 }}>
-        {step === 0 && <WizardStep title="Choose a brand" copy="Select the maker of the device you’d like us to repair."><div className="choice-grid brands">{brands.map(item => <Choice key={item.id} onClick={() => chooseBrand(item)} title={item.name} meta={item.id === "apple" ? "Priority expertise" : "Phones & electronics"} glyph={<span className="brand-letter">{item.name[0]}</span>}/>)}</div></WizardStep>}
-        {step === 1 && <WizardStep title={`What kind of ${brand?.name} device?`} copy="Choose a category. You can change this later."><div className="choice-grid">{categories.map(item => <Choice key={item} onClick={() => { setCategory(item); next(); }} title={item} meta="View supported models" glyph={<DeviceGlyph kind={item} compact/>}/>)}</div></WizardStep>}
-        {step === 2 && <WizardStep title={`Choose your ${category}`} copy="Search or select the exact model."><label className="model-search"><Search size={18}/><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search your device"/></label><div className="model-list">{models.map(item => <button key={item.id} onClick={() => { setModel(item); next(); }}><DeviceGlyph kind={category ?? "phone"} compact/><span><strong>{item.name}</strong><small>{brand?.name} · {item.category}</small></span><ChevronRight/></button>)}{!models.length && <div className="empty-state"><strong>No matching model</strong><p>Try another name or select another category.</p></div>}</div></WizardStep>}
-        {step === 3 && <WizardStep title="What needs attention?" copy="Select one or more issues. We’ll contact you with an individual quote."><div className="repair-list">{model?.repairs.map(item => { const selected = repairs.some(r => r.id === item.id); return <button key={item.id} className={selected ? "selected" : ""} onClick={() => setRepairs(prev => selected ? prev.filter(r => r.id !== item.id) : [...prev, item])}><span className="issue-icon">{issueIcons[item.id] ?? issueIcons.default}</span><span className="repair-info"><strong>{item.name}</strong><small>{item.description}</small><em><Clock3 size={14}/>{item.time}</em></span><span className="repair-price"><b>{formatPrice(item.price)}</b><i>{selected && <Check/>}</i></span></button>})}</div></WizardStep>}
-        {step === 4 && <WizardStep title="How should we receive it?" copy="Choose the option that works best for you."><div className="method-list">{[["Service center", "Bring it to our Prague demo location", <MapPin/>], ["Courier pickup", "We arrange collection from your address", <Truck/>], ["Send by mail", "Ship it securely at your convenience", <Package/>]].map(([name, meta, icon]) => <button key={String(name)} className={method === name ? "selected" : ""} onClick={() => setMethod(String(name))}><span>{icon}</span><div><strong>{name}</strong><small>{meta}</small></div>{method === name && <Check/>}</button>)}</div>{method === "Service center" && <div className="slot-picker"><b><CalendarDays/>Choose an appointment</b><div>{["Today · 16:00", "Tomorrow · 10:30", "Tomorrow · 14:30", "Friday · 09:00"].map(x => <button key={x} className={slot === x ? "selected" : ""} onClick={() => setSlot(x)}>{x}</button>)}</div></div>}</WizardStep>}
-        {step === 5 && <WizardStep title="Your details" copy="No account needed. We’ll use these details only for your repair."><form className="customer-form" onSubmit={submitDetails}><Field label="First name" error={form.formState.errors.firstName?.message}><input {...form.register("firstName")}/></Field><Field label="Last name" error={form.formState.errors.lastName?.message}><input {...form.register("lastName")}/></Field><Field label="Email" error={form.formState.errors.email?.message}><input type="email" {...form.register("email")}/></Field><Field label="Phone" error={form.formState.errors.phone?.message}><input type="tel" {...form.register("phone")}/></Field><Field label="Preferred contact"><select {...form.register("contact")}><option>Email</option><option>Phone</option><option>SMS</option></select></Field><Field label="Additional notes"><textarea rows={3} placeholder="Anything our technician should know?" {...form.register("notes")}/></Field><label className="consent"><input type="checkbox" {...form.register("consent")}/><span>I agree to the demo privacy notice and to being contacted about this repair.</span></label>{form.formState.errors.consent && <small className="error">{form.formState.errors.consent.message}</small>}<Button type="submit" className="form-submit">Review repair <ArrowRight size={18}/></Button></form></WizardStep>}
-        {step === 6 && <WizardStep title="Review and confirm" copy="Check the details below before submitting your request."><div className="confirmation"><Review label="Device" value={`${brand?.name} ${model?.name}`}/><Review label="Service" value={repairs.map(r => r.name).join(", ")}/><Review label="Price" value={formatPrice(total)}/><Review label="Delivery" value={method}/>{method === "Service center" && <Review label="Appointment" value={slot}/>}<Review label="Customer" value={customer ? `${customer.firstName} ${customer.lastName} · ${customer.email}` : ""}/><div className="notice"><ShieldCheck/><p><b>Nothing is charged now.</b> We’ll contact you to agree the price before any work begins.</p></div><Button onClick={confirm} disabled={submitting}>{submitting ? "Sending your request…" : "Confirm repair"}<ArrowRight size={18}/></Button></div></WizardStep>}
-      </motion.div></AnimatePresence>
-      {step > 0 && step < 5 && <div className="wizard-nav"><button onClick={back}><ArrowLeft/>Back</button><Button onClick={next} disabled={(step === 3 && !repairs.length) || (step === 4 && !method)}>Continue <ArrowRight/></Button></div>}
-    </div><aside className="repair-summary"><span>YOUR REPAIR</span>{model ? <><div className="summary-device"><DeviceGlyph kind={category ?? "phone"}/><div><small>{brand?.name}</small><strong>{model.name}</strong><button onClick={() => setStep(0)}>Change</button></div></div>{repairs.length ? <div className="summary-services">{repairs.map(r => <div key={r.id}><span>{r.name}</span><b>{formatPrice(r.price)}</b></div>)}</div> : <p>Select an issue to request a quote.</p>}<div className="summary-total"><span>Repair price <small>agreed individually</small></span><b>{repairs.length ? formatPrice(total) : "—"}</b></div><div className="summary-meta"><span><Clock3/> {repairs[0]?.time ?? "Timing shown after selection"}</span><span><ShieldCheck/> Up to 12-month warranty*</span></div></> : <div className="summary-empty"><Smartphone/><p>Your selected device and services will appear here.</p></div>}</aside></div>
-    {step >= 3 && step < 5 && <div className="mobile-summary"><span>{model?.name}<small>{repairs.length ? `${repairs.length} service${repairs.length > 1 ? "s" : ""}` : "Select a service"}</small></span><b>{repairs.length ? formatPrice(total) : "—"}</b><Button onClick={next} disabled={step === 3 && !repairs.length}>Continue</Button></div>}
-  </div>;
+type FormData = z.infer<typeof schema>;
+
+const issueIcons: Record<string, React.ReactNode> = {
+  battery: <Battery size={20} />,
+  screen: <Smartphone size={20} />,
+  display: <Smartphone size={20} />,
+  charging: <ZapIcon />,
+  camera: <Wrench size={20} />,
+  diagnostics: <Cpu size={20} />,
+  default: <Wrench size={20} />,
+};
+
+function ZapIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </svg>
+  );
 }
 
-function WizardStep({ title, copy, children }: { title: string; copy: string; children: React.ReactNode }) { return <section className="wizard-step"><h2>{title}</h2><p>{copy}</p>{children}</section>; }
-function Choice({ title, meta, glyph, onClick }: { title: string; meta: string; glyph: React.ReactNode; onClick(): void }) { return <button className="choice" onClick={onClick}><span>{glyph}</span><div><strong>{title}</strong><small>{meta}</small></div><ChevronRight/></button>; }
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) { return <label className="field"><span>{label}</span>{children}{error && <small className="error">{error}</small>}</label>; }
-function Review({ label, value }: { label: string; value: string }) { return <div className="review-row"><span>{label}</span><strong>{value}</strong></div>; }
+export function RepairWizard() {
+  const { t } = useLanguage();
+  const router = useRouter();
+  const params = useSearchParams();
+
+  const initialBrand = brands.find(b => b.id === params.get("brand"));
+  const initialModel = initialBrand?.models.find(m => m.id === params.get("model"));
+
+  const [step, setStep] = useState(initialModel ? 3 : initialBrand ? 1 : 0);
+  const [brand, setBrand] = useState<Brand | null>(initialBrand ?? null);
+  const [category, setCategory] = useState<string | null>(initialModel?.category ?? null);
+  const [model, setModel] = useState<DeviceModel | null>(initialModel ?? null);
+  const [repairs, setRepairs] = useState<Repair[]>([]);
+  const [method, setMethod] = useState("Service center");
+  const [slot, setSlot] = useState("Tomorrow · 10:30");
+  const [query, setQuery] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [customer, setCustomer] = useState<FormData | null>(null);
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: { contact: "Email", consent: false },
+  });
+
+  const categories = brand?.categories ?? [];
+  const models = useMemo(
+    () =>
+      brand?.models.filter(
+        m => (!category || m.category === category) && m.name.toLowerCase().includes(query.toLowerCase())
+      ) ?? [],
+    [brand, category, query]
+  );
+
+  const next = () => setStep(s => Math.min(6, s + 1));
+  const back = () => setStep(s => Math.max(0, s - 1));
+
+  const submitDetails = form.handleSubmit(data => {
+    setCustomer(data);
+    next();
+  });
+
+  async function confirm() {
+    setSubmitting(true);
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          brand: brand?.name,
+          model: model?.name,
+          repairs: repairs.map(r => r.name),
+          estimatedPrice: 0,
+          method,
+          slot,
+          customer,
+        }),
+      });
+      const result = (await response.json()) as { orderId?: string };
+      router.push(`/order/success?id=${result.orderId ?? "REP-240182"}`);
+    } catch {
+      setSubmitting(false);
+    }
+  }
+
+  function chooseBrand(item: Brand) {
+    setBrand(item);
+    setCategory(null);
+    setModel(null);
+    setRepairs([]);
+    next();
+  }
+
+  const deliveryList = [
+    {
+      id: "Service center",
+      title: t.wizard.deliveryMethods.center.title,
+      desc: t.wizard.deliveryMethods.center.desc,
+      icon: MapPin,
+    },
+    {
+      id: "Courier pickup",
+      title: t.wizard.deliveryMethods.courier.title,
+      desc: t.wizard.deliveryMethods.courier.desc,
+      icon: Truck,
+    },
+    {
+      id: "Send by mail",
+      title: t.wizard.deliveryMethods.post.title,
+      desc: t.wizard.deliveryMethods.post.desc,
+      icon: Package,
+    },
+  ];
+
+  return (
+    <div className="wizard-shell">
+      <div className="wizard-top">
+        <div>
+          <p className="eyebrow">
+            <Cpu size={14} /> {t.wizard.badge}
+          </p>
+          <h1>{t.wizard.title}</h1>
+        </div>
+        <span className="step-counter">
+          {t.wizard.stepOf.replace("{current}", String(step + 1)).replace("{total}", String(t.wizard.steps.length))}
+        </span>
+      </div>
+
+      {/* Interactive Step Indicator */}
+      <div className="progress" role="tablist">
+        {t.wizard.steps.map((label, index) => (
+          <button
+            key={index}
+            type="button"
+            className={index <= step ? "active" : ""}
+            onClick={() => index < step && setStep(index)}
+            disabled={index > step}
+          >
+            <i>{index < step ? <Check size={14} /> : index + 1}</i>
+            <span>{label}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="wizard-layout">
+        <div className="wizard-content">
+          <AnimatePresence mode="wait">
+            {/* Step 0: Brand Selection */}
+            {step === 0 && (
+              <motion.div
+                key="step0"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="wizard-step"
+              >
+                <h2>{t.wizard.chooseBrand}</h2>
+                <p>{t.wizard.chooseCategory}</p>
+                <div className="choice-grid">
+                  {brands.map(item => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={`choice ${brand?.id === item.id ? "selected" : ""}`}
+                      onClick={() => chooseBrand(item)}
+                    >
+                      <span className="brand-letter">{item.name[0]}</span>
+                      <div>
+                        <strong>{item.name}</strong>
+                        <small>{item.models.length} devices available</small>
+                      </div>
+                      <ArrowRight size={18} />
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 1: Device Category */}
+            {step === 1 && (
+              <motion.div
+                key="step1"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="wizard-step"
+              >
+                <h2>{brand?.name}: {t.wizard.chooseCategory}</h2>
+                <p>Filter models by product category</p>
+                <div className="choice-grid">
+                  {categories.map(cat => (
+                    <button
+                      key={cat}
+                      type="button"
+                      className={`choice ${category === cat ? "selected" : ""}`}
+                      onClick={() => {
+                        setCategory(cat);
+                        next();
+                      }}
+                    >
+                      <DeviceGlyph kind={cat} />
+                      <div>
+                        <strong>{cat}</strong>
+                        <small>{brand?.name} {cat} series</small>
+                      </div>
+                      <ArrowRight size={18} />
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 2: Model Picker */}
+            {step === 2 && (
+              <motion.div
+                key="step2"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="wizard-step"
+              >
+                <h2>{t.wizard.chooseModel}</h2>
+                <div className="model-search">
+                  <Search size={18} />
+                  <input
+                    value={query}
+                    onChange={e => setQuery(e.target.value)}
+                    placeholder={t.wizard.searchModels}
+                    aria-label="Filter models"
+                  />
+                </div>
+                <div className="model-list">
+                  {models.map(item => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={`model-btn ${model?.id === item.id ? "selected" : ""}`}
+                      onClick={() => {
+                        setModel(item);
+                        next();
+                      }}
+                    >
+                      <DeviceGlyph kind={item.category} compact />
+                      <span>
+                        <strong>{item.name}</strong>
+                        <small>{item.category} · {item.repairs.length} repair types</small>
+                      </span>
+                      <ArrowRight size={18} />
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 3: Repair Service Selector */}
+            {step === 3 && (
+              <motion.div
+                key="step3"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="wizard-step"
+              >
+                <h2>{t.wizard.chooseRepairs}</h2>
+                <p>{model?.name ?? "Selected device"}</p>
+                <div className="repair-list">
+                  {(model?.repairs ?? []).map(repair => {
+                    const selected = repairs.some(r => r.id === repair.id);
+                    return (
+                      <button
+                        key={repair.id}
+                        type="button"
+                        className={selected ? "selected" : ""}
+                        onClick={() =>
+                          setRepairs(r => (selected ? r.filter(x => x.id !== repair.id) : [...r, repair]))
+                        }
+                      >
+                        <span className="issue-icon">
+                          {issueIcons[repair.id] ?? issueIcons.default}
+                        </span>
+                        <div className="repair-info">
+                          <strong>{repair.name}</strong>
+                          <small>{repair.description}</small>
+                          <em>
+                            <Clock size={12} /> {repair.time}
+                          </em>
+                        </div>
+                        <div className="repair-price">
+                          <b>{t.wizard.priceOnRequest}</b>
+                          {selected ? (
+                            <i><Check size={14} /></i>
+                          ) : (
+                            <small className="tap-select">Select</small>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 4: Handover Method & Slot */}
+            {step === 4 && (
+              <motion.div
+                key="step4"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="wizard-step"
+              >
+                <h2>{t.wizard.chooseDelivery}</h2>
+                <div className="method-list">
+                  {deliveryList.map(item => {
+                    const Icon = item.icon;
+                    const isSelected = method === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        className={isSelected ? "selected" : ""}
+                        onClick={() => setMethod(item.id)}
+                      >
+                        <span>
+                          <Icon size={20} />
+                        </span>
+                        <div>
+                          <strong>{item.title}</strong>
+                          <small>{item.desc}</small>
+                        </div>
+                        {isSelected && <CheckCircle2 size={20} className="method-checked" />}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="slot-picker">
+                  <b>
+                    <Clock size={18} /> Preferred Drop-off / Collection Time:
+                  </b>
+                  <div>
+                    {["Today · 16:00", "Tomorrow · 10:30", "Tomorrow · 14:00", "Flexible / By arrangement"].map(
+                      time => (
+                        <button
+                          key={time}
+                          type="button"
+                          className={slot === time ? "selected" : ""}
+                          onClick={() => setSlot(time)}
+                        >
+                          {time}
+                        </button>
+                      )
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 5: Customer Details Form */}
+            {step === 5 && (
+              <motion.div
+                key="step5"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="wizard-step"
+              >
+                <h2>{t.wizard.fillDetails}</h2>
+                <form onSubmit={submitDetails} className="customer-form">
+                  <label className="field">
+                    <span>{t.wizard.form.firstName}</span>
+                    <input {...form.register("firstName")} placeholder="Jan" />
+                    {form.formState.errors.firstName && (
+                      <small className="error">{form.formState.errors.firstName.message}</small>
+                    )}
+                  </label>
+
+                  <label className="field">
+                    <span>{t.wizard.form.lastName}</span>
+                    <input {...form.register("lastName")} placeholder="Novák" />
+                    {form.formState.errors.lastName && (
+                      <small className="error">{form.formState.errors.lastName.message}</small>
+                    )}
+                  </label>
+
+                  <label className="field">
+                    <span>{t.wizard.form.email}</span>
+                    <input {...form.register("email")} type="email" placeholder="jan.novak@example.cz" />
+                    {form.formState.errors.email && (
+                      <small className="error">{form.formState.errors.email.message}</small>
+                    )}
+                  </label>
+
+                  <label className="field">
+                    <span>{t.wizard.form.phone}</span>
+                    <input {...form.register("phone")} placeholder="+420 737 000 000" />
+                    {form.formState.errors.phone && (
+                      <small className="error">{form.formState.errors.phone.message}</small>
+                    )}
+                  </label>
+
+                  <label className="field">
+                    <span>{t.wizard.form.preferredContact}</span>
+                    <select {...form.register("contact")}>
+                      <option value="Telegram">Telegram (@liltrafficRUS)</option>
+                      <option value="Phone">Phone Call</option>
+                      <option value="SMS">SMS Message</option>
+                      <option value="Email">Email</option>
+                    </select>
+                  </label>
+
+                  <label className="field">
+                    <span>{t.wizard.form.notes}</span>
+                    <textarea {...form.register("notes")} placeholder="Describe any additional symptoms, passcodes (optional), or requests…" rows={3} />
+                  </label>
+
+                  <label className="consent">
+                    <input type="checkbox" {...form.register("consent")} />
+                    <span>{t.wizard.form.consent}</span>
+                  </label>
+                  {form.formState.errors.consent && (
+                    <small className="error consent-error">{form.formState.errors.consent.message}</small>
+                  )}
+
+                  <div className="form-submit">
+                    <Button type="submit">{t.wizard.form.submit} <ArrowRight size={17} /></Button>
+                  </div>
+                </form>
+              </motion.div>
+            )}
+
+            {/* Step 6: Confirmation */}
+            {step === 6 && (
+              <motion.div
+                key="step6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="wizard-step confirmation"
+              >
+                <h2>{t.wizard.confirm.title}</h2>
+                <div className="review-row">
+                  <span>{t.wizard.confirm.device}:</span>
+                  <strong>{brand?.name} {model?.name}</strong>
+                </div>
+                <div className="review-row">
+                  <span>{t.wizard.confirm.selectedServices}:</span>
+                  <strong>{repairs.length ? repairs.map(r => r.name).join(", ") : "General Diagnostics"}</strong>
+                </div>
+                <div className="review-row">
+                  <span>{t.wizard.confirm.method}:</span>
+                  <strong>{method} ({slot})</strong>
+                </div>
+                <div className="review-row">
+                  <span>{t.wizard.confirm.customer}:</span>
+                  <strong>{customer?.firstName} {customer?.lastName} ({customer?.phone})</strong>
+                </div>
+
+                <div className="notice">
+                  <ShieldCheck size={20} />
+                  <p>{t.wizard.confirm.notice}</p>
+                </div>
+
+                <Button onClick={confirm} disabled={submitting} className="confirm-btn">
+                  {submitting ? t.wizard.confirm.btnSubmitting : t.wizard.confirm.btnSubmit}
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Navigation Controls */}
+          <div className="wizard-nav">
+            {step > 0 ? (
+              <button type="button" onClick={back} className="wizard-back-btn">
+                <ArrowLeft size={16} /> {t.common.back}
+              </button>
+            ) : <span />}
+
+            {step < 5 && step !== 1 && step !== 2 && (
+              <Button onClick={next} disabled={step === 3 && repairs.length === 0}>
+                {t.common.next} <ArrowRight size={16} />
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Persistent Right Summary Sidebar */}
+        <aside className="repair-summary">
+          <span>SUMMARY</span>
+          {model ? (
+            <div className="summary-device">
+              <DeviceGlyph kind={model.category} />
+              <div>
+                <small>{brand?.name}</small>
+                <strong>{model.name}</strong>
+                <button type="button" onClick={() => setStep(2)}>
+                  Change device
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="summary-empty">
+              <Smartphone size={32} />
+              <p>Select your manufacturer and model</p>
+            </div>
+          )}
+
+          {repairs.length > 0 && (
+            <div className="summary-services">
+              {repairs.map(r => (
+                <div key={r.id}>
+                  <span>{r.name}</span>
+                  <b>{t.wizard.priceOnRequest}</b>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="summary-total">
+            <div>
+              <span>Estimated Cost</span>
+              <small>{t.wizard.agreedIndividually}</small>
+            </div>
+            <b>{t.wizard.priceOnRequest}</b>
+          </div>
+
+          <div className="summary-meta">
+            <span><ShieldCheck size={15} /> 12-Month Guarantee</span>
+            <span><MapPin size={15} /> {contactInfo.addressStreet}</span>
+            <span><Send size={15} /> Telegram: {contactInfo.telegram}</span>
+          </div>
+
+          <div className="summary-telegram-assist">
+            <a
+              href={`${contactInfo.telegramUrl}?text=${encodeURIComponent("Hello! I have a question about booking a repair.")}`}
+              target="_blank"
+              rel="noreferrer"
+              className="telegram-assist-link"
+            >
+              <MessageSquare size={14} /> Need quick consultation? Ask master
+            </a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  );
+}

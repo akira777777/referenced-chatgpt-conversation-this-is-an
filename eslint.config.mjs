@@ -13,6 +13,10 @@ const eslintConfig = defineConfig([
     "dist/**",
     "out/**",
     "build/**",
+    "work/**",
+    ".wrangler/**",
+    ".vinext/**",
+    ".openai/**",
     "next-env.d.ts",
   ]),
   eslint.configs.recommended,
@@ -34,6 +38,15 @@ const eslintConfig = defineConfig([
       react: {
         version: "detect",
       },
+    },
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
     },
   },
 ]);

@@ -1,7 +1,34 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { LanguageProvider } from "@/lib/i18n/context";
 import "./globals.css";
+
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const mono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
-export const metadata: Metadata = { metadataBase: new URL(process.env.SITE_URL ?? "https://reform-device-care-prague.artemmikhailov200310.chatgpt.site"), title: { default: "Reform — Premium electronics repair", template: "%s | Reform" }, description: "Precision repairs for Apple and premium electronics with individual quotes and simple online booking.", icons: { icon: "/favicon.svg" }, openGraph: { title: "Reform — Technology, restored", description: "Premium electronics repair with individual pricing and effortless booking.", type: "website", images: [{ url: "/og.png", width: 1200, height: 630, alt: "Reform — Technology, restored" }] }, twitter: { card: "summary_large_image", images: ["/og.png"] } };
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="en" suppressHydrationWarning><body className={`${geist.variable} ${mono.variable}`}>{children}</body></html>; }
+
+export const metadata: Metadata = {
+  metadataBase: new URL(process.env.SITE_URL ?? "https://reform-device-care-prague.artemmikhailov200310.chatgpt.site"),
+  title: {
+    default: "Reform — Precision Electronics Repair Prague",
+    template: "%s | Reform Prague",
+  },
+  description: "Precision repairs, micro-soldering, and individual quotes for Apple, Samsung, Google in Prague 3. Telegram @liltrafficRUS.",
+  icons: { icon: "/favicon.svg", apple: "/favicon.svg" },
+  openGraph: {
+    title: "Reform — Precision Device Care Prague",
+    description: "Component-level electronics repair, micro-soldering & individual pricing in Prague 3.",
+    type: "website",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Reform — Precision Device Care Prague" }],
+  },
+  twitter: { card: "summary_large_image", images: ["/og.png"] },
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <html lang="cs" suppressHydrationWarning>
+      <body className={`${geist.variable} ${mono.variable}`}>
+        <LanguageProvider>{children}</LanguageProvider>
+      </body>
+    </html>
+  );
+}
