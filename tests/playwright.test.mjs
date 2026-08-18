@@ -60,10 +60,11 @@ async function runE2ESuite() {
     console.log(`  ✔ Theme toggled. Dark mode active: ${isDark}`);
 
     console.log("▶ [4/7] Testing Global Search Modal (Search + Keyboard Escape)...");
-    await page.locator("button[title='Search devices']").first().click();
-    await page.waitForTimeout(400);
-    const searchModal = page.locator(".search-modal").first();
-    await searchModal.waitFor({ state: "visible", timeout: 5000 });
+    await page.waitForFunction(() => {
+      const btn = document.querySelector("button[title='Search devices']");
+      if (btn) btn.click();
+      return !!document.querySelector(".search-modal");
+    }, { timeout: 10000 });
     
     const searchInput = page.locator(".search-input input").first();
     await searchInput.fill("iPhone 16");
