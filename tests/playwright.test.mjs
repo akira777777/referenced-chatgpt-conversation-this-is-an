@@ -27,22 +27,34 @@ async function runE2ESuite() {
     console.log("▶ [2/7] Testing Multilingual Language Switching (RU -> CZ -> EN)...");
     
     // Switch to Russian
-    await page.locator(".lang-btn", { hasText: "RU" }).first().click({ force: true });
-    await page.waitForTimeout(300);
+    console.log("  - Switching to Russian");
+    await page.evaluate(() => {
+      const btn = document.querySelector(".header button[aria-label='Switch to RU']");
+      if (btn) btn.click();
+    });
+    await page.waitForTimeout(400);
     const ruHeading = await page.locator(".hero-headline").textContent();
     assert.match(ruHeading, /Работает как новый/);
     console.log("  ✔ Switched to Russian: 'Работает как новый'");
 
     // Switch to Czech
-    await page.locator(".lang-btn", { hasText: "CZ" }).first().click({ force: true });
-    await page.waitForTimeout(300);
+    console.log("  - Switching to Czech");
+    await page.evaluate(() => {
+      const btn = document.querySelector(".header button[aria-label='Switch to CZ']");
+      if (btn) btn.click();
+    });
+    await page.waitForTimeout(400);
     const czHeading = await page.locator(".hero-headline").textContent();
     assert.match(czHeading, /Jako nový/);
     console.log("  ✔ Switched to Czech: 'Jako nový'");
 
     // Switch to English
-    await page.locator(".lang-btn", { hasText: "EN" }).first().click({ force: true });
-    await page.waitForTimeout(300);
+    console.log("  - Switching to English");
+    await page.evaluate(() => {
+      const btn = document.querySelector(".header button[aria-label='Switch to EN']");
+      if (btn) btn.click();
+    });
+    await page.waitForTimeout(400);
     const enHeading = await page.locator(".hero-headline").textContent();
     assert.match(enHeading, /Working like new/);
     console.log("  ✔ Switched to English: 'Working like new'");
@@ -54,11 +66,15 @@ async function runE2ESuite() {
     console.log(`  ✔ Theme toggled. Dark mode active: ${isDark}`);
 
     console.log("▶ [4/7] Testing Global Search Modal (Search + Keyboard Escape)...");
-    await page.locator("button[title='Search devices']").first().click({ force: true });
+    await page.evaluate(() => {
+      const btn = document.querySelector("button[title='Search devices']");
+      if (btn) btn.click();
+    });
+    await page.waitForTimeout(400);
     const searchModal = page.locator(".search-modal").first();
     await searchModal.waitFor({ state: "visible", timeout: 5000 });
     
-    const searchInput = searchModal.locator("input");
+    const searchInput = page.locator(".search-input input").first();
     await searchInput.fill("iPhone 16");
     await page.waitForTimeout(300);
     const resultsCount = await page.locator(".search-results a").count();
