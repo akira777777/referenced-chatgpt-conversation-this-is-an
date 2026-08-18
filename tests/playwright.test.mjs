@@ -28,7 +28,7 @@ async function runE2ESuite() {
     
     // Switch to Russian
     console.log("  - Switching to Russian");
-    await page.locator(".header button[aria-label='Switch to RU']").first().click({ force: true });
+    await page.locator(".nav-actions button[aria-label='Switch to RU']").first().click();
     await page.waitForTimeout(400);
     const ruHeading = await page.locator(".hero-headline").textContent();
     assert.match(ruHeading, /Работает как новый/);
@@ -36,7 +36,7 @@ async function runE2ESuite() {
 
     // Switch to Czech
     console.log("  - Switching to Czech");
-    await page.locator(".header button[aria-label='Switch to CZ']").first().click({ force: true });
+    await page.locator(".nav-actions button[aria-label='Switch to CZ']").first().click();
     await page.waitForTimeout(400);
     const czHeading = await page.locator(".hero-headline").textContent();
     assert.match(czHeading, /Jako nový/);
@@ -44,7 +44,7 @@ async function runE2ESuite() {
 
     // Switch to English
     console.log("  - Switching to English");
-    await page.locator(".header button[aria-label='Switch to EN']").first().click({ force: true });
+    await page.locator(".nav-actions button[aria-label='Switch to EN']").first().click();
     await page.waitForTimeout(400);
     const enHeading = await page.locator(".hero-headline").textContent();
     assert.match(enHeading, /Working like new/);
