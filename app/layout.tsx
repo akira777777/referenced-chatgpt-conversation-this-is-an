@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { LanguageProvider } from "@/lib/i18n/context";
+import { StructuredData } from "@/components/StructuredData";
 import "./globals.css";
 
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -8,8 +9,8 @@ const mono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#040711" },
+    { media: "(prefers-color-scheme: light)", color: "#fbfbfc" },
+    { media: "(prefers-color-scheme: dark)", color: "#090a0f" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -21,8 +22,8 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://reart.cz"),
   title: {
-    default: "RE:Art — Precision Electronics Repair Prague",
-    template: "%s | RE:Art Prague",
+    default: "Reform · Prague — Component Device Care & Electronics Lab",
+    template: "%s | Reform Prague",
   },
   description:
     "Component-level electronics repair, micro-soldering, OLED calibration, and direct transparent quotes for Apple, Samsung, Google in Prague 3. Telegram @liltrafficRUS.",
@@ -50,33 +51,66 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "RE:Art — Precision Device Care Prague",
+    title: "Reform · Prague — Precision Device Care",
     description:
       "Component-level electronics repair, micro-soldering & transparent individual pricing in Prague 3.",
     url: "https://reart.cz",
-    siteName: "RE:Art Prague",
+    siteName: "Reform Prague",
     type: "website",
     images: [
       {
         url: "/icon.png",
         width: 512,
         height: 512,
-        alt: "RE:Art — Precision Device Care Prague",
+        alt: "Reform — Precision Device Care Prague",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "RE:Art — Precision Device Care Prague",
+    title: "Reform · Prague — Precision Device Care",
     description: "Component-level electronics repair & micro-soldering in Prague 3.",
     images: ["/icon.png"],
   },
+};
+
+const localBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Reform · Prague Device Care",
+  "image": "https://reart.cz/icon.png",
+  "telephone": "+420737500587",
+  "email": "fear75412@gmail.com",
+  "url": "https://reart.cz",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Biskupcova 31",
+    "addressLocality": "Praha 3",
+    "postalCode": "130 00",
+    "addressCountry": "CZ",
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 50.0883,
+    "longitude": 14.4715,
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "09:00",
+      "closes": "19:00",
+    },
+  ],
+  "priceRange": "CZK",
+  "sameAs": ["https://t.me/liltrafficRUS"],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="cs" suppressHydrationWarning>
       <head>
+        <StructuredData data={localBusinessSchema} />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('reform_theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}}catch(e){}})();`,
