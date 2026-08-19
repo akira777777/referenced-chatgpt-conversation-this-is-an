@@ -92,44 +92,23 @@ export function HomePage() {
     <>
       {/* 1. HERO SECTION WITH HOLOGRAPHIC 3D DEVICE STAGE */}
       <section className="hero-cyber">
-        <div className="hero-glow-back" />
         <div className="container hero-cyber-grid">
           <div className="hero-cyber-copy">
-            <motion.div
-              className="hero-badge-pill"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-            >
+            <div className="hero-badge-pill">
               <span className="live-pulse" />
               <span>{t.hero.badge}</span>
-            </motion.div>
+            </div>
 
-            <motion.h1
-              className="hero-headline"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
+            <h1 className="hero-headline">
               {t.hero.titleStart} <br />
               <span className="gradient-text">{t.hero.titleHighlight}</span>
-            </motion.h1>
+            </h1>
 
-            <motion.p
-              className="hero-description"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
+            <p className="hero-description">
               {t.hero.subtitle}
-            </motion.p>
+            </p>
 
-            <motion.div
-              className="hero-actions-row"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
+            <div className="hero-actions-row">
               <Link href="/repair" className="button hero-main-cta">
                 {t.hero.startRepair} <ArrowRight size={18} />
               </Link>
@@ -141,14 +120,9 @@ export function HomePage() {
               >
                 <Send size={16} /> {t.hero.chatTelegram}
               </a>
-            </motion.div>
+            </div>
 
-            <motion.div
-              className="hero-trust-bar"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
+            <div className="hero-trust-bar">
               <div className="trust-item">
                 <ShieldCheck size={16} className="trust-icon" />
                 <span>{t.hero.trustWarranty}</span>
@@ -161,7 +135,7 @@ export function HomePage() {
                 <Clock size={16} className="trust-icon" />
                 <span>{t.hero.trustDiagnostics}</span>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
 
@@ -218,11 +192,8 @@ export function HomePage() {
                 <motion.div
                   key={idx}
                   className="bento-card"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-40px" }}
-                  transition={{ duration: 0.4, delay: idx * 0.1 }}
                   whileHover={{ y: -4 }}
+                  transition={{ duration: 0.2 }}
                 >
                   <div className="bento-top-row">
                     <div className="bento-icon-wrap">
@@ -232,7 +203,6 @@ export function HomePage() {
                   </div>
                   <h3>{feat.title}</h3>
                   <p>{feat.desc}</p>
-                  <div className="bento-corner-glow" />
                 </motion.div>
               );
             })}
@@ -255,15 +225,12 @@ export function HomePage() {
               { num: "02", title: t.process.step2_title, desc: t.process.step2_desc },
               { num: "03", title: t.process.step3_title, desc: t.process.step3_desc },
               { num: "04", title: t.process.step4_title, desc: t.process.step4_desc },
-            ].map((step, idx) => (
+            ].map(step => (
               <motion.div
                 key={step.num}
                 className="step-card"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: idx * 0.1 }}
                 whileHover={{ y: -3 }}
+                transition={{ duration: 0.2 }}
               >
                 <span className="step-number">{step.num}</span>
                 <h3>{step.title}</h3>
@@ -295,14 +262,14 @@ export function HomePage() {
                 <li><CheckCircle2 size={18} /> {t.b2b.feature4}</li>
               </ul>
               <div className="b2b-actions">
-                <Link href="/business" className="button b2b-btn-white">
+                <Link href="/business" className="button">
                   {t.b2b.cta}
                 </Link>
                 <a
                   href={`${contactInfo.telegramUrl}?text=${encodeURIComponent("Hello! I am interested in B2B corporate device repairs.")}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="button button-secondary b2b-btn-outline"
+                  className="button button-secondary"
                 >
                   <Send size={16} /> {t.b2b.contactManager}
                 </a>
@@ -310,9 +277,9 @@ export function HomePage() {
             </div>
             <div className="b2b-visual-col">
               <div className="b2b-devices-fan">
-                <Laptop size={72} className="b2b-icon laptop" />
-                <Smartphone size={54} className="b2b-icon phone" />
-                <Tablet size={60} className="b2b-icon tablet" />
+                <Laptop size={72} />
+                <Smartphone size={54} />
+                <Tablet size={60} />
               </div>
             </div>
           </div>
@@ -351,11 +318,8 @@ export function HomePage() {
               <motion.div
                 key={idx}
                 className="testimonial-card"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: idx * 0.1 }}
                 whileHover={{ y: -3 }}
+                transition={{ duration: 0.2 }}
               >
                 <div className="stars-row">★★★★★</div>
                 <p>{item.text}</p>
@@ -375,13 +339,7 @@ export function HomePage() {
       {/* 9. MEET THE MASTER & LEAD TECHNICIAN */}
       <section className="section section-founder">
         <div className="container">
-          <motion.div
-            className="founder-spotlight-card"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
+          <div className="founder-spotlight-card">
             <div className="founder-photo-col">
               <div className="founder-img-frame">
                 <picture>
@@ -428,7 +386,7 @@ export function HomePage() {
                 </Link>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
