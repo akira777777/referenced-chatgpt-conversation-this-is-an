@@ -21,6 +21,9 @@ import {
 import { contactInfo, brands } from "@/lib/data";
 import { InteractiveDiagnostic } from "./InteractiveDiagnostic";
 import { QuickRepairEstimator } from "./QuickRepairEstimator";
+import { InteractiveComparison } from "./InteractiveComparison";
+import { PartsTransparency } from "./PartsTransparency";
+import { LabEquipment } from "./LabEquipment";
 import { StudioTransitAssistant } from "./StudioTransitAssistant";
 import { BrandIcon } from "./BrandIcons";
 
@@ -90,7 +93,7 @@ export function HomePage() {
 
   return (
     <>
-      {/* 1. HERO SECTION WITH HOLOGRAPHIC 3D DEVICE STAGE */}
+      {/* 1. HERO SECTION WITH CLEAN SWISS TYPOGRAPHY */}
       <section className="hero-cyber">
         <div className="container hero-cyber-grid">
           <div className="hero-cyber-copy">
@@ -167,50 +170,35 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 3. INTERACTIVE DIAGNOSTIC SYMPTOM CHECKER */}
+      {/* 3. INTERACTIVE BEFORE/AFTER REPAIR RESTORATION INSPECTOR */}
+      <section className="section">
+        <div className="container">
+          <InteractiveComparison />
+        </div>
+      </section>
+
+      {/* 4. INTERACTIVE DIAGNOSTIC SYMPTOM CHECKER */}
       <section className="section">
         <div className="container">
           <InteractiveDiagnostic />
         </div>
       </section>
 
-      {/* 5. ENGINEERING HIGHLIGHTS / BENTO GRID */}
+      {/* 5. PARTS TRANSPARENCY & QUALITY STANDARDS */}
       <section className="section">
         <div className="container">
-          <div className="section-head text-center">
-            <p className="eyebrow justify-center">
-              <Microscope size={14} /> {t.features.badge}
-            </p>
-            <h2>{t.features.title}</h2>
-            <p className="section-copy centered">{t.features.subtitle}</p>
-          </div>
-
-          <div className="features-bento-grid">
-            {featureCards.map((feat, idx) => {
-              const Icon = feat.icon;
-              return (
-                <motion.div
-                  key={idx}
-                  className="bento-card"
-                  whileHover={{ y: -4 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <div className="bento-top-row">
-                    <div className="bento-icon-wrap">
-                      <Icon size={24} />
-                    </div>
-                    <span className="bento-tag">{feat.tag}</span>
-                  </div>
-                  <h3>{feat.title}</h3>
-                  <p>{feat.desc}</p>
-                </motion.div>
-              );
-            })}
-          </div>
+          <PartsTransparency />
         </div>
       </section>
 
-      {/* 6. WORKFLOW & PROCESS */}
+      {/* 6. LABORATORY EQUIPMENT & INFRASTRUCTURE */}
+      <section className="section">
+        <div className="container">
+          <LabEquipment />
+        </div>
+      </section>
+
+      {/* 7. WORKFLOW & PROCESS */}
       <section className="section section-workflow">
         <div className="container">
           <div className="section-head">
@@ -247,7 +235,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 7. B2B / CORPORATE FLEET SECTION */}
+      {/* 8. B2B / CORPORATE FLEET SECTION */}
       <section className="section">
         <div className="container">
           <div className="b2b-banner-card">
@@ -286,7 +274,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 8. TESTIMONIALS */}
+      {/* 9. TESTIMONIALS */}
       <section className="section section-testimonials">
         <div className="container">
           <div className="section-head text-center">
@@ -336,7 +324,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 9. MEET THE MASTER & LEAD TECHNICIAN */}
+      {/* 10. MEET THE MASTER & LEAD TECHNICIAN */}
       <section className="section section-founder">
         <div className="container">
           <div className="founder-spotlight-card">
@@ -390,7 +378,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 10. PRAGUE 3 WORKSHOP LOCATION & TRANSIT ASSISTANT */}
+      {/* 11. PRAGUE 3 WORKSHOP LOCATION & TRANSIT ASSISTANT */}
       <section className="section">
         <div className="container">
           <StudioTransitAssistant />
