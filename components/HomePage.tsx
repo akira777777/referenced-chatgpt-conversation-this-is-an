@@ -5,14 +5,11 @@ import { motion } from "motion/react";
 import { useLanguage } from "@/lib/i18n/context";
 import {
   ShieldCheck,
-  Zap,
   MapPin,
   Clock,
   ArrowRight,
   Send,
   CheckCircle2,
-  Microscope,
-  Award,
   Laptop,
   Smartphone,
   Tablet,
@@ -29,33 +26,6 @@ import { BrandIcon } from "./BrandIcons";
 
 export function HomePage() {
   const { language, t } = useLanguage();
-
-  const featureCards = [
-    {
-      icon: Microscope,
-      title: t.features.f1_title,
-      desc: t.features.f1_desc,
-      tag: language === "cs" ? "Přesnost 0,02 mm" : language === "ru" ? "Точность 0,02 мм" : "0.02mm BGA Precision",
-    },
-    {
-      icon: Award,
-      title: t.features.f2_title,
-      desc: t.features.f2_desc,
-      tag: language === "cs" ? "TrueTone & Biometrie" : language === "ru" ? "TrueTone и биометрия" : "TrueTone & Biometrics",
-    },
-    {
-      icon: Zap,
-      title: t.features.f3_title,
-      desc: t.features.f3_desc,
-      tag: language === "cs" ? "Expresně 20–40 min" : language === "ru" ? "Экспресс 20–40 мин" : "Express 20-40 min",
-    },
-    {
-      icon: ShieldCheck,
-      title: t.features.f4_title,
-      desc: t.features.f4_desc,
-      tag: language === "cs" ? "Záruka 12 měsíců" : language === "ru" ? "Гарантия 12 месяцев" : "12-Month Guarantee",
-    },
-  ];
 
   const founderText = {
     badge: language === "cs" ? "ARTEM · HLAVNÍ INŽENÝR" : language === "ru" ? "АРТЁМ · ВЕДУЩИЙ МАСТЕР" : "ARTEM · LEAD MASTER",
