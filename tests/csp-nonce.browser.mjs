@@ -87,18 +87,22 @@ async function main() {
     assert.ok(headerNonce, "CSP must carry a nonce");
 
     // The theme bootstrap + JSON-LD scripts in the HTML must carry the nonce.
-    const html = await page.content();
-    const htmlNonces = [...html.matchAll(/nonce="([^"]+)"/g)].map(m => m[1]);
-    assert.ok(htmlNonces.length > 0, "scripts in HTML should have nonce attributes");
+    // NOTE: browsers deliberately hide the nonce *content attribute* from
+    // innerHTML/serialization (to prevent leakage), so we read the `nonce`
+    // IDL property instead — that is exactly what the CSP engine checks.
+    await page.waitForSelector(".hero-headline", { timeout: 15000 });
+    const domNonces = await page.evaluate(() =>
+      Array.from(document.querySelectorAll("script")).map(s => s.nonce).filter(Boolean)
+    );
+    assert.ok(domNonces.length > 0, "scripts in the DOM should expose a nonce");
     assert.ok(
-      htmlNonces.every(n => n === headerNonce),
-      `all HTML nonces (${new Set(htmlNonces).size} unique) must equal the header nonce`
+      domNonces.every(n => n === headerNonce),
+      `all DOM nonces (${new Set(domNonces).size} unique) must equal the header nonce`
     );
 
     // Hydration proof: switch language to Russian and check the headline
     // actually changed. If CSP blocked the hydration bundle, the click
     // handler would never run and the headline would stay in Czech.
-    await page.waitForSelector(".hero-headline", { timeout: 15000 });
     const headlineBefore = await page.locator(".hero-headline").first().textContent();
     await page.waitForFunction(() => {
       const btn = document.querySelector("button[aria-label='Switch to RU']");
