@@ -1,8 +1,8 @@
 /**
- * CSP nonce middleware.
+ * CSP nonce proxy middleware.
  *
- * Runs on every non-static request (standalone server AND Cloudflare worker,
- * since vinext executes middleware in both deployment modes).
+ * Runs on every non-static request (standalone server, Vercel Serverless, and Cloudflare worker,
+ * since vinext executes proxy middleware in all deployment modes).
  *
  * Flow:
  *   1. Generate a fresh 128-bit nonce for THIS request.
@@ -26,7 +26,7 @@ import {
   NONCE_REQUEST_HEADER,
 } from "./lib/security-headers";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const nonce = generateNonce();
   const csp = buildCspHeaderValue(nonce);
 
@@ -46,7 +46,7 @@ export function middleware(request: NextRequest) {
 export const config = {
   // Skip static assets: they carry no HTML, need no nonce, and skipping
   // keeps them cacheable. Everything else (pages, API routes, RSC flights)
-  // passes through the middleware.
+  // passes through the proxy.
   matcher: [
     "/((?!_next/static|_next/image|_vinext/image|favicon.ico|manifest.json|robots.txt|sitemap.xml|icon|.*\\.(?:png|jpg|jpeg|webp|svg|gif|ico|woff|woff2|txt|xml|map|json)).*)",
   ],

@@ -160,9 +160,9 @@ test("withSecurityHeaders does not mutate the input Headers", () => {
 
 // ─── Cross-file contract: middleware uses the shared helpers ────────────────
 
-test("middleware.ts wires the shared nonce helpers", async () => {
+test("proxy.ts wires the shared nonce helpers", async () => {
   const fs = await import("node:fs/promises");
-  const src = await fs.readFile(new URL("../middleware.ts", import.meta.url), "utf8");
+  const src = await fs.readFile(new URL("../proxy.ts", import.meta.url), "utf8");
   assert.match(src, /generateNonce/);
   assert.match(src, /buildCspHeaderValue/);
   assert.match(src, /NONCE_REQUEST_HEADER/);
