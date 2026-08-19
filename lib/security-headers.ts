@@ -2,19 +2,20 @@
  * Shared security-header configuration.
  *
  * This is the single source of truth for the HTTP response headers the
- * application emits. Both `next.config.ts` and `worker/index.ts` import
- * from here so the two layers can't drift.
+ * application emits. `next.config.ts`, `middleware.ts`, and `worker/index.ts`
+ * all import from here so the layers can't drift.
  *
- * Why two layers?
- *   - `next.config.ts` headers() covers most responses but is bypassed by
- *     some RSC streaming paths (notably the home route's pre-rendered
- *     response, observed via curl -I on the production build).
- *   - The Cloudflare worker sits in front of every response, so re-applying
- *     the headers there guarantees the contract end-to-end.
+ * Layering:
+ *   1. `middleware.ts` — generates a per-request CSP nonce, sets the CSP
+ *      request header (vinext reads it and applies the nonce to every
+ *      script it emits) and the CSP response header. THIS OWNS THE CSP.
+ *   2. `next.config.ts` headers() — static baseline headers for every route.
+ *   3. `worker/index.ts` — re-applies the baseline at the edge and only adds
+ *      a fallback CSP when the response carries none (e.g. static assets).
  *
- * The set is deliberately conservative: every header is a production-grade
- * recommendation from MDN / OWASP, and the values are chosen so they work
- * without changes to the current page contents.
+ * CSP mode: ENFORCED. The previous Report-Only soak found no violations
+ * (verified in headless Chromium via tests/csp-nonce.browser.mjs). Roll back
+ * by setting CSP_REPORT_ONLY = true and redeploying.
  */
 
 export interface HeaderRule {
@@ -37,7 +38,8 @@ export const SECURITY_HEADER_PAIRS: { key: string; value: string }[] = [
 
 /**
  * A single catch-all rule covering every route, including /api/* and
- * dynamic segments. Used by next.config.ts.
+ * dynamic segments. Used by next.config.ts. Intentionally does NOT include
+ * the CSP: the CSP is per-request (nonce) and owned by middleware.ts.
  */
 export const SECURITY_HEADER_RULES: HeaderRule[] = [
   { source: "/:path*", headers: SECURITY_HEADER_PAIRS },
@@ -53,66 +55,121 @@ export const SECURITY_HEADERS_MAP: Readonly<Record<string, string>> =
     Object.fromEntries(SECURITY_HEADER_PAIRS.map((h) => [h.key, h.value]))
   );
 
+// ─── Content-Security-Policy ─────────────────────────────────────────────────
+
 /**
- * Content-Security-Policy (Report-Only) — the site has no CSP today, which
- * leaves it open to stored-XSS regressions. Before enforcing, we ship a
- * Report-Only policy and watch the browser's CSP violation reports. After
- * a soak period with no legitimate violations, flip to enforce mode by
- * setting CSP_REPORT_ONLY = false.
- *
- * Sources audited and allowed:
- *   - 'self' for app-owned JS / CSS / fonts
- *   - Supabase storage (https://*.supabase.co) for user-uploaded images
- *   - t.me for Telegram deeplinks
- *   - google.com/maps, maps.apple.com, waze.com for the studio map links
- *   - 'unsafe-inline' for <style> and the theme-bootstrap script
- *     (TODO: replace with nonces/hashes for a strict policy)
+ * Emergency rollback switch. `false` = enforce (production default).
+ * Set to `true` to demote the policy to Report-Only without touching the
+ * directives themselves.
  */
-const CSP_REPORT_ONLY = true;
+export const CSP_REPORT_ONLY = false;
 
-const CSP_DIRECTIVES: string[] = [
-  "default-src 'self'",
-  // 'unsafe-inline' is required for the inline theme-bootstrap <script> in
-  // app/layout.tsx and the inline <style> blocks emitted by Next/font.
-  // Remove it once we add per-request nonces (see worker/index.ts TODO).
-  "script-src 'self' 'unsafe-inline'",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://*.supabase.co",
-  "font-src 'self' data:",
-  // API + RSC fetch endpoints stay same-origin only.
-  "connect-src 'self'",
-  // No embeds on the site; deny plugins and frames.
-  "frame-ancestors 'none'",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  // Reporting endpoint. The route handler at /api/csp-report accepts the
-  // browser's POST and logs a single line; the field can be swapped for an
-  // external collector (Sentry, report-uri.com, a CF Worker) by changing
-  // only this string.
-  "report-uri /api/csp-report",
-];
+export const CSP_HEADER_NAME = CSP_REPORT_ONLY
+  ? "Content-Security-Policy-Report-Only"
+  : "Content-Security-Policy";
 
-export const CSP_HEADER = {
-  key: CSP_REPORT_ONLY
-    ? "Content-Security-Policy-Report-Only"
-    : "Content-Security-Policy",
-  value: CSP_DIRECTIVES.join("; "),
+/** Header the middleware uses to pass the nonce to server components. */
+export const NONCE_REQUEST_HEADER = "x-csp-nonce";
+
+/**
+ * Build the full CSP header value for a given nonce.
+ *
+ * script-src: 'self' (same-origin modules) + 'nonce-X' (inline scripts
+ * emitted by vinext, the theme bootstrap, and JSON-LD). 'unsafe-inline' is
+ * gone — an injected inline script without the nonce is blocked.
+ *
+ * style-src keeps 'unsafe-inline': next/font and React style attributes
+ * both rely on it, and style-based injection has a much smaller blast
+ * radius than script injection.
+ */
+export function buildCspHeaderValue(nonce: string): string {
+  const directives: string[] = [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}'`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob: https://*.supabase.co",
+    "font-src 'self' data:",
+    // API + RSC fetch endpoints stay same-origin only.
+    "connect-src 'self'",
+    // No embeds on the site; deny plugins and frames.
+    "frame-ancestors 'none'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    // Violations are still reported in enforce mode (blocked AND reported).
+    "report-uri /api/csp-report",
+  ];
+  return directives.join("; ");
+}
+
+/**
+ * Static fallback CSP for responses that bypass the middleware (e.g. the
+ * worker serving a static asset directly). Report-only and nonce-less: its
+ * job is telemetry, not enforcement — enforcing without a nonce would break
+ * any HTML that slips past the middleware.
+ */
+export const CSP_FALLBACK = {
+  key: "Content-Security-Policy-Report-Only",
+  value: [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob: https://*.supabase.co",
+    "font-src 'self' data:",
+    "connect-src 'self'",
+    "frame-ancestors 'none'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "report-uri /api/csp-report",
+  ].join("; "),
 };
+
+/** @deprecated kept for tests/back-compat; prefer buildCspHeaderValue(). */
+export const CSP_HEADER = {
+  key: CSP_FALLBACK.key,
+  value: CSP_FALLBACK.value,
+};
+
+/**
+ * Generate a cryptographically random nonce, base64-encoded.
+ *
+ * 16 random bytes → 24 base64 chars. Base64 is safe inside an HTML
+ * attribute and never contains the characters vinext rejects
+ * (`&`, `>`, `<`, U+2028, U+2029 — see vinext/dist/server/csp.js).
+ * Works in both Workers and Node (Web Crypto is global in both).
+ */
+export function generateNonce(): string {
+  const bytes = new Uint8Array(16);
+  globalThis.crypto.getRandomValues(bytes);
+  let binary = "";
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
 
 /**
  * Apply the security-header set to an arbitrary Response, returning a new
  * Response. The original is left untouched so retries and downstream
  * consumers see an unchanged view.
+ *
+ * CSP handling: if the response already carries a Content-Security-Policy
+ * (or Report-Only) header — as set by middleware.ts — it is preserved.
+ * Otherwise the static report-only fallback is attached so unmiddled
+ * responses still generate telemetry.
  */
 export function withSecurityHeaders(response: Response): Response {
   const headers = new Headers(response.headers);
   for (const [key, value] of Object.entries(SECURITY_HEADERS_MAP)) {
     headers.set(key, value);
   }
-  // CSP goes in too. The mode (enforce vs report-only) is controlled by
-  // CSP_REPORT_ONLY above.
-  headers.set(CSP_HEADER.key, CSP_HEADER.value);
+  const hasCsp =
+    headers.has("content-security-policy") ||
+    headers.has("content-security-policy-report-only");
+  if (!hasCsp) {
+    headers.set(CSP_FALLBACK.key, CSP_FALLBACK.value);
+  }
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
