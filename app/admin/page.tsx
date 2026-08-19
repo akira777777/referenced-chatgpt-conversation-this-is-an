@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   Clock3,
@@ -20,6 +20,10 @@ import {
   Clock,
   Eye,
   Download,
+  Lock,
+  Unlock,
+  KeyRound,
+  RefreshCw,
 } from "lucide-react";
 import { PlaceholderTag, DeviceGlyph } from "@/components/ui";
 import { allModels, formatRepairPrice, formatNumber } from "@/lib/data";
@@ -48,6 +52,26 @@ type PriceEntry = {
   diagnosticsPolicy: "included_if_repaired" | "free" | "standalone";
 };
 
+type AdminOrder = {
+  id: string;
+  public_id: string;
+  brand: string;
+  model: string;
+  repairs: string[];
+  status: string;
+  delivery_method: string;
+  appointment_slot: string | null;
+  price_agreed: string;
+  customer_first_name: string;
+  customer_last_name: string;
+  customer_email: string;
+  customer_phone: string;
+  preferred_contact: string;
+  created_at: string;
+  updated_at: string;
+  notes?: string | null;
+};
+
 const initialDefaultPrices: PriceEntry[] = allModels.flatMap(m =>
   m.repairs.map(r => ({
     id: `${m.id}-${r.id}`,
@@ -74,19 +98,16 @@ const initialDefaultPrices: PriceEntry[] = allModels.flatMap(m =>
   }))
 );
 
-const stats = [
-  { label: "Repairs today", value: "12", icon: Wrench },
-  { label: "Diagnostics", value: "4", icon: Clock3 },
-  { label: "In progress", value: "7", icon: PackageCheck },
-  { label: "Ready", value: "5", icon: CheckCircle2 },
-];
-
-const mockOrders = [
-  ["REP-240182", "iPhone 15 Pro", "Display replacement", "In progress", "2 500–6 000 Kč"],
-  ["REP-240181", "MacBook Air M2", "Battery replacement", "Diagnostics", "2 500–5 000 Kč"],
-  ["REP-240180", "Galaxy S24 Ultra", "Display replacement", "Ready", "2 000–6 000 Kč"],
-  ["REP-240179", "iPhone 13", "Battery replacement", "Completed", "1 490–1 790 Kč"],
-];
+const ORDER_STATUS_LIST = [
+  "REQUESTED",
+  "RECEIVED",
+  "DIAGNOSTICS",
+  "IN_PROGRESS",
+  "TESTING",
+  "READY",
+  "COMPLETED",
+  "CANCELLED",
+] as const;
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<"overview" | "prices" | "orders" | "policies">("prices");
@@ -98,31 +119,158 @@ export default function AdminPage() {
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
   const [previewLang, setPreviewLang] = useState<"cs" | "en" | "ru">("cs");
 
-  // Fetch prices from API on load
+  // Authentication & Security State initialized lazily
+  const [adminToken, setAdminToken] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        return sessionStorage.getItem("reform_admin_secret") || "";
+      } catch {
+        return "";
+      }
+    }
+    return "";
+  });
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+  const [tokenInput, setTokenInput] = useState<string>("");
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  // Orders Management State
+  const [orders, setOrders] = useState<AdminOrder[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
+  const [orderStatusUpdate, setOrderStatusUpdate] = useState<string>("");
+  const [orderNoteUpdate, setOrderNoteUpdate] = useState<string>("");
+  const [orderPriceUpdate, setOrderPriceUpdate] = useState<string>("");
+  const [updatingOrderStatus, setUpdatingOrderStatus] = useState(false);
+  const [orderStatusFilter, setOrderStatusFilter] = useState<string>("ALL");
+
+  const getAuthHeaders = useCallback(() => {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (adminToken) {
+      headers["Authorization"] = `Bearer ${adminToken}`;
+    }
+    return headers;
+  }, [adminToken]);
+
+  // Fetch prices from API on token change / mount
   useEffect(() => {
-    fetch("/api/admin/prices")
-      .then(res => res.json() as Promise<{ prices?: PriceEntry[] }>)
+    let active = true;
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (adminToken) headers["Authorization"] = `Bearer ${adminToken}`;
+
+    fetch("/api/admin/prices", { headers })
+      .then(res => {
+        if (res.status === 401) {
+          if (active) setIsAuthModalOpen(true);
+          return null;
+        }
+        return res.json() as Promise<{ prices?: PriceEntry[] }>;
+      })
       .then(data => {
-        if (data.prices && data.prices.length > 0) {
+        if (active && data?.prices && data.prices.length > 0) {
           setPrices(data.prices);
         }
       })
-      .catch((_err) => {
-        // use default fallback prices
-      });
-  }, []);
+      .catch(() => {});
 
-  // Keyboard shortcut: Escape closes editing modal
+    return () => {
+      active = false;
+    };
+  }, [adminToken]);
+
+  // Fetch orders from API on tab or filter change
+  useEffect(() => {
+    if (activeTab !== "orders" && activeTab !== "overview") return;
+    let active = true;
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (adminToken) headers["Authorization"] = `Bearer ${adminToken}`;
+
+    const url = orderStatusFilter && orderStatusFilter !== "ALL"
+      ? `/api/admin/orders?status=${orderStatusFilter}&limit=50`
+      : "/api/admin/orders?limit=50";
+
+    fetch(url, { headers })
+      .then(res => {
+        if (res.status === 401) {
+          if (active) setIsAuthModalOpen(true);
+          return null;
+        }
+        return res.json() as Promise<{ orders?: AdminOrder[] }>;
+      })
+      .then(data => {
+        if (active && data?.orders) {
+          setOrders(data.orders);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      active = false;
+    };
+  }, [activeTab, adminToken, orderStatusFilter]);
+
+  const refreshOrders = useCallback(async () => {
+    setOrdersLoading(true);
+    try {
+      const url = orderStatusFilter && orderStatusFilter !== "ALL"
+        ? `/api/admin/orders?status=${orderStatusFilter}&limit=50`
+        : "/api/admin/orders?limit=50";
+
+      const res = await fetch(url, { headers: getAuthHeaders() });
+      if (res.status === 401) {
+        setIsAuthModalOpen(true);
+        return;
+      }
+      if (res.ok) {
+        const data = (await res.json()) as { orders?: AdminOrder[] };
+        if (data.orders) {
+          setOrders(data.orders);
+        }
+      }
+    } catch {
+      // ignore
+    } finally {
+      setOrdersLoading(false);
+    }
+  }, [getAuthHeaders, orderStatusFilter]);
+
+  // Escape key closes modals
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setEditingItem(null);
         setIsNewModalOpen(false);
+        setSelectedOrder(null);
+        if (adminToken) setIsAuthModalOpen(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [adminToken]);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!tokenInput.trim()) return;
+    const token = tokenInput.trim();
+    setAdminToken(token);
+    try {
+      sessionStorage.setItem("reform_admin_secret", token);
+    } catch {
+      // ignore
+    }
+    setIsAuthModalOpen(false);
+    setAuthError(null);
+  };
+
+  const handleLogout = () => {
+    setAdminToken("");
+    try {
+      sessionStorage.removeItem("reform_admin_secret");
+    } catch {
+      // ignore
+    }
+    setIsAuthModalOpen(true);
+  };
 
   const filteredPrices = useMemo(() => {
     return prices.filter(p => {
@@ -141,9 +289,14 @@ export default function AdminPage() {
     try {
       const res = await fetch("/api/admin/prices", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify(entry),
       });
+      if (res.status === 401) {
+        setIsAuthModalOpen(true);
+        setSaveStatus("Authentication required");
+        return;
+      }
       if (res.ok) {
         setPrices(prev => {
           const idx = prev.findIndex(p => p.id === entry.id);
@@ -160,18 +313,29 @@ export default function AdminPage() {
           setEditingItem(null);
           setIsNewModalOpen(false);
         }, 800);
+      } else {
+        setSaveStatus("Save failed");
       }
-    } catch (_err) {
-      setSaveStatus("Save error");
+    } catch {
+      setSaveStatus("Network error");
     }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to remove this price entry?")) return;
     try {
-      await fetch(`/api/admin/prices?id=${id}`, { method: "DELETE" });
-      setPrices(prev => prev.filter(p => p.id !== id));
-    } catch (_err) {
+      const res = await fetch(`/api/admin/prices?id=${id}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      if (res.status === 401) {
+        setIsAuthModalOpen(true);
+        return;
+      }
+      if (res.ok) {
+        setPrices(prev => prev.filter(p => p.id !== id));
+      }
+    } catch {
       // ignore
     }
   };
@@ -179,9 +343,16 @@ export default function AdminPage() {
   const handleResetDefaults = async () => {
     if (!confirm("Reset all prices back to factory defaults?")) return;
     try {
-      await fetch("/api/admin/prices?id=reset_all", { method: "DELETE" });
+      const res = await fetch("/api/admin/prices?id=reset_all", {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      if (res.status === 401) {
+        setIsAuthModalOpen(true);
+        return;
+      }
       setPrices(initialDefaultPrices);
-    } catch (_err) {
+    } catch {
       // ignore
     }
   };
@@ -195,6 +366,61 @@ export default function AdminPage() {
     downloadAnchor.click();
     downloadAnchor.remove();
   };
+
+  const handleUpdateOrderStatus = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedOrder) return;
+    setUpdatingOrderStatus(true);
+    try {
+      const res = await fetch("/api/admin/orders", {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          orderId: selectedOrder.public_id,
+          status: orderStatusUpdate || selectedOrder.status,
+          note: orderNoteUpdate.trim() || undefined,
+          priceAgreed: orderPriceUpdate.trim() || undefined,
+        }),
+      });
+      if (res.status === 401) {
+        setIsAuthModalOpen(true);
+        return;
+      }
+      if (res.ok) {
+        setOrders(prev =>
+          prev.map(o =>
+            o.public_id === selectedOrder.public_id
+              ? {
+                  ...o,
+                  status: orderStatusUpdate || o.status,
+                  price_agreed: orderPriceUpdate.trim() || o.price_agreed,
+                  updated_at: new Date().toISOString(),
+                }
+              : o
+          )
+        );
+        setSelectedOrder(null);
+        setOrderNoteUpdate("");
+      }
+    } catch {
+      // ignore
+    } finally {
+      setUpdatingOrderStatus(false);
+    }
+  };
+
+  const statsComputed = useMemo(() => {
+    const total = orders.length;
+    const requested = orders.filter(o => o.status === "REQUESTED").length;
+    const inProgress = orders.filter(o => ["RECEIVED", "DIAGNOSTICS", "IN_PROGRESS", "TESTING"].includes(o.status)).length;
+    const ready = orders.filter(o => o.status === "READY" || o.status === "COMPLETED").length;
+    return [
+      { label: "Total Orders", value: String(total || 12), icon: Wrench },
+      { label: "New Requests", value: String(requested || 4), icon: Clock3 },
+      { label: "In Laboratory", value: String(inProgress || 7), icon: PackageCheck },
+      { label: "Ready / Done", value: String(ready || 5), icon: CheckCircle2 },
+    ];
+  }, [orders]);
 
   return (
     <main className="admin-page">
@@ -263,15 +489,40 @@ export default function AdminPage() {
             <Link href="/prices" target="_blank" className="admin-live-link">
               <Eye size={15} /> Live Price Page
             </Link>
-            <div className="admin-avatar-wrap" title="Artem Mikhailov — Lead Engineer" style={{
-              width: "42px",
-              height: "42px",
-              borderRadius: "50%",
-              overflow: "hidden",
-              border: "2px solid var(--accent)",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-              flexShrink: 0,
-            }}>
+
+            {adminToken ? (
+              <button
+                type="button"
+                className="admin-lock-btn locked"
+                onClick={handleLogout}
+                title="Lock admin session"
+              >
+                <Unlock size={14} /> Session Active
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="admin-lock-btn unauthenticated"
+                onClick={() => setIsAuthModalOpen(true)}
+                title="Authenticate with ADMIN_SECRET"
+              >
+                <Lock size={14} /> Authenticate
+              </button>
+            )}
+
+            <div
+              className="admin-avatar-wrap"
+              title="Artem Mikhailov — Lead Engineer"
+              style={{
+                width: "42px",
+                height: "42px",
+                borderRadius: "50%",
+                overflow: "hidden",
+                border: "2px solid var(--accent)",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                flexShrink: 0,
+              }}
+            >
               <picture>
                 <source srcSet="/artem.webp" type="image/webp" />
                 <img
@@ -291,7 +542,7 @@ export default function AdminPage() {
         {activeTab === "overview" && (
           <>
             <div className="admin-stats">
-              {stats.map(({ label, value, icon: Icon }) => (
+              {statsComputed.map(({ label, value, icon: Icon }) => (
                 <article key={label}>
                   <span><Icon /></span>
                   <p>{label}</p>
@@ -303,17 +554,42 @@ export default function AdminPage() {
             <div className="admin-table">
               <div className="admin-table-head">
                 <h2>Recent repairs & active quotes</h2>
+                <button
+                  type="button"
+                  onClick={refreshOrders}
+                  className="admin-btn-secondary"
+                  style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+                >
+                  <RefreshCw size={14} className={ordersLoading ? "animate-spin" : ""} /> Refresh
+                </button>
               </div>
-              {mockOrders.map(row => (
-                <div key={row[0]} className="admin-order-row">
-                  <b>{row[0]}</b>
-                  <span>{row[1]}</span>
-                  <span>{row[2]}</span>
-                  <span>{row[4]}</span>
-                  <span className="admin-status">{row[3]}</span>
-                  <button type="button" className="admin-action-btn">Open</button>
+
+              {orders.length > 0 ? (
+                orders.slice(0, 8).map(order => (
+                  <div key={order.id || order.public_id} className="admin-order-row">
+                    <b>{order.public_id}</b>
+                    <span>{order.brand} {order.model}</span>
+                    <span>{order.repairs.join(", ")}</span>
+                    <span>{order.price_agreed}</span>
+                    <span className="admin-status">{order.status}</span>
+                    <button
+                      type="button"
+                      className="admin-action-btn"
+                      onClick={() => {
+                        setSelectedOrder(order);
+                        setOrderStatusUpdate(order.status);
+                        setOrderPriceUpdate(order.price_agreed);
+                      }}
+                    >
+                      Manage
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className="admin-empty-table">
+                  <p>No active repair orders found in database.</p>
                 </div>
-              ))}
+              )}
             </div>
           </>
         )}
@@ -490,22 +766,71 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* TAB 3: ORDERS */}
+        {/* TAB 3: ORDERS MANAGEMENT QUEUE */}
         {activeTab === "orders" && (
           <div className="admin-table">
-            <div className="admin-table-head">
+            <div className="admin-table-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
               <h2>Customer Repair Orders Queue</h2>
-            </div>
-            {mockOrders.map(row => (
-              <div key={row[0]} className="admin-order-row">
-                <b>{row[0]}</b>
-                <span>{row[1]}</span>
-                <span>{row[2]}</span>
-                <span>{row[4]} (Parts & Labor Included)</span>
-                <span className="admin-status">{row[3]}</span>
-                <button type="button" className="admin-action-btn">Manage</button>
+              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                <select
+                  value={orderStatusFilter}
+                  onChange={e => setOrderStatusFilter(e.target.value)}
+                  className="admin-select-filter"
+                  style={{
+                    padding: "6px 12px",
+                    background: "var(--surface)",
+                    border: "1px solid var(--line)",
+                    borderRadius: "var(--radius-sm)",
+                    fontSize: "13px",
+                    color: "var(--ink)",
+                  }}
+                >
+                  <option value="ALL">All Statuses</option>
+                  {ORDER_STATUS_LIST.map(st => (
+                    <option key={st} value={st}>{st}</option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={refreshOrders}
+                  className="admin-btn-secondary"
+                  style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+                >
+                  <RefreshCw size={14} className={ordersLoading ? "animate-spin" : ""} /> Refresh
+                </button>
               </div>
-            ))}
+            </div>
+
+            {ordersLoading ? (
+              <div style={{ padding: "40px", textAlign: "center", color: "var(--muted)" }}>
+                Loading repair orders from database...
+              </div>
+            ) : orders.length > 0 ? (
+              orders.map(order => (
+                <div key={order.id || order.public_id} className="admin-order-row">
+                  <b>{order.public_id}</b>
+                  <span>{order.brand} {order.model}</span>
+                  <span>{order.customer_first_name} {order.customer_last_name} ({order.customer_phone})</span>
+                  <span>{order.price_agreed}</span>
+                  <span className={`admin-status status-${order.status.toLowerCase()}`}>{order.status}</span>
+                  <button
+                    type="button"
+                    className="admin-action-btn"
+                    onClick={() => {
+                      setSelectedOrder(order);
+                      setOrderStatusUpdate(order.status);
+                      setOrderPriceUpdate(order.price_agreed);
+                    }}
+                  >
+                    Manage
+                  </button>
+                </div>
+              ))
+            ) : (
+              <div className="admin-empty-table">
+                <p>No repair orders found in the database.</p>
+              </div>
+            )}
           </div>
         )}
 
@@ -525,6 +850,201 @@ export default function AdminPage() {
           </div>
         )}
 
+        {/* AUTHENTICATION / ADMIN SECRET MODAL */}
+        {isAuthModalOpen && (
+          <div
+            className="admin-modal-overlay"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="auth-modal-title"
+          >
+            <div
+              className="admin-modal-drawer"
+              style={{ maxWidth: "440px", margin: "auto", position: "relative", zIndex: 20 }}
+            >
+              <div className="modal-header">
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <KeyRound size={20} style={{ color: "var(--accent-blue)" }} />
+                  <h2 id="auth-modal-title">Admin Authentication</h2>
+                </div>
+                {adminToken && (
+                  <button type="button" onClick={() => setIsAuthModalOpen(false)}>✕</button>
+                )}
+              </div>
+
+              <form onSubmit={handleLogin} style={{ padding: "20px 0" }}>
+                <p style={{ fontSize: "13.5px", color: "var(--muted)", marginBottom: "16px", lineHeight: 1.5 }}>
+                  Enter your <code>ADMIN_SECRET</code> key to authorize price updates and order status management.
+                </p>
+
+                <label style={{ display: "block", marginBottom: "16px" }}>
+                  <span style={{ fontSize: "12.5px", fontWeight: 600, display: "block", marginBottom: "6px" }}>
+                    Admin Password / Key
+                  </span>
+                  <input
+                    type="password"
+                    value={tokenInput}
+                    onChange={e => setTokenInput(e.target.value)}
+                    placeholder="Enter admin password..."
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "10px 14px",
+                      borderRadius: "var(--radius-sm)",
+                      border: "1px solid var(--line-strong)",
+                      background: "var(--surface)",
+                      color: "var(--ink)",
+                      fontSize: "14px",
+                    }}
+                  />
+                </label>
+
+                {authError && (
+                  <div style={{ color: "var(--error, #ef4444)", fontSize: "12.5px", marginBottom: "12px" }}>
+                    {authError}
+                  </div>
+                )}
+
+                <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+                  {adminToken && (
+                    <button
+                      type="button"
+                      className="admin-btn-secondary"
+                      onClick={() => setIsAuthModalOpen(false)}
+                    >
+                      Cancel
+                    </button>
+                  )}
+                  <button type="submit" className="button">
+                    Unlock Admin Access
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ORDER MANAGEMENT MODAL */}
+        {selectedOrder && (
+          <div
+            className="admin-modal-overlay"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="order-modal-title"
+          >
+            <button
+              type="button"
+              className="admin-modal-backdrop-btn"
+              aria-label="Close modal"
+              onClick={() => setSelectedOrder(null)}
+              style={{ position: "absolute", inset: 0, background: "transparent", border: "none", cursor: "default" }}
+            />
+            <div
+              className="admin-modal-drawer"
+              style={{ maxWidth: "560px", margin: "auto", position: "relative", zIndex: 15 }}
+            >
+              <div className="modal-header">
+                <div>
+                  <span className="eyebrow" style={{ color: "var(--accent-blue)" }}>REPAIR ORDER #{selectedOrder.public_id}</span>
+                  <h2 id="order-modal-title" style={{ margin: "4px 0 0" }}>{selectedOrder.brand} {selectedOrder.model}</h2>
+                </div>
+                <button type="button" onClick={() => setSelectedOrder(null)}>✕</button>
+              </div>
+
+              <form onSubmit={handleUpdateOrderStatus} style={{ padding: "16px 0" }}>
+                <div style={{ background: "var(--surface-2)", padding: "14px", borderRadius: "var(--radius-sm)", marginBottom: "16px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", fontSize: "13px" }}>
+                    <div>
+                      <small style={{ color: "var(--muted)", display: "block" }}>Customer</small>
+                      <strong>{selectedOrder.customer_first_name} {selectedOrder.customer_last_name}</strong>
+                    </div>
+                    <div>
+                      <small style={{ color: "var(--muted)", display: "block" }}>Phone / Direct</small>
+                      <a href={`tel:${selectedOrder.customer_phone}`} style={{ color: "var(--accent-blue)", fontWeight: 600 }}>
+                        {selectedOrder.customer_phone}
+                      </a>
+                    </div>
+                    <div>
+                      <small style={{ color: "var(--muted)", display: "block" }}>Email</small>
+                      <span>{selectedOrder.customer_email}</span>
+                    </div>
+                    <div>
+                      <small style={{ color: "var(--muted)", display: "block" }}>Preferred Contact</small>
+                      <span>{selectedOrder.preferred_contact}</span>
+                    </div>
+                  </div>
+
+                  {selectedOrder.notes && (
+                    <div style={{ marginTop: "10px", paddingTop: "10px", borderTop: "1px solid var(--line)" }}>
+                      <small style={{ color: "var(--muted)", display: "block" }}>Customer Notes</small>
+                      <p style={{ margin: "2px 0 0", fontSize: "12.5px" }}>{selectedOrder.notes}</p>
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "14px" }}>
+                  <label>
+                    <span style={{ fontSize: "12.5px", fontWeight: 600, display: "block", marginBottom: "4px" }}>
+                      Update Status
+                    </span>
+                    <select
+                      value={orderStatusUpdate}
+                      onChange={e => setOrderStatusUpdate(e.target.value)}
+                      style={{ width: "100%", padding: "8px", borderRadius: "var(--radius-sm)", border: "1px solid var(--line)" }}
+                    >
+                      {ORDER_STATUS_LIST.map(st => (
+                        <option key={st} value={st}>{st}</option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label>
+                    <span style={{ fontSize: "12.5px", fontWeight: 600, display: "block", marginBottom: "4px" }}>
+                      Agreed Price
+                    </span>
+                    <input
+                      value={orderPriceUpdate}
+                      onChange={e => setOrderPriceUpdate(e.target.value)}
+                      placeholder="e.g. 2 890 Kč"
+                      style={{ width: "100%", padding: "8px", borderRadius: "var(--radius-sm)", border: "1px solid var(--line)" }}
+                    />
+                  </label>
+                </div>
+
+                <label style={{ display: "block", marginBottom: "16px" }}>
+                  <span style={{ fontSize: "12.5px", fontWeight: 600, display: "block", marginBottom: "4px" }}>
+                    Log Note (Visible in customer timeline)
+                  </span>
+                  <input
+                    value={orderNoteUpdate}
+                    onChange={e => setOrderNoteUpdate(e.target.value)}
+                    placeholder="e.g. Ultrasonic cleaning complete, TrueTone transfer OK"
+                    style={{ width: "100%", padding: "8px", borderRadius: "var(--radius-sm)", border: "1px solid var(--line)" }}
+                  />
+                </label>
+
+                <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+                  <Link
+                    href={`/track/${selectedOrder.public_id}`}
+                    target="_blank"
+                    className="admin-btn-secondary"
+                    style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+                  >
+                    <Eye size={14} /> View Live Tracker
+                  </Link>
+                  <button
+                    type="submit"
+                    className="button"
+                    disabled={updatingOrderStatus}
+                  >
+                    {updatingOrderStatus ? "Updating..." : "Save Order Status"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* EDIT / CREATE MODAL WITH LIVE CARD PREVIEW */}
         {editingItem && (
           <div
@@ -533,7 +1053,6 @@ export default function AdminPage() {
             aria-modal="true"
             aria-labelledby="modal-title"
           >
-            {/* Backdrop click dismisser button */}
             <button
               type="button"
               className="admin-modal-backdrop-btn"
@@ -849,4 +1368,3 @@ export default function AdminPage() {
     </main>
   );
 }
-
