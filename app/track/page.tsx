@@ -59,8 +59,6 @@ export default function TrackPage() {
         : language === "ru"
         ? "Примеры отслеживания в реальном времени (нажмите для просмотра):"
         : "Live tracking demonstrations (click to preview):",
-    liveBadge:
-      language === "cs" ? "ŽIVÝ STATUS" : language === "ru" ? "ПРЯМОЙ ЭФИР" : "LIVE STATUS",
   };
 
   return (
@@ -71,7 +69,7 @@ export default function TrackPage() {
             <Activity size={14} /> {t.trackPage.badge} <PlaceholderTag />
           </p>
           <h1>{t.trackPage.title}</h1>
-          <p>{t.trackPage.subtitle}</p>
+          <p style={{ color: "var(--muted)", fontSize: "16px", marginTop: "8px" }}>{t.trackPage.subtitle}</p>
 
           <form
             onSubmit={e => {
@@ -80,7 +78,7 @@ export default function TrackPage() {
             }}
             className="track-search-form"
           >
-            <Search size={20} className="track-search-icon" />
+            <Search size={20} style={{ color: "var(--muted)", flexShrink: 0 }} />
             <input
               value={id}
               onChange={e => setId(e.target.value)}
