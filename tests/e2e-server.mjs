@@ -6,15 +6,15 @@ import { createConnection } from "node:net";
  * @param {number} [port=3000]
  * @returns {Promise<boolean>}
  */
-export function isServerReady(port = 3000) {
-  return new Promise((resolve) => {
-    const socket = createConnection(port, "localhost");
-    socket.once("connect", () => {
-      socket.end();
-      resolve(true);
-    });
-    socket.once("error", () => resolve(false));
-  });
+export async function isServerReady(port = 3000) {
+  try {
+    const res = await fetch(`http://localhost:${port}`, { signal: AbortSignal.timeout(2000) });
+    if (!res.ok) return false;
+    const text = await res.text();
+    return /REFORM/i.test(text);
+  } catch {
+    return false;
+  }
 }
 
 /**

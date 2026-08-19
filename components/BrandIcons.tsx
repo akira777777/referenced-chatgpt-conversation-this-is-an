@@ -343,7 +343,7 @@ export function RepairIcon({
 
 export function getBrandIcon(brandId?: string): React.ComponentType<IconProps> {
   return function DynamicBrandIcon(props: IconProps) {
-    return <BrandIcon brand={brandId} {...props} />;
+    return <BrandIcon brandId={brandId} {...props} />;
   };
 }
 

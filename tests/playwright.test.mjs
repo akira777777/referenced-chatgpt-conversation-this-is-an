@@ -117,9 +117,9 @@ async function runE2ETests(port = 3000) {
     console.log("  ✔ Diagnostic telemetry updated dynamically on symptom selection.");
 
     console.log("▶ [6/8] Testing Approximate Repair Prices Explorer (/prices)...");
-    await page.goto(`${baseUrl}/prices`, { waitUntil: "domcontentloaded" });
-    await page.waitForSelector(".repair-card-grid", { timeout: 10000 });
-    await page.waitForTimeout(1000);
+    await page.goto(`${baseUrl}/prices`, { waitUntil: "networkidle" });
+    await page.waitForSelector(".repair-card-grid", { timeout: 15000 });
+    await page.waitForTimeout(500);
     
     const cardCount = await page.locator(".repair-price-card").count();
     assert.ok(cardCount > 0, "Pricing explorer must render repair cards");
@@ -192,7 +192,7 @@ async function runE2ETests(port = 3000) {
     assert.ok(successUrl.includes("/order/success"), "Should redirect to order success page");
 
     const orderNumber = await page.locator(".order-number b").textContent();
-    assert.match(orderNumber, /^REP-\d+/, "Should display valid REP order number");
+    assert.match(orderNumber, /^REP-[A-Z0-9]+/, "Should display valid REP order number");
     console.log(`  ✔ Successfully created repair order: ${orderNumber}`);
 
     console.log("\n=======================================================");

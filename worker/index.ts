@@ -1,4 +1,12 @@
-/** Cloudflare Worker entry point for the vinext-starter template. */
+// Safely encode non-ASCII characters in Headers.prototype.set (e.g. workspace paths with Cyrillic characters)
+const origHeadersSet = globalThis.Headers.prototype.set;
+globalThis.Headers.prototype.set = function (name: string, value: string) {
+  if (typeof value === "string" && value.split("").some((c) => c.charCodeAt(0) > 255)) {
+    value = encodeURI(value);
+  }
+  return origHeadersSet.call(this, name, value);
+};
+
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
 

@@ -340,7 +340,6 @@ export function Footer() {
             <ShieldCheck size={14} />
             <span>{t.footer.labPill}</span>
           </div>
-          <small className="footer-notice">{t.footer.notice}</small>
         </div>
 
         <div>

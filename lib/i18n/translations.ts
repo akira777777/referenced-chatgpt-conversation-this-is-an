@@ -17,6 +17,7 @@ export const translations = {
       noMatch: "No exact match",
       chooseOther: "Choose “Other” in the repair flow and tell us about your device.",
       continueWithOther: "Continue with another device",
+      menu: "Menu",
     },
     // Hero & Home
     hero: {
@@ -367,6 +368,7 @@ export const translations = {
       noMatch: "Žádná přesná shoda",
       chooseOther: "Zvolte „Jiné“ v průvodci a popište nám své zařízení.",
       continueWithOther: "Pokračovat s jiným zařízením",
+      menu: "Menu",
     },
     // Hero & Úvod
     hero: {
@@ -717,6 +719,7 @@ export const translations = {
       noMatch: "Устройство не найдено",
       chooseOther: "Выберите «Другое» в конфигураторе и опишите ваше устройство.",
       continueWithOther: "Продолжить с другим устройством",
+      menu: "Меню",
     },
     // Главный экран
     hero: {

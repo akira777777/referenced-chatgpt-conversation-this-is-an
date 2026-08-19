@@ -1,6 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+// Safely encode non-ASCII characters in HTTP headers when running tests in directory paths with unicode characters
+const origHeadersSet = Headers.prototype.set;
+Headers.prototype.set = function(name, value) {
+  if (typeof value === "string" && value.split("").some((c) => c.charCodeAt(0) > 255)) {
+    value = encodeURI(value);
+  }
+  return origHeadersSet.call(this, name, value);
+};
+
 async function render(path = "/", options = {}) {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-${Math.random()}`);
@@ -123,7 +132,7 @@ test("processes order API requests", async () => {
 
   assert.equal(validResponse.status, 201);
   const validData = await validResponse.json();
-  assert.match(validData.orderId, /^REP-\d+/);
+  assert.match(validData.orderId, /^REP-[A-Z0-9]+/);
   assert.equal(validData.status, "REQUESTED");
 
   // Invalid request

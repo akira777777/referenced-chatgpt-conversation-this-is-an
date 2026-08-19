@@ -253,12 +253,14 @@ main {
   flex: none;
   position: relative;
   z-index: 5;
+  text-decoration: none;
 }
 
 .logo-icon-wrap {
   display: grid;
   place-items: center;
   transition: transform 0.25s ease;
+  flex-shrink: 0;
 }
 
 .brand-logo:hover .logo-icon-wrap {
@@ -268,6 +270,8 @@ main {
 .logo-text-wrap {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  white-space: nowrap;
 }
 
 .brand-name {
@@ -276,6 +280,7 @@ main {
   letter-spacing: 0.16em;
   line-height: 1.1;
   color: var(--ink);
+  white-space: nowrap;
 }
 
 .brand-dot {
@@ -288,7 +293,8 @@ main {
   letter-spacing: 0.12em;
   color: var(--muted);
   font-weight: 600;
-  margin-top: 1px;
+  margin-top: 2px;
+  white-space: nowrap;
 }
 
 .tagline-sub {
@@ -1602,8 +1608,16 @@ main {
   z-index: 1;
 }
 
+.section-dark-accent h2 {
+  color: #ffffff !important;
+}
+
+.section-dark-accent .eyebrow {
+  color: #00e5ff !important;
+}
+
 .section-dark-accent .section-copy {
-  color: #94a3b8;
+  color: #cbd5e1 !important;
 }
 
 .comparison-wrapper {
@@ -2088,9 +2102,13 @@ main {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(10, 17, 34, 0.92) 0%, rgba(10, 17, 34, 0.75) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.85) 100%);
   z-index: 0;
   pointer-events: none;
+}
+
+.dark .bento-card:nth-child(1)::before {
+  background: linear-gradient(135deg, rgba(10, 17, 34, 0.92) 0%, rgba(10, 17, 34, 0.75) 100%);
 }
 
 .bento-card:nth-child(1) > * {
@@ -2109,9 +2127,13 @@ main {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(10, 17, 34, 0.92) 0%, rgba(10, 17, 34, 0.75) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.85) 100%);
   z-index: 0;
   pointer-events: none;
+}
+
+.dark .bento-card:nth-child(3)::before {
+  background: linear-gradient(135deg, rgba(10, 17, 34, 0.92) 0%, rgba(10, 17, 34, 0.75) 100%);
 }
 
 .bento-card:nth-child(3) > * {
@@ -5906,9 +5928,14 @@ main {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to right, rgba(10, 17, 34, 0.97) 0%, rgba(10, 17, 34, 0.88) 50%, rgba(10, 17, 34, 0.7) 100%);
+    linear-gradient(to right, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.88) 50%, rgba(255, 255, 255, 0.72) 100%);
   z-index: 0;
   pointer-events: none;
+}
+
+.dark .founder-spotlight-card::after {
+  background:
+    linear-gradient(to right, rgba(10, 17, 34, 0.97) 0%, rgba(10, 17, 34, 0.88) 50%, rgba(10, 17, 34, 0.7) 100%);
 }
 
 .founder-photo-col,
@@ -6000,13 +6027,19 @@ main {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(0, 229, 255, 0.05);
-  border: 1px solid rgba(0, 229, 255, 0.15);
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
   border-radius: 12px;
   padding: 8px 12px;
   font-size: 12px;
   font-weight: 600;
   color: var(--ink);
+}
+
+.dark .founder-cred-badge {
+  background: rgba(0, 229, 255, 0.08);
+  border-color: rgba(0, 229, 255, 0.25);
+  color: #f1f5f9;
 }
 
 .founder-cred-badge .cred-icon {
@@ -6158,17 +6191,38 @@ main {
   box-shadow: 0 4px 16px rgba(0, 114, 245, 0.35);
 }
 
-.estimator-models-scroll {
+.estimator-model-select-wrap {
+  margin-bottom: 10px;
+}
+
+.estimator-model-select {
+  width: 100%;
+  padding: 11px 16px;
+  background: var(--surface-2);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.estimator-model-select:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.2);
+}
+
+.estimator-models-wrap {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  scrollbar-width: thin;
 }
 
 .estimator-model-chip {
   flex-shrink: 0;
-  padding: 8px 14px;
+  padding: 7px 13px;
   background: var(--surface-2);
   border: 1px solid var(--line);
   border-radius: 12px;

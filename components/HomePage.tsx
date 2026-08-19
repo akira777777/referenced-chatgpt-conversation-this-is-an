@@ -20,8 +20,6 @@ import {
 } from "lucide-react";
 import { contactInfo, brands } from "@/lib/data";
 import { InteractiveDiagnostic } from "./InteractiveDiagnostic";
-import { InteractiveComparison } from "./InteractiveComparison";
-import { HolographicDeviceStage } from "./HolographicDeviceStage";
 import { QuickRepairEstimator } from "./QuickRepairEstimator";
 import { StudioTransitAssistant } from "./StudioTransitAssistant";
 import { BrandIcon } from "./BrandIcons";
@@ -165,9 +163,6 @@ export function HomePage() {
               </div>
             </motion.div>
           </div>
-
-          {/* Holographic 3D Interactive Stage */}
-          <HolographicDeviceStage />
         </div>
 
         {/* Quick Manufacturer Strip with Vector Brand Logos */}
@@ -202,13 +197,6 @@ export function HomePage() {
       <section className="section">
         <div className="container">
           <InteractiveDiagnostic />
-        </div>
-      </section>
-
-      {/* 4. BEFORE / AFTER INTERACTIVE SLIDER */}
-      <section className="section section-dark-accent">
-        <div className="container">
-          <InteractiveComparison />
         </div>
       </section>
 

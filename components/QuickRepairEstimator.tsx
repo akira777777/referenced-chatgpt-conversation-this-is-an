@@ -143,8 +143,22 @@ export function QuickRepairEstimator() {
           {/* 2. Model Selector */}
           <div className="selector-group">
             <label className="selector-label">{labels.step2}</label>
-            <div className="estimator-models-scroll">
-              {brandModels.slice(0, 8).map(m => {
+            <div className="estimator-model-select-wrap">
+              <select
+                className="estimator-model-select"
+                value={activeModel?.id}
+                onChange={e => handleModelChange(e.target.value)}
+                aria-label={labels.step2}
+              >
+                {brandModels.map(m => (
+                  <option key={m.id} value={m.id}>
+                    {m.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="estimator-models-wrap">
+              {brandModels.slice(0, 6).map(m => {
                 const isSelected = activeModel?.id === m.id;
                 return (
                   <button

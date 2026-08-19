@@ -7,6 +7,7 @@
 export function sanitizeText(input: string, maxLen = 500): string {
   return input
     .replace(/<[^>]*>/g, "")  // strip HTML tags
+    // eslint-disable-next-line no-control-regex
     .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "") // strip control chars
     .trim()
     .slice(0, maxLen);

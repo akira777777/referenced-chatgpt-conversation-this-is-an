@@ -61,7 +61,7 @@ export default function TrackDetail({ params }: { params: Promise<{ repairId: st
           return;
         }
         const data = await res.json();
-        setOrder(data);
+        setOrder(data as OrderData);
       } catch {
         setError(language === "cs" ? "Nepodařilo se načíst zakázku" : language === "ru" ? "Не удалось загрузить заявку" : "Unable to load order");
       } finally {
@@ -127,7 +127,7 @@ export default function TrackDetail({ params }: { params: Promise<{ repairId: st
                 <h2>{t.trackPage.statusTitle}</h2>
                 {/* Real status timeline from Supabase */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 16 }}>
-                  {STATUS_ORDER.filter(s => s !== "CANCELLED").map((s, i) => {
+                  {STATUS_ORDER.filter(s => (s as string) !== "CANCELLED").map((s, i) => {
                     const currentIndex = getStatusIndex(order.status);
                     const isDone = i < currentIndex;
                     const isCurrent = s === order.status;

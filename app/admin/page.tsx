@@ -101,7 +101,7 @@ export default function AdminPage() {
   // Fetch prices from API on load
   useEffect(() => {
     fetch("/api/admin/prices")
-      .then(res => res.json())
+      .then(res => res.json() as Promise<{ prices?: PriceEntry[] }>)
       .then(data => {
         if (data.prices && data.prices.length > 0) {
           setPrices(data.prices);

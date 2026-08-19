@@ -712,6 +712,7 @@ export const contactInfo = {
   brandName: "Reform",
   addressStreet: "Biskupcova 31",
   addressDistrict: "Praha 3",
+  addressCity: "Praha 3",
   addressFull: "Biskupcova 31, Praha 3",
   postalCode: "130 00",
   city: "Praha",
