@@ -668,17 +668,43 @@ main {
 }
 
 /* ==========================================================================
-   MINIMAL HERO SECTION
+   MINIMAL HERO SECTION & HIGH-END STUDIO AESTHETICS
    ========================================================================== */
 
 .hero-cyber {
-  padding: 130px 0 40px;
+  padding: 130px 0 50px;
   position: relative;
-  background: transparent;
+  background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(37, 99, 235, 0.09), transparent);
+  overflow: hidden;
+}
+
+.dark .hero-cyber {
+  background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(59, 130, 246, 0.15), transparent);
+}
+
+.hero-cyber::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+  opacity: 0.3;
 }
 
 .hero-glow-back {
-  display: none;
+  display: block;
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(147, 51, 234, 0.05) 50%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .hero-cyber-grid {
@@ -686,6 +712,8 @@ main {
   max-width: 840px;
   margin: 0 auto;
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .hero-cyber-copy {
@@ -698,13 +726,12 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 12px;
-  background: var(--surface);
-  border: 1px solid var(--line);
+  padding: 6px 14px;
   border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  border: 1px solid var(--line-strong);
   font-family: var(--font-geist-mono), monospace;
   font-size: 11px;
-  font-weight: 600;
   letter-spacing: 0.08em;
   color: var(--muted);
   box-shadow: var(--shadow-sm);
@@ -837,7 +864,7 @@ main {
 }
 
 /* ==========================================================================
-   QUICK REPAIR ESTIMATOR WIDGET
+   QUICK REPAIR ESTIMATOR WIDGET (HIGH-TECH GLASS)
    ========================================================================== */
 
 .section-estimator {
@@ -846,15 +873,29 @@ main {
 
 .quick-estimator-card {
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-lg);
   padding: 36px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow);
   position: relative;
+  overflow: hidden;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.quick-estimator-card:hover {
+  border-color: color-mix(in srgb, var(--accent-blue) 40%, var(--line-strong));
+  box-shadow: 0 12px 36px -8px rgba(37, 99, 235, 0.12);
 }
 
 .estimator-glow-bg {
-  display: none;
+  display: block;
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .estimator-head {
@@ -867,11 +908,15 @@ main {
   align-items: center;
   gap: 6px;
   font-family: var(--font-geist-mono), monospace;
-  font-size: 10.5px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 650;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--accent-blue);
+  background: rgba(37, 99, 235, 0.08);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(37, 99, 235, 0.2);
   margin-bottom: 8px;
 }
 
@@ -1050,10 +1095,13 @@ main {
 }
 
 .price-display-hero {
-  padding: 16px;
+  padding: 20px;
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
 }
 
 .price-hero-label {
@@ -1067,10 +1115,18 @@ main {
 }
 
 .price-hero-number {
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: var(--ink);
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, var(--ink) 20%, var(--accent-blue) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dark .price-hero-number {
+  background: linear-gradient(135deg, #ffffff 20%, #60a5fa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .price-inclusions-badge {
@@ -1079,7 +1135,7 @@ main {
   gap: 5px;
   font-size: 11.5px;
   color: var(--success);
-  font-weight: 550;
+  font-weight: 600;
   margin-top: 6px;
 }
 

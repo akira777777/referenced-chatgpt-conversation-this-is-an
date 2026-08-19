@@ -22,24 +22,33 @@ const orderSchema = z.object({
 });
 
 // ─── CORS headers (same-origin is fine for Vercel) ───────────────────────────
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": process.env.NEXT_PUBLIC_SITE_URL ?? "https://reart.cz",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-};
+function corsHeaders(request?: Request): Record<string, string> {
+  // Echo the request Origin when present so the browser allows the response.
+  // Falls back to the configured site URL, then "*" for tools/curl.
+  const origin = request?.headers.get("origin");
+  const allowed = origin || process.env.NEXT_PUBLIC_SITE_URL || "*";
+  return {
+    "Access-Control-Allow-Origin": allowed,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    Vary: "Origin",
+  };
+}
 
-export async function OPTIONS() {
-  return new Response(null, { status: 204, headers: CORS_HEADERS });
+export async function OPTIONS(request: Request) {
+  return new Response(null, { status: 204, headers: corsHeaders(request) });
 }
 
 export async function POST(request: Request) {
+  const headers = corsHeaders(request);
+
   // ── Rate limit: 5 orders / 10 min per IP ────────────────────────────────
   const ip = getClientIp(request);
   const rl = rateLimit(ip, { limit: 5, windowSec: 600 });
   if (!rl.ok) {
     return Response.json(
       { error: "Too many requests. Please wait before submitting again." },
-      { status: 429, headers: { "Retry-After": String(rl.retryAfter), ...CORS_HEADERS } }
+      { status: 429, headers: { "Retry-After": String(rl.retryAfter), ...headers } }
     );
   }
 
@@ -50,7 +59,7 @@ export async function POST(request: Request) {
     if (!parsed.success) {
       return Response.json(
         { error: "Invalid repair request", fields: parsed.error.flatten().fieldErrors },
-        { status: 400, headers: CORS_HEADERS }
+        { status: 400, headers }
       );
     }
 
@@ -86,7 +95,7 @@ export async function POST(request: Request) {
     if (!saveResult.success) {
       return Response.json(
         { error: "Failed to save order. Please try again or contact us via Telegram." },
-        { status: 500, headers: CORS_HEADERS }
+        { status: 500, headers }
       );
     }
 
@@ -97,13 +106,13 @@ export async function POST(request: Request) {
 
     return Response.json(
       { orderId, status: "REQUESTED" },
-      { status: 201, headers: CORS_HEADERS }
+      { status: 201, headers }
     );
   } catch (err) {
     console.error("[POST /api/orders] Unhandled error:", err);
     return Response.json(
       { error: "Internal server error" },
-      { status: 500, headers: CORS_HEADERS }
+      { status: 500, headers }
     );
   }
 }

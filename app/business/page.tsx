@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Building2, FileText, Laptop, PackageCheck, ShieldCheck, Truck, Send } from "lucide-react";
+import { Building2, FileText, Laptop, PackageCheck, ShieldCheck, Truck, Send } from "lucide-react";
 import { SiteChrome } from "@/components/SiteChrome";
 import { PlaceholderTag, Section } from "@/components/ui";
 import { useLanguage } from "@/lib/i18n/context";

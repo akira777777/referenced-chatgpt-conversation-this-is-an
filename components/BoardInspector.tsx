@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useLanguage } from "@/lib/i18n/context";
-import { Microscope, Flame, Activity, Zap, CheckCircle2, ShieldAlert, Cpu, ZoomIn } from "lucide-react";
+import { Microscope, Flame, Activity, Zap, Cpu, ZoomIn } from "lucide-react";
 
 export function BoardInspector() {
   const { language } = useLanguage();

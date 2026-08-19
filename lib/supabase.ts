@@ -225,6 +225,12 @@ export async function saveOrderToSupabase(
 
     if (customerError) {
       console.error("Supabase customer insert error:", customerError);
+      // Fail loud: without a customer_id the order row will exist but PII
+      // linkage is lost. In dev, surface it; in prod we continue so a
+      // transient customers-table issue doesn't block the order itself.
+      if (process.env.NODE_ENV !== "production") {
+        throw new Error(`Customer insert failed: ${customerError.message}`);
+      }
     }
 
     // 2. Insert repair order

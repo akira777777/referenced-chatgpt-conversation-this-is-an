@@ -26,6 +26,17 @@ const patchSchema = z.object({
 export async function GET(request: Request) {
   if (!isAdminAuthorized(request)) return unauthorizedResponse();
 
+  // Read-side rate limit: 120 lookups / 60s per IP. Generous because admins
+  // paginate and filter, but bounded so a leaked token can't drain Supabase.
+  const ip = getClientIp(request);
+  const rl = rateLimit(ip, { limit: 120, windowSec: 60 });
+  if (!rl.ok) {
+    return Response.json(
+      { error: "Too many requests" },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfter) } }
+    );
+  }
+
   const url    = new URL(request.url);
   const id     = url.searchParams.get("id");
   const page   = Math.max(1, parseInt(url.searchParams.get("page") ?? "1"));

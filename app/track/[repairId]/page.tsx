@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Clock, Mail, MapPin, Send, Smartphone, AlertCircle, Loader2, ShieldCheck, FileCheck2, Printer } from "lucide-react";
+import { ArrowLeft, Clock, MapPin, Send, Smartphone, AlertCircle, Loader2, ShieldCheck, Printer } from "lucide-react";
 import { SiteChrome } from "@/components/SiteChrome";
 import { StatusTimeline } from "@/components/StatusTimeline";
 import { DeviceGlyph, PlaceholderTag } from "@/components/ui";

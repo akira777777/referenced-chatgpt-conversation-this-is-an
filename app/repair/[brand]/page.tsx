@@ -4,7 +4,7 @@ import { use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { motion } from "motion/react";
-import { ArrowRight, Wrench, ShieldCheck, Cpu, CheckCircle2, Send, Clock, Sparkles } from "lucide-react";
+import { ArrowRight, Wrench, ShieldCheck, Cpu, Send, Sparkles } from "lucide-react";
 import { SiteChrome } from "@/components/SiteChrome";
 import { DeviceGlyph, PlaceholderTag } from "@/components/ui";
 import { brands, contactInfo } from "@/lib/data";
