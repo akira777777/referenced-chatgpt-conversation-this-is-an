@@ -3,6 +3,11 @@
 
 # testing
 /coverage
+/playwright-report/
+/test-results/
+/playwright/.cache/
+/blob-report/
+/playwright/.last-run.json
 
 # vinext / next.js
 /.next/
@@ -20,6 +25,7 @@ yarn-error.log*
 
 # env files
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -28,3 +34,12 @@ yarn-error.log*
 /.wrangler/
 /outputs/
 /work/
+
+# editor / OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# typescript build info
+*.tsbuildinfo

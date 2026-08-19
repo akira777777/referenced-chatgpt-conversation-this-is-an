@@ -1,0 +1,31 @@
+# EditorConfig is awesome: https://EditorConfig.org
+# Enforces consistent whitespace, line endings, and charset across editors
+# (VS Code, JetBrains, Vim, Sublime, etc.) without requiring any plugin to
+# be installed. All major editors support it natively.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Markdown often uses trailing whitespace for hard line breaks; preserve it.
+[*.md]
+trim_trailing_whitespace = false
+
+# TypeScript / TSX / JS / JSX share the project's 2-space convention.
+[*.{ts,tsx,js,jsx,mjs,cjs}]
+indent_size = 2
+quote_type = double
+
+# Shell scripts use 2 spaces too; # comments are tolerated.
+[*.{sh,bash,zsh}]
+indent_size = 2
+
+# Makefile requires real tabs.
+[Makefile]
+indent_style = tab

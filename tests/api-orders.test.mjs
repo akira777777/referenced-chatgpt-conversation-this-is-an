@@ -13,7 +13,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { z } from "zod";
 import { sanitizeText } from "../lib/sanitize.ts";
-import { rateLimit, getClientIp } from "../lib/rate-limit.ts";
+import {
+  rateLimit,
+  getClientIp,
+  __resetRateLimitStoreForTests,
+} from "../lib/rate-limit.ts";
 
 // Mirror the production schema in app/api/orders/route.ts. Kept in lockstep
 // so a contract change there must also be reflected here.
@@ -150,6 +154,26 @@ test("rateLimit allows requests under the limit and blocks after", () => {
   const blocked = rateLimit(key, opts);
   assert.equal(blocked.ok, false);
   assert.ok(typeof blocked.retryAfter === "number" && blocked.retryAfter > 0);
+});
+
+test("rateLimit: separate keys have independent counters", () => {
+  const opts = { limit: 1, windowSec: 60 };
+  const a = `test-rl-a-${Date.now()}-${Math.random()}`;
+  const b = `test-rl-b-${Date.now()}-${Math.random()}`;
+  assert.equal(rateLimit(a, opts).ok, true);
+  // Same key would now be blocked, but a different IP must still pass.
+  assert.equal(rateLimit(b, opts).ok, true);
+  assert.equal(rateLimit(a, opts).ok, false);
+});
+
+test("rateLimit: __resetRateLimitStoreForTests clears the in-memory store", () => {
+  const key = `test-rl-reset-${Date.now()}-${Math.random()}`;
+  const opts = { limit: 1, windowSec: 60 };
+  assert.equal(rateLimit(key, opts).ok, true);
+  assert.equal(rateLimit(key, opts).ok, false);
+  __resetRateLimitStoreForTests();
+  // After reset, the same key is treated as a fresh IP.
+  assert.equal(rateLimit(key, opts).ok, true);
 });
 
 // ─── Order ID regex (used by /api/orders/[id]) ────────────────────────────────

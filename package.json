@@ -9,7 +9,11 @@
     "dev": "vinext dev",
     "build": "vinext build",
     "start": "vinext start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "node --experimental-strip-types --test tests/api-orders.test.mjs tests/pricing.test.mjs tests/security-headers.test.mjs",
+    "test:e2e": "node --experimental-strip-types --test tests/rendered-html.test.mjs",
+    "test": "npm run lint && npm run typecheck && npm run test:unit"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
