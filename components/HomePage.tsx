@@ -23,7 +23,6 @@ import { PartsTransparency } from "./PartsTransparency";
 import { LabEquipment } from "./LabEquipment";
 import { StudioTransitAssistant } from "./StudioTransitAssistant";
 import { BoardInspector } from "./BoardInspector";
-import { HolographicDeviceStage } from "./HolographicDeviceStage";
 import { BrandIcon } from "./BrandIcons";
 
 export function HomePage() {
@@ -132,13 +131,6 @@ export function HomePage() {
               ))}
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* 1.1 HOLOGRAPHIC 3D DEVICE STAGE SPOTLIGHT */}
-      <section className="section" style={{ padding: "20px 0 40px" }}>
-        <div className="container">
-          <HolographicDeviceStage />
         </div>
       </section>
 
