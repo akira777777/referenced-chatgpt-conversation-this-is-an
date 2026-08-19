@@ -864,6 +864,271 @@ main {
 }
 
 /* ==========================================================================
+   HOLOGRAPHIC 3D DEVICE STAGE (INTERACTIVE WORKSTATION)
+   ========================================================================== */
+
+.hero-stage-cyber {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.stage-cyber-frame {
+  width: 100%;
+  max-width: 520px;
+  height: 560px;
+  position: relative;
+}
+
+.workstation-ambient-glow {
+  position: absolute;
+  inset: -24px;
+  background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.10) 0%, rgba(2, 132, 199, 0.05) 45%, transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dark .workstation-ambient-glow {
+  background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.16) 0%, rgba(56, 189, 248, 0.08) 45%, transparent 70%);
+}
+
+.workstation-card {
+  width: 100%;
+  height: 100%;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.workstation-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  z-index: 5;
+}
+
+.workstation-brand-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success-glow);
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.workstation-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-family: var(--font-geist-mono), monospace;
+}
+
+.workstation-modes {
+  display: flex;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  gap: 2px;
+}
+
+.ws-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ws-mode-btn:hover {
+  color: var(--ink);
+}
+
+.ws-mode-btn.active {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+
+.workstation-display-stage {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.scanner-sweep-beam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-blue), var(--accent-cyan), transparent);
+  opacity: 0.5;
+  animation: scannerSweep 4s ease-in-out infinite;
+  z-index: 10;
+  pointer-events: none;
+}
+
+@keyframes scannerSweep {
+  0% { top: 0%; opacity: 0; }
+  15% { opacity: 0.6; }
+  85% { opacity: 0.6; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.ws-view {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Diagnostics View */
+.diagnostics-phone-mockup {
+  width: 220px;
+  height: 320px;
+  background: #0a0c12;
+  border: 4px solid #1f2430;
+  border-radius: 28px;
+  box-shadow: 0 15px 40px rgba(9, 10, 15, 0.25), inset 0 0 20px rgba(37, 99, 235, 0.18);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.diag-island {
+  width: 50px;
+  height: 14px;
+  background: #020617;
+  border-radius: 10px;
+  margin-top: 8px;
+}
+
+.diag-screen-ui {
+  flex: 1;
+  width: 100%;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.diag-circle-radar {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(56, 189, 248, 0.45);
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin-top: 6px;
+}
+
+.radar-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(56, 189, 248, 0.35), transparent 60%);
+  animation: radarSpin 4s linear infinite;
+}
+
+@keyframes radarSpin {
+  100% { transform: rotate(360deg); }
+}
+
+.radar-center-icon {
+  color: #38bdf8;
+  z-index: 2;
+}
+
+.diag-telemetry-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: #34d399;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-family: var(--font-geist-mono), monospace;
+}
+
+.diag-metric-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.diag-metric-box {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+  padding: 5px 8px;
+  text-align: center;
+}
+
+.diag-metric-box small {
+  display: block;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  font-family: var(--font-geist-mono), monospace;
+}
+
+.diag-metric-box b {
+  font-size: 11px;
+  color: #38bdf8;
+}
+
+/* __STAGE_PART2__ */
+
+/* ==========================================================================
    QUICK REPAIR ESTIMATOR WIDGET (HIGH-TECH GLASS)
    ========================================================================== */
 
