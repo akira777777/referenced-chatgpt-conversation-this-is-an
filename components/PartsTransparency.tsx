@@ -1,7 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/lib/i18n/context";
-import { CheckCircle2, ShieldCheck, Sparkles, Layers, Cpu, Award } from "lucide-react";
+import { CheckCircle2, ShieldCheck, Sparkles, Layers, Cpu, Award, ZoomIn } from "lucide-react";
 
 export function PartsTransparency() {
   const { language } = useLanguage();
@@ -15,6 +15,14 @@ export function PartsTransparency() {
         : language === "ru"
         ? "Никаких сюрпризов. Для каждого ремонта вы точно знаете класс устанавливаемой детали и её технические параметры."
         : "No mystery parts. For every repair, you know exactly what grade of component is installed and its technical specs.",
+    techArchBadge: language === "cs" ? "TECHNICKÁ ARCHITEKTURA DISPLEJE" : language === "ru" ? "АРХИТЕКТУРА И СЛОИ ДИСПЛЕЯ" : "OPTICAL DISPLAY STACK ARCHITECTURE",
+    techArchTitle: language === "cs" ? "Přesná kalibrace a přenos EEPROM dat" : language === "ru" ? "Ювелирная сборка и перенос EEPROM микросхемы" : "Layer Lamination & EEPROM Serialization",
+    techArchDesc:
+      language === "cs"
+        ? "Při výměně displeje zachováváme původní senzor TrueTone, přenášíme hardwarový identifikační kód z poškozeného panelu a obnovujeme tovární vodotěsné těsnění."
+        : language === "ru"
+        ? "При замене экрана мы сохраняем работу TrueTone, считываем калибровочные данные со старого модуля и наносим заводскую влагозащитную проклейку."
+        : "During screen repair, we migrate the factory EEPROM hardware ID, preserve TrueTone optical balance, and re-apply factory water-resistant seals.",
   };
 
   const grades = [
@@ -82,6 +90,51 @@ export function PartsTransparency() {
         </p>
         <h2>{labels.title}</h2>
         <p className="section-copy centered">{labels.subtitle}</p>
+      </div>
+
+      {/* Exploded Optical Module Architecture Illustration */}
+      <div className="display-exploded-showcase" style={{
+        background: "var(--surface)",
+        border: "1px solid var(--line)",
+        borderRadius: "var(--radius-lg)",
+        overflow: "hidden",
+        display: "grid",
+        gridTemplateColumns: "1.15fr 0.85fr",
+        alignItems: "center",
+        boxShadow: "var(--shadow-sm)",
+        marginBottom: "28px",
+      }}>
+        <div style={{ aspectRatio: "16/9", overflow: "hidden", background: "var(--surface-2)" }}>
+          <img
+            src="/cleanroom-display-exploded.jpg"
+            alt="Exploded technical illustration of smartphone OLED display matrix, Ceramic Glass, Polarized Film, and EEPROM Serialization Chip"
+            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <div style={{ padding: "32px" }}>
+          <span className="eyebrow" style={{ color: "var(--accent-blue)", marginBottom: "6px" }}>
+            <ZoomIn size={14} /> {labels.techArchBadge}
+          </span>
+          <h3 style={{ fontSize: "20px", fontWeight: 700, margin: "0 0 10px", lineHeight: 1.3 }}>
+            {labels.techArchTitle}
+          </h3>
+          <p style={{ color: "var(--muted)", fontSize: "14px", lineHeight: 1.6, margin: "0 0 18px" }}>
+            {labels.techArchDesc}
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", fontSize: "13px", color: "var(--ink)", fontWeight: 550 }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+              <CheckCircle2 size={16} style={{ color: "var(--success)" }} /> Ceramic Shield & High-Grade Lamination
+            </span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+              <CheckCircle2 size={16} style={{ color: "var(--success)" }} /> 120Hz ProMotion & TrueTone EEPROM Chip
+            </span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+              <CheckCircle2 size={16} style={{ color: "var(--success)" }} /> IP68 Waterproof Seal Replacement
+            </span>
+          </div>
+        </div>
       </div>
 
       <div className="grades-grid">

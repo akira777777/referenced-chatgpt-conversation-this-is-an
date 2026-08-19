@@ -4429,6 +4429,9 @@ main {
   .diagnostic-grid { grid-template-columns: 1fr; }
   .grades-grid { grid-template-columns: 1fr; }
   .equipment-grid { grid-template-columns: 1fr 1fr; }
+  .lab-visual-gallery { grid-template-columns: 1fr !important; }
+  .display-exploded-showcase { grid-template-columns: 1fr !important; }
+  .b2b-visual-banner { grid-template-columns: 1fr !important; }
   .workflow-steps-grid { grid-template-columns: 1fr 1fr; }
   .b2b-banner-card { grid-template-columns: 1fr; }
   .testimonials-grid { grid-template-columns: 1fr; }
