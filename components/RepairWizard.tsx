@@ -56,6 +56,10 @@ export function RepairWizard() {
 
   const initialBrand = brands.find(b => b.id === params.get("brand"));
   const initialModel = initialBrand?.models.find(m => m.id === params.get("model"));
+  const initialServiceId = params.get("service");
+  const initialRepair = initialModel?.repairs?.find(
+    r => r.id === initialServiceId || r.name.toLowerCase().includes(initialServiceId?.toLowerCase() ?? "")
+  );
 
   const defaultSlot =
     language === "cs" ? "Zítra · 10:30" : language === "ru" ? "Завтра · 10:30" : "Tomorrow · 10:30";
@@ -64,7 +68,7 @@ export function RepairWizard() {
   const [brand, setBrand] = useState<Brand | null>(initialBrand ?? null);
   const [category, setCategory] = useState<string | null>(initialModel?.category ?? null);
   const [model, setModel] = useState<DeviceModel | null>(initialModel ?? null);
-  const [repairs, setRepairs] = useState<Repair[]>([]);
+  const [repairs, setRepairs] = useState<Repair[]>(initialRepair ? [initialRepair] : []);
   const [method, setMethod] = useState("Service center");
   const [slot, setSlot] = useState(defaultSlot);
   const [query, setQuery] = useState("");

@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Clock, Mail, MapPin, Send, Smartphone, AlertCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, Clock, Mail, MapPin, Send, Smartphone, AlertCircle, Loader2, ShieldCheck, FileCheck2, Printer } from "lucide-react";
 import { SiteChrome } from "@/components/SiteChrome";
 import { StatusTimeline } from "@/components/StatusTimeline";
 import { DeviceGlyph, PlaceholderTag } from "@/components/ui";
@@ -73,22 +73,39 @@ export default function TrackDetail({ params }: { params: Promise<{ repairId: st
   }, [repairId, language]);
 
   const statusLabels: Record<string, string> = {
-    REQUESTED: language === "cs" ? "Přijato" : language === "ru" ? "Принято" : "Received",
-    RECEIVED: language === "cs" ? "Doručeno" : language === "ru" ? "Доставлено" : "Delivered",
-    DIAGNOSTICS: language === "cs" ? "Diagnostika" : language === "ru" ? "Диагностика" : "Diagnostics",
-    IN_PROGRESS: language === "cs" ? "Probíhá oprava" : language === "ru" ? "В ремонте" : "In Progress",
-    TESTING: language === "cs" ? "Testování" : language === "ru" ? "Тестирование" : "Testing",
+    REQUESTED: language === "cs" ? "Přijato online" : language === "ru" ? "Принято онлайн" : "Received Online",
+    RECEIVED: language === "cs" ? "Zařízení v laboratoři" : language === "ru" ? "Устройство в лаборатории" : "Device in Lab",
+    DIAGNOSTICS: language === "cs" ? "Diagnostika & Termovize" : language === "ru" ? "Диагностика и тепловизор" : "Diagnostics & Thermal",
+    IN_PROGRESS: language === "cs" ? "Probíhá mikrooprava" : language === "ru" ? "Идет ремонт и пайка" : "Micro-Soldering & Repair",
+    TESTING: language === "cs" ? "18-bodový test & TrueTone" : language === "ru" ? "18-ступенчатый тест ОТК" : "18-Point QA Testing",
     READY: language === "cs" ? "Připraveno k vyzvednutí" : language === "ru" ? "Готово к выдаче" : "Ready for Pickup",
-    COMPLETED: language === "cs" ? "Dokončeno" : language === "ru" ? "Завершено" : "Completed",
+    COMPLETED: language === "cs" ? "Předáno se zárukou" : language === "ru" ? "Выдано с гарантией" : "Completed with Warranty",
     CANCELLED: language === "cs" ? "Zrušeno" : language === "ru" ? "Отменено" : "Cancelled",
   };
+
+  const telegramMsg =
+    language === "cs"
+      ? `Dobrý den! Mám dotaz k zakázce ${order?.orderId ?? repairId} (${order?.brand} ${order?.model}).`
+      : language === "ru"
+      ? `Здравствуйте! У меня вопрос по заказу ${order?.orderId ?? repairId} (${order?.brand} ${order?.model}).`
+      : `Hello! I have a question regarding order ${order?.orderId ?? repairId} (${order?.brand} ${order?.model}).`;
 
   return (
     <SiteChrome>
       <div className="tracking-page container">
-        <Link href="/track" className="back-link">
-          <ArrowLeft /> {t.trackPage.backToTrack}
-        </Link>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+          <Link href="/track" className="back-link" style={{ margin: 0 }}>
+            <ArrowLeft size={16} /> {t.trackPage.backToTrack}
+          </Link>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="button button-secondary button-small"
+            style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "12px" }}
+          >
+            <Printer size={14} /> {language === "cs" ? "Vytisknout potvrzení" : language === "ru" ? "Печать акта" : "Print Receipt"}
+          </button>
+        </div>
 
         {loading && (
           <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "40px 0", color: "var(--muted)" }}>
@@ -125,8 +142,7 @@ export default function TrackDetail({ params }: { params: Promise<{ repairId: st
             <div className="tracking-grid">
               <section>
                 <h2>{t.trackPage.statusTitle}</h2>
-                {/* Real status timeline from Supabase */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 16 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 16 }}>
                   {STATUS_ORDER.filter(s => (s as string) !== "CANCELLED").map((s, i) => {
                     const currentIndex = getStatusIndex(order.status);
                     const isDone = i < currentIndex;
@@ -141,6 +157,10 @@ export default function TrackDetail({ params }: { params: Promise<{ repairId: st
                           alignItems: "flex-start",
                           gap: 12,
                           opacity: isDone || isCurrent ? 1 : 0.35,
+                          padding: "12px",
+                          background: isCurrent ? "var(--surface)" : "transparent",
+                          border: isCurrent ? "1px solid var(--line-strong)" : "1px solid transparent",
+                          borderRadius: "var(--radius-sm)",
                         }}
                       >
                         <div
@@ -149,7 +169,7 @@ export default function TrackDetail({ params }: { params: Promise<{ repairId: st
                             height: 28,
                             borderRadius: "50%",
                             background: isCurrent
-                              ? "var(--accent)"
+                              ? "var(--accent-blue)"
                               : isDone
                               ? "var(--success, #22c55e)"
                               : "var(--surface-2)",
@@ -164,11 +184,11 @@ export default function TrackDetail({ params }: { params: Promise<{ repairId: st
                         >
                           {isDone ? "✓" : i + 1}
                         </div>
-                        <div>
-                          <strong style={{ fontSize: 14 }}>{statusLabels[s]}</strong>
+                        <div style={{ flex: 1 }}>
+                          <strong style={{ fontSize: 14, color: "var(--ink)" }}>{statusLabels[s]}</strong>
                           {log && (
-                            <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 2 }}>
-                              <Clock size={10} style={{ display: "inline", marginRight: 4 }} />
+                            <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 3 }}>
+                              <Clock size={11} style={{ display: "inline", marginRight: 4 }} />
                               {new Date(log.loggedAt).toLocaleString(
                                 language === "cs" ? "cs-CZ" : language === "ru" ? "ru-RU" : "en-GB"
                               )}
@@ -189,7 +209,7 @@ export default function TrackDetail({ params }: { params: Promise<{ repairId: st
                     <small>{t.trackPage.deviceLabel}</small>
                     <b>{order.brand} {order.model}</b>
                     <span>
-                      <Smartphone /> {order.repairs.join(", ")}
+                      <Smartphone size={14} /> {order.repairs.join(", ")}
                     </span>
                   </div>
                 </div>
@@ -213,26 +233,38 @@ export default function TrackDetail({ params }: { params: Promise<{ repairId: st
                   <div>
                     <dt>{t.trackPage.locationLabel}</dt>
                     <dd>
-                      <MapPin /> {contactInfo.addressFull}
+                      <MapPin size={14} /> {contactInfo.addressFull}
                     </dd>
                   </div>
                 </dl>
-                <div className="notice">
-                  <Mail />
-                  <p>{t.trackPage.updatesNotice}</p>
-                </div>
-                <div className="notice" style={{ marginTop: "10px", background: "var(--surface-2)" }}>
-                  <Send />
-                  <p>
-                    {t.trackPage.questionsNotice}{" "}
+
+                {/* Direct Telegram Sync & Master Question Box */}
+                <div className="notice" style={{ marginTop: "12px", background: "var(--surface)", border: "1px solid var(--line-strong)" }}>
+                  <Send size={16} style={{ color: "var(--accent-blue)" }} />
+                  <div>
+                    <p style={{ margin: "0 0 8px", fontSize: "12.5px", color: "var(--ink)", fontWeight: 600 }}>
+                      {language === "cs" ? "Dotaz k této zakázce?" : language === "ru" ? "Есть вопрос по этой заявке?" : "Questions about this order?"}
+                    </p>
                     <a
-                      href={contactInfo.telegramUrl}
+                      href={`${contactInfo.telegramUrl}?text=${encodeURIComponent(telegramMsg)}`}
                       target="_blank"
                       rel="noreferrer"
-                      style={{ color: "var(--accent)", fontWeight: 600 }}
+                      className="button button-small"
+                      style={{ display: "inline-flex", alignItems: "center", gap: "6px", width: "100%", justifyContent: "center" }}
                     >
-                      {contactInfo.telegram}
+                      <Send size={13} /> {language === "cs" ? "Napsat mistrovi na Telegram" : language === "ru" ? "Спросить мастера в Telegram" : "Chat on Telegram"}
                     </a>
+                  </div>
+                </div>
+
+                <div className="notice" style={{ marginTop: "10px" }}>
+                  <ShieldCheck size={16} style={{ color: "var(--success)" }} />
+                  <p style={{ fontSize: "12px", margin: 0 }}>
+                    {language === "cs"
+                      ? "Na všechny provedené práce a náhradní díly se vztahuje záruka 12 měsíců."
+                      : language === "ru"
+                      ? "На все выполненные работы и установленные компоненты действует гарантия 12 месяцев."
+                      : "12-month full lab warranty applies to all components and labor."}
                   </p>
                 </div>
               </aside>

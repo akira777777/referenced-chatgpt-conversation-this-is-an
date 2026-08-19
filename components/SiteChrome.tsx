@@ -398,12 +398,15 @@ export function Footer() {
   );
 }
 
+import { FloatingPhotoQuote } from "./FloatingPhotoQuote";
+
 export function SiteChrome({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Header />
       <main>{children}</main>
       <Footer />
+      <FloatingPhotoQuote />
     </>
   );
 }

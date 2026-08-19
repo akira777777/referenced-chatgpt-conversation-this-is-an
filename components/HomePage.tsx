@@ -22,6 +22,7 @@ import { InteractiveComparison } from "./InteractiveComparison";
 import { PartsTransparency } from "./PartsTransparency";
 import { LabEquipment } from "./LabEquipment";
 import { StudioTransitAssistant } from "./StudioTransitAssistant";
+import { BoardInspector } from "./BoardInspector";
 import { BrandIcon } from "./BrandIcons";
 
 export function HomePage() {
@@ -151,6 +152,13 @@ export function HomePage() {
       <section className="section">
         <div className="container">
           <InteractiveDiagnostic />
+        </div>
+      </section>
+
+      {/* 4.1 INTERACTIVE COMPONENT-LEVEL BOARD & THERMAL INSPECTOR */}
+      <section className="section">
+        <div className="container">
+          <BoardInspector />
         </div>
       </section>
 
