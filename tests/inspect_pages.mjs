@@ -25,8 +25,13 @@ async function run() {
 
   for (const r of routes) {
     try {
-      await page.goto(r.url, { waitUntil: "domcontentloaded" });
-      await page.waitForTimeout(600);
+      await page.goto(r.url, { waitUntil: "networkidle" });
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight / 2));
+      await page.waitForTimeout(400);
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      await page.waitForTimeout(400);
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.waitForTimeout(400);
       await page.screenshot({ path: path.join(outDir, `${r.name}-desktop.png`), fullPage: true });
       console.log(`Saved screenshot for ${r.name} desktop`);
     } catch (e) {
@@ -38,8 +43,13 @@ async function run() {
   await page.setViewportSize({ width: 390, height: 844 });
   for (const r of routes) {
     try {
-      await page.goto(r.url, { waitUntil: "domcontentloaded" });
-      await page.waitForTimeout(600);
+      await page.goto(r.url, { waitUntil: "networkidle" });
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight / 2));
+      await page.waitForTimeout(400);
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      await page.waitForTimeout(400);
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.waitForTimeout(400);
       await page.screenshot({ path: path.join(outDir, `${r.name}-mobile.png`), fullPage: true });
       console.log(`Saved screenshot for ${r.name} mobile`);
     } catch (e) {

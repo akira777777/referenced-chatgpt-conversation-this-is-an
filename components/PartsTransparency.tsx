@@ -109,7 +109,6 @@ export function PartsTransparency() {
             src="/cleanroom-display-exploded.jpg"
             alt="Exploded technical illustration of smartphone OLED display matrix, Ceramic Glass, Polarized Film, and EEPROM Serialization Chip"
             style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-            loading="lazy"
             decoding="async"
           />
         </div>

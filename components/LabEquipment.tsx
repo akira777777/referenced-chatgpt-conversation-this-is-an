@@ -98,7 +98,6 @@ export function LabEquipment() {
               src="/prague-precision-workbench.jpg"
               alt="Reform Prague Laboratory precision workbench with Leica microscope and Flir thermal camera"
               style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-              loading="lazy"
               decoding="async"
             />
           </div>
@@ -136,7 +135,6 @@ export function LabEquipment() {
               src="/lab-microsoldering.jpg"
               alt="Micro-soldering 0.02mm jump wires under microscope"
               style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-              loading="lazy"
               decoding="async"
             />
           </div>
