@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import { LanguageProvider } from "@/lib/i18n/context";
 import { StructuredData } from "@/components/StructuredData";
+import { NONCE_REQUEST_HEADER } from "@/lib/security-headers";
 import "./globals.css";
 
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -106,12 +108,18 @@ const localBusinessSchema = {
   "sameAs": ["https://t.me/liltrafficRUS"],
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  // Per-request CSP nonce from middleware.ts. Reading headers() here opts
+  // every page into dynamic rendering, which per-request nonces require.
+  const requestHeaders = await headers();
+  const nonce = requestHeaders.get(NONCE_REQUEST_HEADER) ?? undefined;
+
   return (
     <html lang="cs" suppressHydrationWarning>
       <head>
-        <StructuredData data={localBusinessSchema} />
+        <StructuredData data={localBusinessSchema} nonce={nonce} />
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('reform_theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}}catch(e){}})();`,
           }}
