@@ -8,7 +8,6 @@ import { ArrowRight, Wrench, ShieldCheck, Cpu, Send, Sparkles } from "lucide-rea
 import { SiteChrome } from "@/components/SiteChrome";
 import { DeviceGlyph, PlaceholderTag } from "@/components/ui";
 import { brands, contactInfo } from "@/lib/data";
-import { StructuredData } from "@/components/StructuredData";
 import { useLanguage } from "@/lib/i18n/context";
 import { BrandIcon } from "@/components/BrandIcons";
 
@@ -78,27 +77,6 @@ export default function BrandPage({ params }: { params: Promise<{ brand: string 
 
   return (
     <SiteChrome>
-      <StructuredData
-        data={[
-          {
-            "@context": "https://schema.org",
-            "@type": "Service",
-            name: `${brand.name} electronics repair in Prague`,
-            provider: { "@type": "LocalBusiness", name: "Reform Prague" },
-            areaServed: "Prague",
-          },
-          {
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: "/" },
-              { "@type": "ListItem", position: 2, name: "Repairs", item: "/repair" },
-              { "@type": "ListItem", position: 3, name: brand.name },
-            ],
-          },
-        ]}
-      />
-
       <div className="page-hero compact">
         <div className="container">
           <p className="eyebrow">
