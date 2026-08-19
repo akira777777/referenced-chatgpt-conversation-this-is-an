@@ -76,7 +76,7 @@ export default function ContactPage() {
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginTop: "24px" }}>
             <LinkButton href="/repair">{t.nav.startRepair}</LinkButton>
             <a
               href={contactInfo.telegramUrl}
@@ -100,8 +100,8 @@ export default function ContactPage() {
                   <img
                     src="/artem-avatar.png"
                     alt="Artem — Lead Engineer Reform Prague"
-                    width={80}
-                    height={80}
+                    width={72}
+                    height={72}
                     loading="lazy"
                     decoding="async"
                     className="tech-avatar-img"
@@ -139,10 +139,7 @@ export default function ContactPage() {
 
           {/* Map Card */}
           <div className="map-card">
-            <div className="map-grid" />
-            <span className="map-pin">
-              <MapPin />
-            </span>
+            <MapPin size={22} style={{ color: "var(--accent-blue)", marginTop: "2px", flexShrink: 0 }} />
             <div>
               <b>{contactInfo.brandName} Prague Lab</b>
               <small>{contactInfo.addressFull}</small>
