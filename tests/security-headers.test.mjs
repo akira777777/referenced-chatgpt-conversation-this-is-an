@@ -44,3 +44,35 @@ test("headers include the baseline security set", async () => {
   assert.match(headerMap["Permissions-Policy"], /geolocation=\(\)/);
   assert.equal(headerMap["Cross-Origin-Opener-Policy"], "same-origin");
 });
+
+test("next.config and worker share the same security header contract", async () => {
+  // The worker applies its own security-headers layer as defense-in-depth
+  // (because some streaming responses bypass the next.config headers() rule).
+  // Both layers must agree on every header so a refactor in one place doesn't
+  // drift from the other.
+  const fs = await import("node:fs/promises");
+  const workerSrc = await fs.readFile(
+    new URL("../worker/index.ts", import.meta.url),
+    "utf8"
+  );
+
+  // Pull the SECURITY_HEADERS object out of the worker source by literal match.
+  // We don't import the worker (it requires Cloudflare bindings); we just
+  // assert the same keys and values appear in the source.
+  const expected = [
+    ["Strict-Transport-Security", "max-age=31536000; includeSubDomains"],
+    ["X-Content-Type-Options", "nosniff"],
+    ["X-Frame-Options", "DENY"],
+    ["Referrer-Policy", "strict-origin-when-cross-origin"],
+    ["Permissions-Policy", "camera=(), microphone=(), geolocation=(), interest-cohort=()"],
+    ["Cross-Origin-Opener-Policy", "same-origin"],
+    ["X-DNS-Prefetch-Control", "off"],
+  ];
+
+  for (const [key, value] of expected) {
+    assert.ok(
+      workerSrc.includes(`"${key}": "${value}"`),
+      `worker/index.ts must declare "${key}: ${value}"`
+    );
+  }
+});
