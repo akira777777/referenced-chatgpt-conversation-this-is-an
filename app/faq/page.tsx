@@ -17,9 +17,8 @@ import {
 } from "lucide-react";
 import { SiteChrome } from "@/components/SiteChrome";
 import { contactInfo } from "@/lib/data";
-import { useLanguage } from "@/lib/i18n/context";
-
 import { faqDatabase, type FaqCategory } from "@/lib/faq";
+import { useLanguage } from "@/lib/i18n/context";
 
 export default function FaqPage() {
   const { language, t } = useLanguage();
