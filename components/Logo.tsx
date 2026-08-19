@@ -13,15 +13,14 @@ export function LogoMark({ size = 32 }: { size?: number }) {
       style={{
         width: size,
         height: size,
-        borderRadius: Math.round(size * 0.28),
+        borderRadius: Math.round(size * 0.25),
         overflow: "hidden",
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
-        boxShadow: "0 4px 14px rgba(0, 229, 255, 0.35), 0 0 10px rgba(0, 114, 245, 0.3)",
-        border: "1px solid rgba(0, 229, 255, 0.4)",
+        border: "1px solid var(--line)",
         flexShrink: 0,
-        background: "#050811",
+        background: "var(--surface-2)",
       }}
     >
       <img
