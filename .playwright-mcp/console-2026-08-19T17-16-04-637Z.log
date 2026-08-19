@@ -1,0 +1,67 @@
+[    2938ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=495adfde:14337
+[    3313ms] [ERROR] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+%s%s https://react.dev/link/hydration-mismatch 
+
+  ...
+    <meta>
+    <title>
+    <meta>
+    <meta>
+    <meta>
+    <link>
+    <meta>
+    <meta>
+    <meta>
+    <meta>
+    <meta>
+    <meta>
+    <meta>
+    <meta>
+    <meta>
+    <meta>
+    <meta>
+    <meta>
+    <meta>
+    <meta>
+    <link>
+    <link>
+    <link>
+    <link>
+    <link>
+    <meta>
+    <meta>
+    <meta>
+    <GlobalErrorBoundary fallback={function DefaultGlobalError}>
+      <ErrorBoundaryInner pathname="/" fallback={function DefaultGlobalError} isImplicitRootErrorBoundary={true}>
+        <ErrorBoundary fallback={function DefaultGlobalError}>
+          <ErrorBoundaryInner pathname="/" resetKey={undefined} fallback={function DefaultGlobalError}>
+            <LayoutSegmentProvider providerId="layout:/" segmentMap={{children:[...]}}>
+              <Slot id="layout:/">
+                <BfcacheSlotBoundary id="layout:/" content={<Context>}>
+                  <default>
+                    <link>
+                    <RemoveDuplicateServerCss>
+                    <default>
+                      <RootLayout>
+                        <html lang="cs" suppressHydrationWarning={true}>
+                          <head>
+                            <script>
+                            <script
++                             nonce="yn5vkeFgfP4owz3D8lGmmw=="
+-                             nonce=""
+                              dangerouslySetInnerHTML={{__html:"(function(..."}}
+                            >
+                          ...
+ @ http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=495adfde:3084
+[  111364ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:3000/@vite/client:968
+[  111365ms] [ERROR] Creating a worker from 'blob:http://localhost:3000/1c9725ad-0015-40c1-8b75-f7b05d56dbeb' violates the following Content Security Policy directive: "script-src 'self' 'nonce-yn5vkeFgfP4owz3D8lGmmw=='". Note that 'worker-src' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked. @ http://localhost:3000/@vite/client:1038
+[  111366ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/api/csp-report:0

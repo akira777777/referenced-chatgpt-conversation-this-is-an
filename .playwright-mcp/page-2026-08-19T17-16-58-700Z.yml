@@ -1,0 +1,577 @@
+- generic [ref=e1]:
+  - banner:
+    - generic [ref=e3]:
+      - link "Reform — Electronics Repair Prague" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - img "Reform Device Care" [ref=e7]
+        - generic [ref=e8]:
+          - generic [ref=e9]: REFORM.
+          - generic [ref=e10]: PRAGUE · DEVICE CARE
+      - navigation "Main Navigation" [ref=e11]:
+        - link "Ремонт" [ref=e12] [cursor=pointer]:
+          - /url: /repair
+        - link "Устройства" [ref=e13] [cursor=pointer]:
+          - /url: /repair/apple
+        - link "Цены" [ref=e14] [cursor=pointer]:
+          - /url: /prices
+        - link "Для бизнеса" [ref=e15] [cursor=pointer]:
+          - /url: /business
+        - link "О нас" [ref=e16] [cursor=pointer]:
+          - /url: /about
+        - link "Контакты" [ref=e17] [cursor=pointer]:
+          - /url: /contact
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - group "Language selection" [ref=e20]:
+            - button "Switch to CZ" [ref=e21] [cursor=pointer]: CZ
+            - button "Switch to RU" [pressed] [ref=e22] [cursor=pointer]: RU
+            - button "Switch to EN" [ref=e23] [cursor=pointer]: EN
+          - button "Search devices (Cmd+K)" [ref=e24] [cursor=pointer]:
+            - generic [ref=e28]: ⌘K
+          - button "Toggle color theme" [ref=e29] [cursor=pointer]
+          - link "Telegram @liltrafficRUS" [ref=e33] [cursor=pointer]:
+            - /url: https://t.me/liltrafficRUS
+        - link "Оформить ремонт" [ref=e37] [cursor=pointer]:
+          - /url: /repair
+  - main [ref=e41]:
+    - generic [ref=e42]:
+      - generic [ref=e44]:
+        - generic [ref=e45]: ЛАБОРАТОРИЯ В ПРАГЕ · МИКРОХИРУРГИЯ ЭЛЕКТРОНИКИ
+        - heading "Работает как новый. С ювелирной точностью." [level=1] [ref=e48]
+        - paragraph [ref=e49]: Профессиональная лаборатория ремонта электроники в Праге 3. Пайка микросхем под микроскопом, оригинальные компоненты, ремонт день-в-день и честные индивидуальные цены.
+        - generic [ref=e50]:
+          - link "Рассчитать ремонт" [ref=e51] [cursor=pointer]:
+            - /url: /repair
+          - link "Написать мастеру в Telegram" [ref=e54] [cursor=pointer]:
+            - /url: https://t.me/liltrafficRUS
+        - generic [ref=e58]:
+          - generic [ref=e59]: Гарантия до 12 месяцев
+          - generic [ref=e64]: Biskupcova 31, Praha 3
+          - generic [ref=e69]: Бесплатная диагностика
+      - generic [ref=e75]:
+        - generic [ref=e76]: "Быстрый выбор:"
+        - generic [ref=e77]:
+          - link "Apple" [ref=e78] [cursor=pointer]:
+            - /url: /repair?brand=apple
+          - link "Samsung" [ref=e82] [cursor=pointer]:
+            - /url: /repair?brand=samsung
+          - link "Google" [ref=e88] [cursor=pointer]:
+            - /url: /repair?brand=google
+          - link "Xiaomi" [ref=e93] [cursor=pointer]:
+            - /url: /repair?brand=xiaomi
+          - link "Huawei" [ref=e99] [cursor=pointer]:
+            - /url: /repair?brand=huawei
+          - link "Other" [ref=e107] [cursor=pointer]:
+            - /url: /repair?brand=other
+    - generic [ref=e117]:
+      - generic [ref=e118]:
+        - generic [ref=e119]: REFORM LAB • PRAGUE 3
+        - tablist [ref=e122]:
+          - tab "Диагностика" [ref=e123] [cursor=pointer]
+          - tab "Разборка" [ref=e127] [cursor=pointer]
+          - tab "Микропайка" [active] [selected] [ref=e133] [cursor=pointer]
+      - generic [ref=e1137]:
+        - generic [ref=e1138]:
+          - generic [ref=e1143]: BGA-U2000
+          - generic [ref=e1160]: Шаг BGA шариков 0,01 мм
+        - generic [ref=e1164]:
+          - generic [ref=e1165]: Восстановление обрывов цепей
+          - generic [ref=e1170]: Ультразвуковая деконтаминация
+          - generic [ref=e1175]: Полная сохранность данных и NAND
+      - generic [ref=e178]:
+        - generic [ref=e179]:
+          - img "Artem" [ref=e182]
+          - generic [ref=e183]: "Ведущий мастер: Artem Mikhailov"
+        - link "Консультация в Telegram @@liltrafficRUS" [ref=e184] [cursor=pointer]:
+          - /url: https://t.me/liltrafficRUS
+          - generic [ref=e185]: Консультация в Telegram
+          - generic [ref=e186]: "@@liltrafficRUS"
+    - generic [ref=e189]:
+      - generic [ref=e190]:
+        - generic [ref=e191]: БЫСТРЫЙ РАСЧЕТ СТОИМОСТИ
+        - heading "Узнайте стоимость ремонта за 1 секунду" [level=3] [ref=e195]
+        - paragraph [ref=e196]: Выберите бренд, модель и услугу. Каждая цена уже включает оригинальную деталь, работу мастера и тестирование.
+      - generic [ref=e197]:
+        - generic [ref=e198]:
+          - generic [ref=e199]:
+            - generic [ref=e200]: 1. Бренд
+            - tablist [ref=e201]:
+              - tab "Apple" [selected] [ref=e202] [cursor=pointer]
+              - tab "Samsung" [ref=e206] [cursor=pointer]
+              - tab "Google" [ref=e212] [cursor=pointer]
+              - tab "Xiaomi" [ref=e217] [cursor=pointer]
+              - tab "Huawei" [ref=e223] [cursor=pointer]
+              - tab "Other" [ref=e231] [cursor=pointer]
+          - generic [ref=e237]:
+            - generic [ref=e238]: 2. Модель
+            - generic [ref=e239]:
+              - button "iPhone 16 Pro Max" [ref=e240] [cursor=pointer]
+              - button "iPhone 16 Pro" [ref=e241] [cursor=pointer]
+              - button "iPhone 16" [ref=e242] [cursor=pointer]
+              - button "iPhone 15 Pro Max" [ref=e243] [cursor=pointer]
+              - button "iPhone 15 Pro" [ref=e244] [cursor=pointer]
+              - button "iPhone 15" [ref=e245] [cursor=pointer]
+          - generic [ref=e246]:
+            - generic [ref=e247]: 3. Неисправность
+            - generic [ref=e248]:
+              - button "Battery replacement" [ref=e249] [cursor=pointer]
+              - button "Display replacement" [ref=e254] [cursor=pointer]
+              - button "Back glass replacement" [ref=e260] [cursor=pointer]
+              - button "Charging port repair / replacement" [ref=e266] [cursor=pointer]
+              - button "Camera replacement" [ref=e271] [cursor=pointer]
+              - button "Speaker / microphone repair" [ref=e277] [cursor=pointer]
+              - button "Diagnostics" [ref=e282] [cursor=pointer]
+        - generic [ref=e288]:
+          - generic [ref=e289]:
+            - generic [ref=e290]:
+              - generic [ref=e291]: iPhone 15 Pro
+              - generic [ref=e294]: 60–90 min
+            - heading "Display replacement" [level=4] [ref=e298]
+            - paragraph [ref=e299]: Precision display assembly swap, calibrated TrueTone and touch sensors.
+          - generic [ref=e300]:
+            - generic [ref=e301]: Ориентировочно под ключ
+            - generic [ref=e302]: ок. 2 500–6 000 Kč
+            - generic [ref=e303]: Запчасть и работа включены
+          - generic [ref=e308]:
+            - generic [ref=e309]: Качественная деталь / дисплей / ячейка
+            - generic [ref=e314]: Работа инженера лаборатории
+            - generic [ref=e319]: Комплексная диагностика и тесты
+            - generic [ref=e324]: Гарантия до 12 месяцев
+          - generic [ref=e329]:
+            - link "Оформить этот ремонт" [ref=e330] [cursor=pointer]:
+              - /url: /repair?brand=apple&model=iphone-15-pro&service=screen
+            - link "Уточнить в Telegram" [ref=e334] [cursor=pointer]:
+              - /url: https://t.me/liltrafficRUS?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%98%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D0%B5%D1%82%20%D1%80%D0%B5%D0%BC%D0%BE%D0%BD%D1%82%3A%20iPhone%2015%20Pro%20%E2%80%94%20Display%20replacement%20(%D0%BE%D0%BA.%202%20500%E2%80%936%20000%20K%C4%8D).%20%D0%9C%D0%BE%D0%B6%D0%BD%D0%BE%20%D0%B7%D0%B0%D0%BF%D0%B8%D1%81%D0%B0%D1%82%D1%8C%D1%81%D1%8F%20%D0%BD%D0%B0%20%D1%81%D0%B5%D0%B3%D0%BE%D0%B4%D0%BD%D1%8F%3F
+    - generic [ref=e342]:
+      - generic [ref=e343]:
+        - paragraph [ref=e344]: РЕЗУЛЬТАТЫ ЛАБОРАТОРИИ
+        - heading "Восстановление до заводского идеала." [level=2] [ref=e348]
+        - paragraph [ref=e349]: Потяните слайдер, чтобы оценить качество компонентной реставрации и микропайки.
+        - tablist "Select repair scenario" [ref=e350]:
+          - tab "OLED Дисплей" [selected] [ref=e351] [cursor=pointer]
+          - tab "Батарея 68% → 100%" [ref=e355] [cursor=pointer]
+          - tab "Залитие и коррозия" [ref=e361] [cursor=pointer]
+          - tab "Разъем зарядки" [ref=e366] [cursor=pointer]
+        - list [ref=e370]:
+          - listitem [ref=e371]:
+            - generic [ref=e375]: Сборка в чистой обеспыленной зоне
+          - listitem [ref=e376]:
+            - generic [ref=e380]: Сохранение TrueTone, Face ID и биометрии
+          - listitem [ref=e381]:
+            - generic [ref=e385]: Восстановление заводской влагозащитной проклейки
+        - generic [ref=e386]: Перетаскивайте ползунок для сравнения
+      - slider "Comparison image slider" [ref=e389]:
+        - generic [ref=e390]:
+          - generic [ref=e391]:
+            - generic [ref=e392]: Разбитое устройство
+            - paragraph [ref=e396]: Треснувшее стекло и полосы матрицы
+          - generic [ref=e397]:
+            - generic [ref=e398]: После реставрации Reform
+            - paragraph [ref=e403]: Новый 120Hz OLED + TrueTone 100%
+        - generic [ref=e404]:
+          - generic [ref=e407]:
+            - generic [ref=e408]: 09:41
+            - generic [ref=e409]: Вторник, 12 сентября
+          - generic [ref=e420]:
+            - generic [ref=e421]: 09:41
+            - generic [ref=e422]: Вторник, 12 сентября
+          - generic:
+            - generic:
+              - generic: ‹
+              - generic: ›
+    - generic [ref=e435]:
+      - generic [ref=e436]:
+        - paragraph [ref=e437]: СТАНДАРТЫ КАЧЕСТВА
+        - heading "Интерактивный помощник по симптомам" [level=2] [ref=e441]
+        - paragraph [ref=e442]: Выберите проблему вашего устройства, чтобы мгновенно узнать сроки и технологию ремонта.
+      - generic [ref=e443]:
+        - tablist "Device symptoms" [ref=e444]:
+          - tab "Разбит экран / дефекты матрицы Выбрано Не работает тачскрин, полосы на OLED, черный экран или трещины на стекле. Уровень 1 · OEM Калибровка" [selected] [ref=e445] [cursor=pointer]:
+            - generic [ref=e451]:
+              - generic [ref=e452]:
+                - strong [ref=e453]: Разбит экран / дефекты матрицы
+                - generic [ref=e454]: Выбрано
+              - paragraph [ref=e457]: Не работает тачскрин, полосы на OLED, черный экран или трещины на стекле.
+              - generic [ref=e458]: Уровень 1 · OEM Калибровка
+          - tab "Быстро садится / выключается Износ батареи ниже 80%, вздутие аккумулятора или отключение на морозе. Уровень 1 · Свежая 0-цикл ячейка" [ref=e459] [cursor=pointer]:
+            - generic [ref=e464]:
+              - strong [ref=e466]: Быстро садится / выключается
+              - paragraph [ref=e467]: Износ батареи ниже 80%, вздутие аккумулятора или отключение на морозе.
+              - generic [ref=e468]: Уровень 1 · Свежая 0-цикл ячейка
+          - tab "Не заряжается / отходит провод Кабель выпадает, медленная зарядка, ошибка попадания влаги или нет реакции. Уровень 2 · Замена компонента" [ref=e469] [cursor=pointer]:
+            - generic [ref=e473]:
+              - strong [ref=e475]: Не заряжается / отходит провод
+              - paragraph [ref=e476]: Кабель выпадает, медленная зарядка, ошибка попадания влаги или нет реакции.
+              - generic [ref=e477]: Уровень 2 · Замена компонента
+          - tab "Попадание воды / залитие жидкостью Падение в воду, залитие кофе/чаем или короткое замыкание от влаги. Уровень 3 · Ультразвуковая сушка" [ref=e478] [cursor=pointer]:
+            - generic [ref=e483]:
+              - strong [ref=e485]: Попадание воды / залитие жидкостью
+              - paragraph [ref=e486]: Падение в воду, залитие кофе/чаем или короткое замыкание от влаги.
+              - generic [ref=e487]: Уровень 3 · Ультразвуковая сушка
+          - tab "Не включается / сбой платы Вечное яблоко (bootloop), ошибка памяти NAND, процессора или аудиокодека. Уровень 4 · BGA Микропайка" [ref=e488] [cursor=pointer]:
+            - generic [ref=e495]:
+              - strong [ref=e497]: Не включается / сбой платы
+              - paragraph [ref=e498]: Вечное яблоко (bootloop), ошибка памяти NAND, процессора или аудиокодека.
+              - generic [ref=e499]: Уровень 4 · BGA Микропайка
+          - tab "Трясется камера / размытый фокус Разбито внешнее стекло, треск стабилизатора или темный экран камеры. Уровень 2 · Замена оптического модуля" [ref=e500] [cursor=pointer]:
+            - generic [ref=e506]:
+              - strong [ref=e508]: Трясется камера / размытый фокус
+              - paragraph [ref=e509]: Разбито внешнее стекло, треск стабилизатора или темный экран камеры.
+              - generic [ref=e510]: Уровень 2 · Замена оптического модуля
+        - generic [ref=e512]:
+          - generic [ref=e519]:
+            - generic [ref=e520]: ДИАГНОСТИЧЕСКИЙ ПРОТОКОЛ
+            - heading "Разбит экран / дефекты матрицы" [level=3] [ref=e521]
+            - text: Уровень 1 · OEM Калибровка
+          - generic [ref=e522]:
+            - generic [ref=e528]:
+              - generic [ref=e529]: "Ориентировочное время:"
+              - strong [ref=e530]: 1–2 часа
+            - generic [ref=e535]:
+              - generic [ref=e536]: "Рекомендуемый ремонт:"
+              - text: Замена откалиброванного дисплейного модуля с сохранением TrueTone
+          - generic [ref=e537]:
+            - generic [ref=e538]: "Класс детали: TrueTone матрица + Олеофобное стекло"
+            - generic [ref=e543]: "Протокол лаборатории: Калибровка цвета и перенос EEPROM профиля"
+          - paragraph [ref=e549]: 💡 Точная цена согласовывается с вами индивидуально до начала работ.
+          - generic [ref=e550]:
+            - link "Записаться на этот ремонт" [ref=e551] [cursor=pointer]:
+              - /url: /repair?issue=screen
+            - link "Telegram @liltrafficRUS" [ref=e554] [cursor=pointer]:
+              - /url: https://t.me/liltrafficRUS?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9D%D1%83%D0%B6%D0%BD%D0%B0%20%D0%B4%D0%B8%D0%B0%D0%B3%D0%BD%D0%BE%D1%81%D1%82%D0%B8%D0%BA%D0%B0%20%D0%B8%20%D1%80%D0%B0%D1%81%D1%87%D0%B5%D1%82%20%D1%81%D1%82%D0%BE%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D0%B8%20%D1%80%D0%B5%D0%BC%D0%BE%D0%BD%D1%82%D0%B0%3A%20%D0%A0%D0%B0%D0%B7%D0%B1%D0%B8%D1%82%20%D1%8D%D0%BA%D1%80%D0%B0%D0%BD%20%2F%20%D0%B4%D0%B5%D1%84%D0%B5%D0%BA%D1%82%D1%8B%20%D0%BC%D0%B0%D1%82%D1%80%D0%B8%D1%86%D1%8B%20(%D0%A3%D1%80%D0%BE%D0%B2%D0%B5%D0%BD%D1%8C%201%20%C2%B7%20OEM%20%D0%9A%D0%B0%D0%BB%D0%B8%D0%B1%D1%80%D0%BE%D0%B2%D0%BA%D0%B0).
+    - generic [ref=e560]:
+      - generic [ref=e561]:
+        - paragraph [ref=e562]: ЛАБОРАТОРНЫЙ СИМУЛЯТОР ДИАГНОСТИКИ
+        - heading "Поиск неисправностей на уровне микроскопа." [level=2] [ref=e565]
+        - paragraph [ref=e566]: "Попробуйте интерактивную диагностику: как наши инженеры локализуют короткие замыкания и восстанавливают микросхемы с помощью тепловизора и оптики Leica."
+      - generic [ref=e567]:
+        - button "45× Микроскоп" [ref=e568] [cursor=pointer]
+        - button "Тепловизор Flir" [ref=e573] [cursor=pointer]
+        - button "Схема и шины питания" [ref=e576] [cursor=pointer]
+      - generic [ref=e579]:
+        - generic [ref=e580]:
+          - generic [ref=e581]:
+            - generic [ref=e582]: 45× LEICA OPTICAL FEED
+            - generic [ref=e583]: +74.2 °C (Hotspot ΔT +51°C)
+          - generic [ref=e584]:
+            - button "U2000 Main Power PMIC VDD_MAIN Short" [ref=e585] [cursor=pointer]:
+              - generic [ref=e586]: U2000
+              - strong [ref=e591]: Main Power PMIC
+              - text: VDD_MAIN Short
+            - button "U1500 NAND NVMe Flash Error 4013 Trace" [ref=e592] [cursor=pointer]:
+              - generic [ref=e593]: U1500
+              - strong [ref=e598]: NAND NVMe Flash
+              - text: Error 4013 Trace
+            - button "U3101 · Audio Subsystem Audio Codec IC (Pad Lift C12) Micro-jumper repair" [ref=e599] [cursor=pointer]:
+              - generic [ref=e600]: U3101 · Audio Subsystem
+              - strong [ref=e605]: Audio Codec IC (Pad Lift C12)
+              - text: Micro-jumper repair
+          - generic [ref=e606]:
+            - generic [ref=e607]: Нажмите на чип для анализа поломки
+            - generic [ref=e611]: PASS 18/18 QA
+        - generic [ref=e612]:
+          - generic [ref=e613]:
+            - generic [ref=e614]: Короткое замыкание локализовано
+            - heading "U2000 Main PMIC (Power Management IC)" [level=3] [ref=e616]
+            - generic [ref=e617]:
+              - generic [ref=e618]:
+                - generic [ref=e619]: "Симптомы поломки:"
+                - text: Аппарат не включается, греется в верхней части платы при подключении кабеля.
+              - generic [ref=e620]:
+                - generic [ref=e621]: "Инженерное решение:"
+                - text: Устранение пробитого фильтрующего конденсатора C1042 и реболлинг контроллера питания.
+          - generic [ref=e622]:
+            - generic [ref=e623]:
+              - generic [ref=e624]: "Телеметрия шины:"
+              - strong [ref=e625]: "VDD_MAIN: 4.20 V / 1.85 A Short"
+            - generic [ref=e626]:
+              - generic [ref=e627]: "Гарантия на ремонт:"
+              - strong [ref=e628]: 12 месяцев
+    - generic [ref=e631]:
+      - generic [ref=e632]:
+        - paragraph [ref=e633]: СТАНДАРТЫ ДЕТАЛЕЙ
+        - heading "Прозрачный выбор классов комплектующих." [level=2] [ref=e637]
+        - paragraph [ref=e638]: Никаких сюрпризов. Для каждого ремонта вы точно знаете класс устанавливаемой детали и её технические параметры.
+      - generic [ref=e639]:
+        - img "Exploded technical illustration of smartphone OLED display matrix, Ceramic Glass, Polarized Film, and EEPROM Serialization Chip" [ref=e641]
+        - generic [ref=e642]:
+          - generic [ref=e643]: АРХИТЕКТУРА И СЛОИ ДИСПЛЕЯ
+          - heading "Ювелирная сборка и перенос EEPROM микросхемы" [level=3] [ref=e647]
+          - paragraph [ref=e648]: При замене экрана мы сохраняем работу TrueTone, считываем калибровочные данные со старого модуля и наносим заводскую влагозащитную проклейку.
+          - generic [ref=e649]:
+            - generic [ref=e650]: Ceramic Shield & High-Grade Lamination
+            - generic [ref=e654]: 120Hz ProMotion & TrueTone EEPROM Chip
+            - generic [ref=e658]: IP68 Waterproof Seal Replacement
+      - generic [ref=e662]:
+        - generic [ref=e663]:
+          - generic [ref=e664]: РЕКОМЕНДУЕМ
+          - generic [ref=e673]:
+            - generic [ref=e674]: МАКСИМАЛЬНОЕ КАЧЕСТВО
+            - heading "Original OEM (Заводской оригинал)" [level=3] [ref=e675]
+          - paragraph [ref=e676]: Оригинальная фабричная деталь. Полное сохранение заводских стандартов, TrueTone, Face ID и максимальный цветовой охват DCI-P3.
+          - list [ref=e677]:
+            - listitem [ref=e678]:
+              - generic [ref=e682]: 100% заводская яркость и калибровка
+            - listitem [ref=e683]:
+              - generic [ref=e687]: ProMotion 120Hz и перенос TrueTone
+            - listitem [ref=e688]:
+              - generic [ref=e692]: Официальная гарантия 12 месяцев
+        - generic [ref=e693]:
+          - generic [ref=e700]:
+            - generic [ref=e701]: ЭКО-ВЫБОР
+            - heading "Refurbished Original (Переклейка стекла)" [level=3] [ref=e702]
+          - paragraph [ref=e703]: Родная оригинальная OLED матрица с новым заводским стеклом, заламинированная в беспылевой комнате. Идентичная цветопередача и скорость.
+          - list [ref=e704]:
+            - listitem [ref=e705]:
+              - generic [ref=e709]: Родной заводской OLED чип
+            - listitem [ref=e710]:
+              - generic [ref=e714]: Олеофобное покрытие высокой стойкости
+            - listitem [ref=e715]:
+              - generic [ref=e719]: Официальная гарантия 12 месяцев
+        - generic [ref=e720]:
+          - generic [ref=e726]:
+            - generic [ref=e727]: БЮДЖЕТНОЕ РЕШЕНИЕ
+            - heading "Certified High-Grade (Премиум-аналог)" [level=3] [ref=e728]
+          - paragraph [ref=e729]: Проверенная деталь класса Tier-1 от сертифицированных фабрик. Проходит строгий входной контроль поляризации и отклика.
+          - list [ref=e730]:
+            - listitem [ref=e731]:
+              - generic [ref=e735]: Входной контроль по 18 пунктам
+            - listitem [ref=e736]:
+              - generic [ref=e740]: Оптимальный баланс цены и надежности
+            - listitem [ref=e741]:
+              - generic [ref=e745]: Официальная гарантия 12 месяцев
+    - generic [ref=e748]:
+      - generic [ref=e749]:
+        - paragraph [ref=e750]: ОБОРУДОВАНИЕ ЛАБОРАТОРИИ
+        - heading "Инженерная база без компромиссов." [level=2] [ref=e754]
+        - paragraph [ref=e755]: Мы используем профессиональные микроскопы Leica, тепловизоры Flir и BGA паяльные станции JBC для безопасного восстановления микросхем и дорожек.
+      - generic [ref=e756]:
+        - generic [ref=e757]:
+          - img "Reform Prague Laboratory precision workbench with Leica microscope and Flir thermal camera" [ref=e759]
+          - generic [ref=e760]:
+            - generic [ref=e761]: РАБОЧЕЕ МЕСТО В ПРАГЕ 3
+            - heading "Антистатическое рабочее место с тепловизионным контролем" [level=4] [ref=e762]
+            - generic [ref=e763]:
+              - generic [ref=e764]: Leica Stereo 45×
+              - generic [ref=e768]: JBC Soldering 360°C
+              - generic [ref=e772]: Flir Thermal Monitor
+        - generic [ref=e776]:
+          - img "Micro-soldering 0.02mm jump wires under microscope" [ref=e778]
+          - generic [ref=e779]:
+            - generic [ref=e780]: МИКРОПАЙКА 0.02 ММ
+            - heading "Восстановление оборванных дорожек под микроскопом" [level=4] [ref=e781]
+            - generic [ref=e782]:
+              - generic [ref=e783]: 0.02mm Gold Wire
+              - generic [ref=e787]: BGA Reballing
+      - generic [ref=e791]:
+        - generic [ref=e792]:
+          - generic [ref=e793]: 0.02 mm BGA
+          - heading "Оптический микроскоп 45×" [level=3] [ref=e800]
+          - paragraph [ref=e801]: Контроль пайки и восстановление проводников толщиной 0,02 мм с кольцевой подсветкой.
+        - generic [ref=e802]:
+          - generic [ref=e803]: 0.1°C ΔT
+          - heading "Тепловизор Flir High-Res" [level=3] [ref=e808]
+          - paragraph [ref=e809]: Локализация коротких замыканий и перегревающихся SMD компонентов за секунды.
+        - generic [ref=e810]:
+          - generic [ref=e811]: Class-100
+          - heading "Беспылевой ламинатор OCA" [level=3] [ref=e818]
+          - paragraph [ref=e819]: Переклейка стекол экранов в среде с глубокой HEPA-фильтрацией без единой пылинки.
+        - generic [ref=e820]:
+          - generic [ref=e821]: I²C / SMBus
+          - heading "Программаторы EEPROM и TrueTone" [level=3] [ref=e827]
+          - paragraph [ref=e828]: Считывание и перенос заводских калибровок TrueTone, Face ID и серийных номеров батареи.
+    - generic [ref=e830]:
+      - generic [ref=e831]:
+        - paragraph [ref=e832]: КАК МЫ РАБОТАЕМ
+        - heading "Просто. Понятно. Быстро." [level=2] [ref=e833]
+        - paragraph [ref=e834]: Четыре шага от заявки до полностью исправного устройства у вас в руках.
+      - generic [ref=e835]:
+        - generic [ref=e836]:
+          - generic [ref=e837]: "01"
+          - heading "1. Заявка и расчет" [level=3] [ref=e838]
+          - paragraph [ref=e839]: Выберите модель на сайте или напишите мастеру в Telegram для быстрого расчета цены.
+        - generic [ref=e840]:
+          - generic [ref=e841]: "02"
+          - heading "2. Визит или курьер" [level=3] [ref=e842]
+          - paragraph [ref=e843]: Приезжайте в лабораторию на Biskupcova 31 (Praha 3) либо закажите забор курьером.
+        - generic [ref=e844]:
+          - generic [ref=e845]: "03"
+          - heading "3. Профессиональный ремонт" [level=3] [ref=e846]
+          - paragraph [ref=e847]: Мастер меняет детали и проводит нагрузочные тесты с тепловизором.
+        - generic [ref=e848]:
+          - generic [ref=e849]: "04"
+          - heading "4. Выдача с гарантией" [level=3] [ref=e850]
+          - paragraph [ref=e851]: Забирайте идеально работающее устройство вместе с гарантией на 12 месяцев.
+      - link "Оформить ремонт" [ref=e853] [cursor=pointer]:
+        - /url: /repair
+    - generic [ref=e859]:
+      - generic [ref=e860]: ДЛЯ КОМПАНИЙ В ПРАГЕ
+      - heading "Корпоративное обслуживание техники" [level=2] [ref=e861]
+      - paragraph [ref=e862]: Быстрый ремонт MacBook, iPhone и корпоративных ноутбуков с оплатой по счету (фактуре) и курьерской доставкой по Праге.
+      - list [ref=e863]:
+        - listitem [ref=e864]: Приоритетный SLA по срокам
+        - listitem [ref=e868]: Срочный курьерский забор и возврат
+        - listitem [ref=e872]: Единый ежемесячный счет с НДС/без
+        - listitem [ref=e876]: Строгий регламент конфиденциальности данных
+      - generic [ref=e880]:
+        - link "Услуги для бизнеса" [ref=e881] [cursor=pointer]:
+          - /url: /business
+        - link "Связаться по B2B" [ref=e882] [cursor=pointer]:
+          - /url: https://t.me/liltrafficRUS?text=Hello!%20I%20am%20interested%20in%20B2B%20corporate%20device%20repairs.
+    - generic [ref=e895]:
+      - generic [ref=e896]:
+        - paragraph [ref=e897]: ОТЗЫВЫ КЛИЕНТОВ
+        - heading "Нам доверяют IT-специалисты в Праге." [level=2] [ref=e898]
+      - generic [ref=e899]:
+        - generic [ref=e900]:
+          - generic [ref=e901]: ★★★★★
+          - paragraph [ref=e902]: «В Reform восстановили мой MacBook после сильного залития кофе, когда в других мастерских говорили менять всю плату за бешеные деньги. Сделали за 2 дня!»
+          - generic [ref=e903]:
+            - generic [ref=e904]: JN
+            - generic [ref=e905]:
+              - strong [ref=e906]: Ян Новак
+              - text: Software Engineer, Karlín
+        - generic [ref=e907]:
+          - generic [ref=e908]: ★★★★★
+          - paragraph [ref=e909]: «Заменили дисплей на iPhone моментально. Цветопередача и отклик идеальные, а возможность написать мастеру напрямую в Telegram — супер удобно.»
+          - generic [ref=e910]:
+            - generic [ref=e911]: MV
+            - generic [ref=e912]:
+              - strong [ref=e913]: Михаил Воронин
+              - text: Product Designer, Vinohrady
+        - generic [ref=e914]:
+          - generic [ref=e915]: ★★★★★
+          - paragraph [ref=e916]: «Обслуживаем парк из 40 рабочих ноутбуков компании. Reform — надежный партнер уже больше года. Все четко, быстро и с гарантией.»
+          - generic [ref=e917]:
+            - generic [ref=e918]: EP
+            - generic [ref=e919]:
+              - strong [ref=e920]: Елена Петрова
+              - text: Operations Lead, Praha 1
+    - generic [ref=e923]:
+      - generic [ref=e924]:
+        - img "Artem Mikhailov — Lead Master Reform Prague" [ref=e927]
+        - generic [ref=e928]: АРТЁМ · ВЕДУЩИЙ МАСТЕР
+      - generic [ref=e932]:
+        - paragraph [ref=e933]: О нас
+        - heading "«Каждое устройство мы восстанавливаем с микроскопической точностью.»" [level=2] [ref=e934]
+        - paragraph [ref=e935]: В Reform ваше устройство диагностируют и ремонтируют лично опытные инженеры. Никаких скрытых наценок — мы осматриваем плату, тестируем цепи и утверждаем точную смету до первого винта.
+        - generic [ref=e936]:
+          - generic [ref=e937]: 8+ лет опыта компонентного ремонта
+          - generic [ref=e942]: IPC-7711/7721 сертификация BGA пайки
+          - generic [ref=e947]: Беспылевая комната для экранов
+          - generic [ref=e952]: Специализация Apple & Unix архитектуры
+        - generic [ref=e957]:
+          - link "Написать Артёму в Telegram" [ref=e958] [cursor=pointer]:
+            - /url: https://t.me/liltrafficRUS
+          - link "О нашей лаборатории" [ref=e963] [cursor=pointer]:
+            - /url: /about
+    - generic [ref=e966]:
+      - generic [ref=e967]:
+        - generic [ref=e968]:
+          - generic [ref=e969]: ЛАБОРАТОРИЯ В ПРАГЕ 3 И КАК ДОБРАТЬСЯ
+          - generic [ref=e973]: "Сегодня открыты: 09:00 – 19:00"
+        - heading "Где мы находимся и как к нам добраться" [level=3] [ref=e975]
+        - paragraph [ref=e976]: Удобная локация на Жижкове, всего в 2 минутах от трамвайной остановки Biskupcova.
+      - generic [ref=e977]:
+        - generic [ref=e978]:
+          - tablist [ref=e979]:
+            - tab "Трамвай" [selected] [ref=e980] [cursor=pointer]
+            - tab "Metro" [ref=e981] [cursor=pointer]
+            - tab "На авто" [ref=e982] [cursor=pointer]
+            - tab "Курьер" [ref=e983] [cursor=pointer]
+          - generic [ref=e984]:
+            - generic [ref=e985]: TRAMVAJ (2 MIN CHŮZE)
+            - heading "Остановка Biskupcova" [level=4] [ref=e986]
+            - paragraph [ref=e987]: Прямой маршрут от Главного вокзала (10 мин), Вацлавской площади (12 мин) или Пальмовки. От остановки 150 метров пешком.
+            - generic [ref=e988]:
+              - generic [ref=e989]: "9"
+              - generic [ref=e990]: "10"
+              - generic [ref=e991]: "11"
+              - generic [ref=e992]: "16"
+              - generic [ref=e993]: "19"
+              - generic [ref=e994]: "26"
+          - generic [ref=e995]:
+            - generic [ref=e1000]:
+              - strong [ref=e1001]: Biskupcova 31, Praha 3
+              - generic [ref=e1002]: Экспресс-диагностика на месте
+            - button "Скопировать адрес" [ref=e1003] [cursor=pointer]
+        - generic [ref=e1009]:
+          - generic [ref=e1013]:
+            - strong [ref=e1014]: Reform Prague Lab
+            - generic [ref=e1015]: Biskupcova 31, Praha 3
+          - generic [ref=e1016]:
+            - link "Google Maps" [ref=e1017] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=Biskupcova+31+Praha
+            - link "Apple Maps" [ref=e1023] [cursor=pointer]:
+              - /url: https://maps.apple.com/?address=Biskupcova%2031,%20Praha,%20Czechia
+            - link "Waze" [ref=e1029] [cursor=pointer]:
+              - /url: https://waze.com/ul?q=Biskupcova%2031%20Praha
+          - 'link "Telegram: @liltrafficRUS" [ref=e1039] [cursor=pointer]':
+            - /url: https://t.me/liltrafficRUS
+  - contentinfo [ref=e1040]:
+    - generic [ref=e1041]:
+      - generic [ref=e1042]:
+        - link "Reform — Electronics Repair Prague" [ref=e1043] [cursor=pointer]:
+          - /url: /
+          - img "Reform Device Care" [ref=e1046]
+          - generic [ref=e1047]:
+            - generic [ref=e1048]:
+              - text: REFORM
+              - generic [ref=e1049]: .
+            - generic [ref=e1050]:
+              - text: PRAGUE
+              - generic [ref=e1051]: · DEVICE CARE
+        - paragraph [ref=e1052]: Ювелирный ремонт, микропайка плат и компонентная реставрация вашей техники в Праге.
+        - generic [ref=e1053]: Прага 3 · Сертифицированная лаборатория
+      - generic [ref=e1058]:
+        - generic [ref=e1059]: Ремонт
+        - link "Оформить ремонт" [ref=e1060] [cursor=pointer]:
+          - /url: /repair
+        - link "Цены" [ref=e1061] [cursor=pointer]:
+          - /url: /prices
+        - link "Статус заказа" [ref=e1062] [cursor=pointer]:
+          - /url: /track
+        - link "Apple (iPhone / Mac)" [ref=e1063] [cursor=pointer]:
+          - /url: /repair/apple
+        - link "Samsung Galaxy" [ref=e1064] [cursor=pointer]:
+          - /url: /repair/samsung
+      - generic [ref=e1065]:
+        - generic [ref=e1066]: О нас & Для бизнеса
+        - link "Для бизнеса" [ref=e1067] [cursor=pointer]:
+          - /url: /business
+        - link "О нас" [ref=e1068] [cursor=pointer]:
+          - /url: /about
+        - link "Контакты" [ref=e1069] [cursor=pointer]:
+          - /url: /contact
+        - link "FAQ" [ref=e1070] [cursor=pointer]:
+          - /url: /faq
+      - generic [ref=e1071]:
+        - generic [ref=e1072]: Поддержка и связь
+        - link "+420 737 500 587" [ref=e1073] [cursor=pointer]:
+          - /url: tel:+420737500587
+        - link "fear75412@gmail.com" [ref=e1076] [cursor=pointer]:
+          - /url: mailto:fear75412@gmail.com
+        - 'link "Telegram: @liltrafficRUS" [ref=e1080] [cursor=pointer]':
+          - /url: https://t.me/liltrafficRUS
+        - generic [ref=e1084]: Biskupcova 31, Praha 3
+        - group "Language selection" [ref=e1089]:
+          - button "Switch to CZ" [ref=e1090] [cursor=pointer]: CZ
+          - button "Switch to RU" [pressed] [ref=e1091] [cursor=pointer]: RU
+          - button "Switch to EN" [ref=e1092] [cursor=pointer]: EN
+    - generic [ref=e1093]:
+      - generic [ref=e1094]: © 2026 Reform Prague. Лаборатория точного ремонта электроники. · Biskupcova 31, Praha 3
+      - generic [ref=e1095]:
+        - link "Политика конфиденциальности" [ref=e1096] [cursor=pointer]:
+          - /url: /about
+        - generic [ref=e1097]: ·
+        - link "Условия обслуживания" [ref=e1098] [cursor=pointer]:
+          - /url: /about
+        - generic [ref=e1099]: ·
+        - generic [ref=e1100]: CZ / RU / EN
+  - complementary "Оценка ремонта по фото" [ref=e1101]:
+    - generic [ref=e1102]:
+      - strong [ref=e1108]: Оценка ремонта по фото
+      - button "Close photo quote widget" [ref=e1109] [cursor=pointer]
+    - paragraph [ref=e1113]: Отправьте фото разбитого экрана или платы в Telegram — мастер ответит за 5 мин.
+    - link "Написать в Telegram" [ref=e1114] [cursor=pointer]:
+      - /url: https://t.me/liltrafficRUS?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9E%D1%82%D0%BF%D1%80%D0%B0%D0%B2%D0%BB%D1%8F%D1%8E%20%D1%84%D0%BE%D1%82%D0%BE%20%D1%83%D1%81%D1%82%D1%80%D0%BE%D0%B9%D1%81%D1%82%D0%B2%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D0%BF%D1%80%D0%B5%D0%B4%D0%B2%D0%B0%D1%80%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D0%B9%20%D0%BE%D1%86%D0%B5%D0%BD%D0%BA%D0%B8%20%D1%81%D1%82%D0%BE%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D0%B8%20%D1%80%D0%B5%D0%BC%D0%BE%D0%BD%D1%82%D0%B0.

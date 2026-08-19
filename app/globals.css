@@ -5033,6 +5033,7 @@ main {
   .track-presets-grid { grid-template-columns: 1fr; }
   .price-head { display: none; }
   .price-row { grid-template-columns: 1fr; gap: 8px; }
+  .stage-cyber-frame { height: 500px; }
 }
 
 @media (max-width: 640px) {
@@ -5065,4 +5066,10 @@ main {
   .search-trigger-btn span { display: none; }
   .b2b-grid { grid-template-columns: 1fr; }
   .repair-card-grid { grid-template-columns: 1fr; }
+  .stage-cyber-frame { height: 480px; }
+  .workstation-header { flex-direction: column; align-items: stretch; gap: 10px; }
+  .workstation-modes { justify-content: center; }
+  .ws-callout { display: none; }
+  .craft-microscope-stage { flex-direction: column; gap: 14px; }
+  .workstation-footer { flex-direction: column; align-items: flex-start; gap: 8px; }
 }
