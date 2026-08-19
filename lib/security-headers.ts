@@ -141,7 +141,14 @@ export const CSP_HEADER = {
  */
 export function generateNonce(): string {
   const bytes = new Uint8Array(16);
-  globalThis.crypto.getRandomValues(bytes);
+  if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+    crypto.getRandomValues(bytes);
+  } else {
+    const webCrypto = (globalThis as unknown as { crypto?: { getRandomValues: (b: Uint8Array) => Uint8Array } }).crypto;
+    if (webCrypto?.getRandomValues) {
+      webCrypto.getRandomValues(bytes);
+    }
+  }
   let binary = "";
   for (let i = 0; i < bytes.length; i++) {
     binary += String.fromCharCode(bytes[i]);
