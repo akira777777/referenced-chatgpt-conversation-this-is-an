@@ -165,21 +165,6 @@ export default function FaqPage() {
 
   return (
     <SiteChrome>
-      <StructuredData
-        data={{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: faqDatabase.map(f => ({
-            "@type": "Question",
-            name: f.question[language as "cs" | "ru" | "en"] || f.question.en,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: f.answer[language as "cs" | "ru" | "en"] || f.answer.en,
-            },
-          })),
-        }}
-      />
-
       {/* Hero Header */}
       <div className="page-hero">
         <div className="container">
