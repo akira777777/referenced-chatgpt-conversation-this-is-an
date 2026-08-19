@@ -23,8 +23,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           # Node 22 is the project's stated minimum (see package.json engines).
-          # Node 23+ enables --experimental-strip-types by default; 22 needs
-          # the flag, which is already passed via npm scripts.
           node-version: "22"
           cache: "npm"
 
@@ -40,11 +38,11 @@ jobs:
       - name: Unit tests
         run: npm run test:unit
 
-  build:
-    name: Production build
+  build-and-e2e:
+    name: Production build & E2E (incl. enforced CSP browser check)
     runs-on: ubuntu-latest
     needs: lint-typecheck-test
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -66,3 +64,9 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: https://example.invalid
           NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
           ADMIN_SECRET: placeholder-admin-secret
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: E2E tests (server-rendered HTML, CSP report sink, nonce CSP in browser)
+        run: npm run test:e2e
